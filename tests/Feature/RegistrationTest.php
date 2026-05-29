@@ -141,6 +141,10 @@ class RegistrationTest extends TestCase
         // Seller registration
         $response3 = $this->get('/register/seller');
         $response3->assertRedirect(route('dashboard'));
+
+        // Login page
+        $response4 = $this->get('/login');
+        $response4->assertRedirect(route('dashboard'));
     }
 
     /**
@@ -183,5 +187,56 @@ class RegistrationTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Pasteleria Maria');
         $response->assertSee('Sesión Iniciada: Emprendedor');
+    }
+
+    /**
+     * Test login page loads for guests.
+     */
+    public function test_login_page_loads_for_guests(): void
+    {
+        $response = $this->get('/login');
+        $response->assertStatus(200);
+        $response->assertSee('Ingresar a tu Cuenta');
+        $response->assertSee('Iniciar Sesión');
+    }
+
+    /**
+     * Test successful login redirects to dashboard.
+     */
+    public function test_successful_login_redirects_to_dashboard(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'login@test.com',
+            'password' => bcrypt('password123'),
+            'role' => 'client'
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => 'login@test.com',
+            'password' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('dashboard'));
+        $this->assertAuthenticatedAs($user);
+    }
+
+    /**
+     * Test failed login returns validation error.
+     */
+    public function test_failed_login_returns_validation_error(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'login@test.com',
+            'password' => bcrypt('password123'),
+            'role' => 'client'
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => 'login@test.com',
+            'password' => 'wrongpassword',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest();
     }
 }

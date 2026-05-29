@@ -55,20 +55,10 @@
                         </form>
                     </div>
                 @else
-                    <a href="{{ route('register.select') }}" 
-                       id="nav-home-link"
-                       class="transition-colors hover:text-indigo-400 {{ Route::currentRouteName() == 'register.select' ? 'text-indigo-400 font-semibold' : 'text-slate-400' }}">
-                        Inicio
-                    </a>
-                    <a href="{{ route('register.client') }}" 
-                       id="nav-client-link"
-                       class="transition-colors hover:text-indigo-400 {{ Route::currentRouteName() == 'register.client' ? 'text-indigo-400 font-semibold' : 'text-slate-400' }}">
-                        Soy Cliente
-                    </a>
-                    <a href="{{ route('register.seller') }}" 
-                       id="nav-seller-link"
-                       class="px-3 py-1.5 rounded-lg border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 hover:border-purple-500/50 text-purple-300 transition-all duration-300 {{ Route::currentRouteName() == 'register.seller' ? 'bg-purple-500/20 border-purple-500 text-purple-200' : '' }}">
-                        Soy Emprendedor
+                    <a href="{{ route('login') }}" 
+                       id="nav-login-link"
+                       class="px-3.5 py-1.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 hover:border-indigo-500/50 text-indigo-300 font-semibold transition-all duration-300">
+                        Iniciar Sesión
                     </a>
                 @endauth
             </nav>

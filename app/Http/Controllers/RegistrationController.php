@@ -7,6 +7,7 @@ use App\Models\BusinessProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class RegistrationController extends Controller
 {
@@ -15,7 +16,7 @@ class RegistrationController extends Controller
      */
     public function select()
     {
-        if (auth()->check()) {
+        if (Auth::check()) {
             return redirect()->route('dashboard');
         }
         return view('register.select');
@@ -26,7 +27,7 @@ class RegistrationController extends Controller
      */
     public function createClient()
     {
-        if (auth()->check()) {
+        if (Auth::check()) {
             return redirect()->route('dashboard');
         }
         return view('register.client');
@@ -37,7 +38,7 @@ class RegistrationController extends Controller
      */
     public function storeClient(Request $request)
     {
-        if (auth()->check()) {
+        if (Auth::check()) {
             return redirect()->route('dashboard');
         }
 
@@ -55,7 +56,7 @@ class RegistrationController extends Controller
         ]);
 
         // Auto-login the registered user
-        auth()->login($user);
+        Auth::login($user);
 
         return redirect()->route('dashboard')->with('success', '¡Registro de cliente completado con éxito! Bienvenido, ' . $user->name);
     }
@@ -65,7 +66,7 @@ class RegistrationController extends Controller
      */
     public function createSeller()
     {
-        if (auth()->check()) {
+        if (Auth::check()) {
             return redirect()->route('dashboard');
         }
         return view('register.seller');
@@ -76,7 +77,7 @@ class RegistrationController extends Controller
      */
     public function storeSeller(Request $request)
     {
-        if (auth()->check()) {
+        if (Auth::check()) {
             return redirect()->route('dashboard');
         }
 
@@ -115,9 +116,45 @@ class RegistrationController extends Controller
         });
 
         // Auto-login the registered user
-        auth()->login($user);
+        Auth::login($user);
 
         return redirect()->route('dashboard')->with('success', '¡Registro de emprendedor y negocio completado con éxito!');
+    }
+
+    /**
+     * Show the login form.
+     */
+    public function showLogin()
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.login');
+    }
+
+    /**
+     * Authenticate the user.
+     */
+    public function login(Request $request)
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
+        $credentials = $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('dashboard'))->with('success', '¡Inicio de sesión exitoso!');
+        }
+
+        return back()->withErrors([
+            'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+        ])->onlyInput('email');
     }
 
     /**
@@ -125,7 +162,7 @@ class RegistrationController extends Controller
      */
     public function dashboard()
     {
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return redirect()->route('register.select');
         }
         return view('dashboard');
