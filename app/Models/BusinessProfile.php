@@ -2,20 +2,41 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['user_id', 'business_name', 'description', 'phone', 'logo', 'address'])]
 class BusinessProfile extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    /**
-     * Get the user that owns the business profile.
-     */
+    protected $fillable = [
+        'user_id',
+        'business_name',
+        'description',
+        'phone',
+        'logo',
+        'address',
+    ];
+
+    // Relaciones
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function availabilitySlots()
+    {
+        return $this->hasMany(AvailabilitySlot::class);
+    }
+
+    public function ingredients()
+    {
+        return $this->hasMany(Ingredient::class);
     }
 }
