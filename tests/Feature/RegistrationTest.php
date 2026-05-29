@@ -127,6 +127,7 @@ class RegistrationTest extends TestCase
      */
     public function test_authenticated_user_redirected_from_registration_pages(): void
     {
+        /** @var User $user */
         $user = User::factory()->create(['role' => 'client']);
         $this->actingAs($user);
 
@@ -152,6 +153,7 @@ class RegistrationTest extends TestCase
      */
     public function test_dashboard_displays_client_name_in_navbar(): void
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'name' => 'Juan Perez',
             'role' => 'client'
@@ -169,6 +171,7 @@ class RegistrationTest extends TestCase
      */
     public function test_dashboard_displays_seller_business_name_in_navbar(): void
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'name' => 'Maria Lopez',
             'role' => 'seller'
@@ -205,6 +208,7 @@ class RegistrationTest extends TestCase
      */
     public function test_successful_login_redirects_to_dashboard(): void
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'login@test.com',
             'password' => bcrypt('password123'),
@@ -225,6 +229,7 @@ class RegistrationTest extends TestCase
      */
     public function test_failed_login_returns_validation_error(): void
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'login@test.com',
             'password' => bcrypt('password123'),
