@@ -3,21 +3,162 @@
 @section('title', 'Gestionar Categorías | ProyectoUTN')
 
 @section('content')
-<div class="max-w-2xl mx-auto py-8">
-    <div class="border border-slate-800 bg-slate-900/40 backdrop-blur rounded-2xl p-8 shadow-xl">
-        <span class="px-3 py-1 text-xs font-bold tracking-wider rounded-full uppercase bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-            Vista Preliminar (Borrador)
-        </span>
-        <h1 class="text-3xl font-bold tracking-tight text-white mt-4">
-            Categorías de Productos
-        </h1>
-        <p class="text-slate-400 mt-2 text-sm">
-            Responsable: <span class="text-indigo-300 font-semibold">Programador 2</span> | Modelo: <code>Category</code>
-        </p>
+@php
+    // Obtiene directamente las categorías reales de la base de datos
+    $categoriesList = \App\Models\Category::withCount('products')->get();
+@endphp
 
-        <div class="mt-8 border border-dashed border-slate-800 rounded-xl p-8 text-center text-slate-500 text-sm">
-            <p>Aquí se maquetará la interfaz de administración de categorías, con un formulario de creación rápida a la izquierda y el listado con opción de borrado a la derecha.</p>
+<div class="py-6">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-6 border-b border-slate-800/60">
+        <div>
+            <span class="px-2.5 py-1 text-[10px] font-bold tracking-wider rounded-full uppercase bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                Módulo de Catálogo
+            </span>
+            <h1 class="text-3xl font-bold tracking-tight text-white mt-3 font-sans">
+                Categorías de Productos
+            </h1>
+            <p class="text-slate-400 mt-1.5 text-sm">
+                Organiza tus productos en categorías para facilitar la navegación en el catálogo.
+            </p>
         </div>
+        <div class="mt-4 md:mt-0">
+            <a href="{{ route('dashboard') }}" class="inline-flex items-center space-x-2 text-xs text-slate-400 hover:text-white bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 rounded-xl px-4 py-2.5 transition-all duration-200">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>Volver al Panel</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Side: Creation Form -->
+        <div class="lg:col-span-5">
+            <div class="border border-slate-800/80 bg-slate-900/40 backdrop-blur rounded-2xl p-6 shadow-xl shadow-indigo-950/10 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-indigo-500/5 blur-2xl pointer-events-none group-hover:bg-indigo-500/10 transition-all duration-500"></div>
+                
+                <h2 class="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                    <span>Nueva Categoría</span>
+                </h2>
+
+                <form action="{{ route('categories.store') }}" method="POST" class="space-y-4">
+                    @csrf
+                    
+                    <div>
+                        <label for="category-name-input" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                            Nombre de la categoría
+                        </label>
+                        <input 
+                            type="text" 
+                            name="name" 
+                            id="category-name-input" 
+                            required
+                            minlength="3"
+                            maxlength="50"
+                            placeholder="Ej: Bebidas Calientes, Pastas..."
+                            class="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all duration-300"
+                            autocomplete="off"
+                        >
+                        <p class="text-[11px] text-slate-500 mt-2">
+                            El nombre debe ser único y descriptivo. Mínimo 3 caracteres.
+                        </p>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        class="w-full relative group/btn flex items-center justify-center space-x-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold text-sm rounded-xl py-3 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 transition-all duration-300 cursor-pointer overflow-hidden active:scale-[0.98]"
+                    >
+                        <svg class="w-4 h-4 shrink-0 transition-transform group-hover/btn:scale-110" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span>Crear Categoría</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Side: Categories List -->
+        <div class="lg:col-span-7">
+            <div class="border border-slate-800/80 bg-slate-900/40 backdrop-blur rounded-2xl p-6 shadow-xl shadow-indigo-950/10">
+                <h2 class="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
+                    <span>Categorías Existentes</span>
+                    <span class="text-xs font-normal text-slate-400">({{ $categoriesList->count() }})</span>
+                </h2>
+
+                @if($categoriesList->isEmpty())
+                <div class="py-12 text-center border border-dashed border-slate-800 rounded-xl">
+                    <svg class="w-12 h-12 mx-auto text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.885 1.77a2.25 2.25 0 002.007 1.241h1.98a2.25 2.25 0 002.007-1.24l.885-1.77a2.25 2.25 0 012.007-1.241h3.86m-18 0h18M2.25 13.5l1.626-5.693A2.25 2.25 0 015.982 6.25h12.036a2.25 2.25 0 012.193 1.557l1.626 5.693m-18 0v2.25C2.25 16.893 3.607 18 5.285 18h13.43c1.678 0 3.035-1.107 3.035-2.25V13.5" />
+                    </svg>
+                    <p class="text-sm text-slate-400 font-medium">No hay categorías registradas</p>
+                    <p class="text-xs text-slate-500 mt-1">Ingresa el nombre en el formulario para crear una.</p>
+                </div>
+                @else
+                <div class="space-y-3">
+                    @foreach($categoriesList as $category)
+                    <div class="flex items-center justify-between p-4 rounded-xl border border-slate-800/80 bg-slate-900/20 hover:bg-slate-900/60 hover:border-slate-700/80 hover:shadow-md hover:shadow-indigo-950/5 transition-all duration-300">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-center text-indigo-400">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581a2.25 2.25 0 003.182 0l4.318-4.318a2.25 2.25 0 000-3.182L11.16 3.659A2.25 2.25 0 009.568 3z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-white text-sm">{{ $category->name }}</p>
+                                <p class="text-[11px] text-slate-500">
+                                    Creada {{ is_string($category->created_at) ? $category->created_at : $category->created_at->diffForHumans() }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/10 mr-2">
+                                {{ $category->products_count ?? 0 }} {{ ($category->products_count ?? 0) === 1 ? 'producto' : 'productos' }}
+                            </span>
+                            
+                            <!-- Edit Button (Pencil Icon for TS integration) -->
+                            <button 
+                                type="button" 
+                                class="edit-category-btn p-2 rounded-lg text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/10 border border-transparent hover:border-indigo-500/20 transition-all duration-300 cursor-pointer"
+                                data-id="{{ $category->id }}"
+                                data-name="{{ $category->name }}"
+                                title="Editar categoría"
+                            >
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                                </svg>
+                            </button>
+
+                            <!-- Delete Button Form -->
+                            <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="inline-block">
+                                @csrf
+                                @method('DELETE')
+                                <button 
+                                    type="submit" 
+                                    class="p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all duration-300 cursor-pointer"
+                                    title="Eliminar categoría"
+                                    onclick="return confirm('¿Estás seguro de que deseas eliminar la categoría {{ $category->name }}?')"
+                                >
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+            </div>
+        </div>
+
     </div>
 </div>
 @endsection
+
+

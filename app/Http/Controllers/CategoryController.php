@@ -15,6 +15,11 @@ class CategoryController extends Controller
         return view('categories.index');
     }
 
+    public function update()
+    {
+        
+    }
+
     /**
      * Store a newly created category in storage.
      */

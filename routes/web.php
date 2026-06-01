@@ -51,7 +51,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-    
+    Route::put('/categories/{category}' , [CategoryController::class , 'update'])->name('categories.update');
+
     Route::resource('products', ProductController::class);
 
     // --- Programador 3: Inventario de Ingredientes y Constructor de Recetas ---
