@@ -101,22 +101,57 @@
                 <div class="space-y-3">
                     @foreach($categoriesList as $category)
                     <div class="flex items-center justify-between p-4 rounded-xl border border-slate-800/80 bg-slate-900/20 hover:bg-slate-900/60 hover:border-slate-700/80 hover:shadow-md hover:shadow-indigo-950/5 transition-all duration-300">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-center text-indigo-400">
+                        <div class="flex items-center space-x-3 flex-grow">
+                            <div class="w-10 h-10 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-center text-indigo-400 shrink-0">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581a2.25 2.25 0 003.182 0l4.318-4.318a2.25 2.25 0 000-3.182L11.16 3.659A2.25 2.25 0 009.568 3z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
                                 </svg>
                             </div>
-                            <div>
+                            
+                            <!-- Contenedor visible por defecto -->
+                            <div class="category-view-container">
                                 <p class="font-semibold text-white text-sm">{{ $category->name }}</p>
                                 <p class="text-[11px] text-slate-500">
                                     Creada {{ is_string($category->created_at) ? $category->created_at : $category->created_at->diffForHumans() }}
                                 </p>
                             </div>
+
+                            <!-- Formulario de Edición (Oculto por defecto, para poner en block/flex con TS) -->
+                            <form action="{{ route('categories.update', $category->id) }}" method="POST" class="category-edit-form hidden items-center space-x-2 flex-grow max-w-sm" id="form-edit">
+                                @csrf
+                                @method('PUT')
+                                <input 
+                                    type="text" 
+                                    name="name" 
+                                    value="{{ $category->name }}" 
+                                    required
+                                    minlength="3"
+                                    maxlength="50"
+                                    class="bg-slate-950/80 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-full"
+                                >
+                                <button 
+                                    type="submit" 
+                                    class="p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors cursor-pointer shrink-0"
+                                    title="Guardar cambios"
+                                >
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                    </svg>
+                                </button>
+                                <button 
+                                    type="button" 
+                                    class="cancel-edit-btn p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0"
+                                    title="Cancelar"
+                                >
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
                         
-                        <div class="flex items-center space-x-2">
+                        <div class="category-actions-container flex items-center space-x-2 shrink-0">
                             <span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/10 mr-2">
                                 {{ $category->products_count ?? 0 }} {{ ($category->products_count ?? 0) === 1 ? 'producto' : 'productos' }}
                             </span>
@@ -128,12 +163,13 @@
                                 data-id="{{ $category->id }}"
                                 data-name="{{ $category->name }}"
                                 title="Editar categoría"
+                                id="buttonEdit"
                             >
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                                 </svg>
                             </button>
-
+ 
                             <!-- Delete Button Form -->
                             <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="inline-block">
                                 @csrf
