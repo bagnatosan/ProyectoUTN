@@ -17,9 +17,11 @@ class Ingredient extends Model
         'unit_cost',
     ];
 
+    
     protected $casts = [
         'unit_cost' => 'decimal:2',
     ];
+
 
     // Relaciones
     public function businessProfile()
