@@ -15,9 +15,20 @@ class CategoryController extends Controller
         return view('categories.index');
     }
 
-    public function update()
+    public function update(Request $request , Category $category)
     {
-        
+        $request->validate(['name' => 'required|max:50',
+        ]);
+
+        $category->update([
+            'name' => $request->name,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Categoria actualizada con exito',
+            'category' => $category
+        ]);
     }
 
     /**

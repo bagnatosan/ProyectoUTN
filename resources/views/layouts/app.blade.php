@@ -6,9 +6,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Plataforma de Reservas y Emprendimientos')</title>
     <meta name="description" content="Regístrate como cliente para realizar reservas o como emprendedor para potenciar tu negocio.">
-    <link rel="stylesheet" href="/resources/css/app.css">
-    <!-- Vite Assets -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Vite Assets (CSS only) -->
+    @vite(['resources/css/app.css'])
+    <script src="/js/app.js" defer></script>
+    
+    
 </head>
 <body class="h-full bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col">
     
