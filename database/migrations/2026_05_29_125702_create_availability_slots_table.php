@@ -14,7 +14,7 @@ return new class extends Migration
             Schema::create('availability_slots', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('business_profile_id')->constrained()->onDelete('cascade');
-                $table->enum('weekday', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
+                $table->string('weekday');
                 $table->time('start_time');
                 $table->time('end_time');
                 $table->boolean('is_active')->default(true);
