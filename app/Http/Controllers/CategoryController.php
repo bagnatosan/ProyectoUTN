@@ -45,7 +45,12 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        // Delete category logic will be implemented here
-        return redirect()->route('categories.index')->with('success', 'Categoría eliminada (borrador).');
+        $category->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Categoria eliminada con exito.'
+        ]);
+        
     }
 }

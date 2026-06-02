@@ -72,3 +72,31 @@ formUpdate.forEach(form => {
         }
     });
 });
+//delete
+const deleteForms = document.querySelectorAll('.category-actions-container form');
+deleteForms.forEach(form => {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const url = form.action;
+        const formData = new FormData(form);
+        const response = await fetch(url, {
+            method: 'delete',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        });
+        if (response.ok) {
+            const row = form.closest('.justify-between');
+            if (row) {
+                row.remove();
+                alert('Categoria eliminada con exito');
+            }
+            else {
+                const errorData = response.json();
+                alert(`Error: ${errorData}`);
+            }
+        }
+    });
+});
