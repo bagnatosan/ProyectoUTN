@@ -8,21 +8,41 @@ use Illuminate\Http\Request;
 
 class RecipeController extends Controller
 {
-    /**
-     * Show the recipe constructor (ingredients association) for a product.
-     */
-    public function edit(Product $product)
+   
+    public function edit($productId)
     {
-        $ingredients = Ingredient::all();
+        $product = Product::findOrFail($productId);
+        $ingredients = Ingredient::all(); //aca el usuario elige que reservar
+        
         return view('recipes.edit', compact('product', 'ingredients'));
     }
 
-    /**
-     * Update the recipe for a product.
-     */
-    public function update(Request $request, Product $product)
+    // Guarda o actualiza ingredientes
+    public function update(Request $request, $productId)
     {
-        // Association logic between product and ingredients (product_ingredients pivot)
-        return redirect()->route('products.index')->with('success', 'Receta del producto actualizada (borrador).');
+        $product = Product::findOrFail($productId);
+
+        // Si el usuario borró todos los ingredientes o mandó la receta vacía
+        if (!$request->has('ingredients') || empty($request->ingredients)) {
+            $product->ingredients()->detach(); // Limpia la receta por completo
+            return redirect()->back()->with('success', 'Receta vaciada con éxito.');
+        }
+
+        // Si vienen ingredientes, se valida
+        $request->validate([
+            'ingredients' => 'array',
+            'ingredients.*.id' => 'exists:ingredients,id',
+            'ingredients.*.quantity' => 'numeric|min:0.01',
+        ]);
+
+        // Sincronizamos los ingredientes con sus cantidades en la tabla pivot
+        $syncData = [];
+        foreach ($request->ingredients as $item) {
+            $syncData[$item['id']] = ['quantity' => $item['quantity']];
+        }
+
+        $product->ingredients()->sync($syncData);
+
+        return redirect()->back()->with('success', 'Receta actualizada con éxito.');
     }
 }
