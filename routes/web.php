@@ -54,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/categories/{category}' , [CategoryController::class , 'update'])->name('categories.update');
 
     Route::resource('products', ProductController::class);
+    Route::patch('/products/{product}/change-statement', [ProductController::class, 'ChangeStatement'])->name('products.change-statement'); //toggle button
 
     // --- Programador 3: Inventario de Ingredientes y Constructor de Recetas ---
     Route::resource('ingredients', IngredientController::class);

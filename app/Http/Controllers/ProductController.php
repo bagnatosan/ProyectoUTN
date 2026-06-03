@@ -107,6 +107,24 @@ class ProductController extends Controller implements HasMiddleware
         return redirect()->route('products.index')->with('success', 'Producto eliminado con exito.');
     }
 
+    public function ChangeStatement(Request $request, Product $product)
+    {
+        if($this->productBelongsToSeller($product)){
+            if($product->is_active)
+                $product->is_active = false;
+            else
+                $product->is_active = true;
+        }
+
+        $product->save();
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Actualizado correctamente el estado del producto',
+            'state' => $product->is_active
+        ]);
+    }
+
     public function ImagePath(Request $request)
     {
         $imagePath = null;

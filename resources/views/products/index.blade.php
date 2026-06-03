@@ -185,16 +185,15 @@
 
                         <!-- Estado (Toggle Form / Badge) -->
                         <td class="p-4">
-                            <form action="{{ route('products.update', $product->id) }}" method="POST" class="inline-block align-middle">
+                            <form action="{{ route('products.change-statement', $product->id) }}" method="POST" class="form-toggle inline-block align-middle">
                                 @csrf
-                                @method('PUT')
-                                <input type="hidden" name="is_active" value="{{ $product->is_active ? 0 : 1 }}">
+                                @method('PATCH')
                                 <button 
                                     type="submit" 
-                                    class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {{ $product->is_active ? 'bg-indigo-600' : 'bg-slate-800' }}"
+                                    class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-300 ease-out focus:outline-none transform hover:scale-105 active:scale-95 {{ $product->is_active ? 'bg-indigo-600' : 'bg-slate-800' }}"
                                     title="Alternar estado (Activo/Inactivo)"
                                 >
-                                    <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ $product->is_active ? 'translate-x-4' : 'translate-x-0' }}"></span>
+                                    <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] {{ $product->is_active ? 'translate-x-4' : 'translate-x-0' }}"></span>
                                 </button>
                             </form>
                             <span class="ml-2 text-xs font-semibold {{ $product->is_active ? 'text-emerald-400' : 'text-slate-500' }}">
@@ -252,4 +251,5 @@
         @endif
     </div>
 </div>
+<script src="/js/products.js"></script>
 @endsection
