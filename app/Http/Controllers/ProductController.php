@@ -6,12 +6,26 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ProductController extends Controller
+class ProductController extends Controller implements HasMiddleware
 {
-    /**
-     * Display a listing of the products.
-     */
+    public static function middleware(): array
+    {
+        return [
+            // Aquí puedes definir tu middleware usando una función
+            new Middleware(function ($request, $next) {
+                if ($request->user()->role !== 'seller') {
+                    abort(403);
+                }
+                return $next($request);
+            }),
+        ];
+    }
+
+    
+
     public function index()
     {
         return view('products.index');
