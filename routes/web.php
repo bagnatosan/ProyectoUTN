@@ -47,7 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile/edit', [BusinessProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [BusinessProfileController::class, 'update'])->name('profile.update');
 
-    // --- Programador 2: Catálogo de Productos y Categorías ---
+    // --- Santiago Bagnato: Catálogo de Productos y Categorías ---
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'create'])->name('categories.create');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
