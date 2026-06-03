@@ -4,7 +4,6 @@
 
 @section('content')
 @php
-    // Obtiene directamente las categorías reales de la base de datos
     $categoriesList = \App\Models\Category::withCount('products')->get();
 @endphp
 
@@ -37,7 +36,7 @@
         
         <!-- Left Side: Creation Form -->
         <div class="lg:col-span-5">
-            <div class="border border-slate-800/80 bg-slate-900/40 backdrop-blur rounded-2xl p-6 shadow-xl shadow-indigo-950/10 relative overflow-hidden group">
+            <div id="create-category-container" class="border border-slate-800/80 bg-slate-900/40 backdrop-blur rounded-2xl p-6 shadow-xl shadow-indigo-950/10 relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-indigo-500/5 blur-2xl pointer-events-none group-hover:bg-indigo-500/10 transition-all duration-500"></div>
                 
                 <h2 class="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
@@ -45,7 +44,7 @@
                     <span>Nueva Categoría</span>
                 </h2>
 
-                <form action="{{ route('categories.store') }}" method="POST" class="space-y-4">
+                <form action="{{ route('categories.create') }}" method="POST" class="space-y-4">
                     @csrf
                     
                     <div>
@@ -195,6 +194,7 @@
 
     </div>
 </div>
+<script src="/js/categories.js"></script>
 @endsection
 
 

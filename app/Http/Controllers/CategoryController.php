@@ -7,9 +7,7 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of categories.
-     */
+
     public function index()
     {
         return view('categories.index');
@@ -31,18 +29,23 @@ class CategoryController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created category in storage.
-     */
-    public function store(Request $request)
+   
+    public function create(Request $request)
     {
-        // Store category logic will be implemented here
-        return redirect()->route('categories.index')->with('success', 'Categoría creada (borrador).');
+        $request->validate(['name' => 'required|max:50']);
+
+        $category = Category::create([
+            'name' => $request->name
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Categoria creada con exito',
+            'category' => $category
+        ]);
+
     }
 
-    /**
-     * Remove the specified category from storage.
-     */
     public function destroy(Category $category)
     {
         $category->delete();

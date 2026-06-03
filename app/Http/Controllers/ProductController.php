@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -16,13 +17,12 @@ class ProductController extends Controller
         return view('products.index');
     }
 
-    /**
-     * Show the form for creating a new product.
-     */
-    public function create()
+    
+    public function create(Request $request)
     {
         $categories = Category::all();
         return view('products.create', compact('categories'));
+
     }
 
     /**
@@ -30,8 +30,31 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        // Store product logic will be implemented here
-        return redirect()->route('products.index')->with('success', 'Producto creado (borrador).');
+        $request->validate([
+            'name' => 'required|string|max:30',
+            'description' => 'nullable|string|max:50',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'image' => 'nullable|image|max:2048', //2mb
+            'is_active' => 'required|boolean',
+        ]);
+
+        $imagePath = null;
+
+        if($request->hasFile('image'))
+            $imagePath = $request->file('image')->store('products' , 'public');
+
+        $product = Product::create([
+            'business_profile_id' => Auth::user()->businessProfile->id,
+            'name' => $request->name,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+            'image' => $imagePath, //2mb
+            'is_active' => $request->is_active,
+        ]);
+
+        return view('products.index');
     }
 
     /**
