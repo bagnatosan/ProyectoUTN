@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+/* --------------------------------------------------
+   CAT ANIMATIONS (Error 403 Page)
+   -------------------------------------------------- */
+
+@keyframes cat-breath {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.04) translateY(-1px); }
+}
+
+@keyframes cat-tail-wag {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(12deg) translateY(-2px); }
+}
+
+@keyframes cat-head-bob {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-2px); }
+}
+
+@keyframes ear-twitch-left {
+    0%, 90%, 100% { transform: rotate(0deg); }
+    95% { transform: rotate(-8deg); }
+}
+
+@keyframes ear-twitch-right {
+    0%, 92%, 100% { transform: rotate(0deg); }
+    96% { transform: rotate(8deg); }
+}
+
+@keyframes cat-blink {
+    0%, 90%, 94%, 100% { transform: scaleY(1); }
+    92% { transform: scaleY(0.1); }
+}
+
+.cat-body {
+    animation: cat-breath 4s ease-in-out infinite;
+    transform-origin: center bottom;
+}
+
+.cat-tail {
+    animation: cat-tail-wag 2.5s ease-in-out infinite;
+    transform-origin: 135px 130px;
+}
+
+.cat-head {
+    animation: cat-head-bob 4s ease-in-out infinite;
+    transform-origin: center bottom;
+}
+
+.cat-ear-left {
+    animation: ear-twitch-left 6s ease-in-out infinite;
+    transform-origin: 65px 85px;
+}
+
+.cat-ear-right {
+    animation: ear-twitch-right 5.5s ease-in-out infinite;
+    transform-origin: 135px 85px;
+}
+
+.cat-eye-left, .cat-eye-right {
+    animation: cat-blink 5s infinite;
+    transform-origin: center;
+}
