@@ -44,14 +44,7 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:30',
-            'description' => 'nullable|string|max:70',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|max:2048', //2mb
-            'is_active' => 'required|boolean',
-        ]);
+        $request->validate($this->DataValidation());
 
 
         $product = Product::create([
@@ -81,14 +74,7 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function update(Request $request, Product $product)
     {
-        $request->validate([
-            'name' => 'required|string|max:30',
-            'description' => 'nullable|string|max:50',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|max:2048', //2mb
-            'is_active' => 'required|boolean',
-        ]);
+        $request->validate($this->DataValidation());
 
         $data = [
             'name' => $request->name,
@@ -112,8 +98,13 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function destroy(Product $product)
     {
-        // Delete product logic will be implemented here
-        return redirect()->route('products.index')->with('success', 'Producto eliminado (borrador).');
+        if($this->productBelongsToSeller($product)) //validar que el producto sea del vendedor logueado
+            $product->delete();
+        else 
+            abort(403);
+
+
+        return redirect()->route('products.index')->with('success', 'Producto eliminado con exito.');
     }
 
     public function ImagePath(Request $request)
@@ -126,5 +117,26 @@ class ProductController extends Controller implements HasMiddleware
         return $imagePath;
     }
 
+    public function productBelongsToSeller(Product $product)
+    {
+        if($product->business_profile_id === Auth::user()->businessProfile->id)
+            return true;
+        else 
+            return false;
+    }
+
+    public function DataValidation()
+    {
+        $data = [
+            'name' => 'required|string|max:30',
+            'description' => 'nullable|string|max:50',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'image' => 'nullable|image|max:2048', //2mb
+            'is_active' => 'required|boolean',
+        ];
+
+        return $data;
+    }
 
 }
