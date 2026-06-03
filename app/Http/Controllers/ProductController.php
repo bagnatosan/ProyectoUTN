@@ -46,17 +46,13 @@ class ProductController extends Controller implements HasMiddleware
     {
         $request->validate([
             'name' => 'required|string|max:30',
-            'description' => 'nullable|string|max:50',
+            'description' => 'nullable|string|max:70',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:2048', //2mb
             'is_active' => 'required|boolean',
         ]);
 
-        $imagePath = null;
-
-        if($request->hasFile('image'))
-            $imagePath = $request->file('image')->store('products' , 'public');
 
         $product = Product::create([
             'business_profile_id' => Auth::user()->businessProfile->id,
@@ -64,11 +60,11 @@ class ProductController extends Controller implements HasMiddleware
             'description' => $request->description,
             'category_id' => $request->category_id,
             'price' => $request->price,
-            'image' => $imagePath, //2mb
+            'image' => $this->ImagePath($request), //2mb
             'is_active' => $request->is_active,
         ]);
 
-        return view('products.index');
+        return redirect()->route('products.index')->with('success', 'Producto creado con éxito.');
     }
 
     /**
@@ -85,8 +81,30 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function update(Request $request, Product $product)
     {
-        // Update product logic will be implemented here
-        return redirect()->route('products.index')->with('success', 'Producto actualizado (borrador).');
+        $request->validate([
+            'name' => 'required|string|max:30',
+            'description' => 'nullable|string|max:50',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'image' => 'nullable|image|max:2048', //2mb
+            'is_active' => 'required|boolean',
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+            'image' => $this->ImagePath($request), //2mb
+            'is_active' => $request->is_active,
+        ];
+
+        if($request->hasFile('image')) 
+            $data['image'] = $this->ImagePath($request);
+
+        $product->update($data);
+
+        return redirect()->route('products.index')->with('success', 'Producto actualizado con éxito.');
     }
 
     /**
@@ -97,4 +115,16 @@ class ProductController extends Controller implements HasMiddleware
         // Delete product logic will be implemented here
         return redirect()->route('products.index')->with('success', 'Producto eliminado (borrador).');
     }
+
+    public function ImagePath(Request $request)
+    {
+        $imagePath = null;
+
+        if($request->hasFile('image'))
+            $imagePath = $request->file('image')->store('products' , 'public');
+
+        return $imagePath;
+    }
+
+
 }
