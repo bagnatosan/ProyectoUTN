@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['seller'])->group(function () {
         Route::get('/profile/edit', [BusinessProfileController::class, 'edit'])->name('business_profile.edit');
         Route::put('/profile/update', [BusinessProfileController::class, 'update'])->name('business_profile.update');
+        Route::put('/profile/password', [BusinessProfileController::class, 'updatePassword'])->name('business_profile.password');
     });
     // --- Santiago Bagnato: Catálogo de Productos y Categorías ---
     Route::middleware(['seller'])->group(function () {

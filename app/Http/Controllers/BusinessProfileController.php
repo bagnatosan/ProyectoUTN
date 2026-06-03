@@ -22,6 +22,27 @@ class BusinessProfileController extends Controller
         return view('business_profile.edit', compact('profile'));
     }
 
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password'     => 'required|string|min:8',
+        ]);
+
+        $user = Auth::user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return redirect()->route('business_profile.edit')
+                            ->withErrors(['current_password' => 'La contraseña actual es incorrecta.']);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return redirect()->route('business_profile.edit')
+                        ->with('success', 'Contraseña actualizada correctamente.');
+    }
+
     public function update(Request $request)
     {
        $validated = $request->validate([
@@ -31,6 +52,7 @@ class BusinessProfileController extends Controller
         'address'       => 'nullable|string|max:255',
         'logo'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
     ]);
+
 
     $user    = Auth::user();
     $profile = $user->businessProfile;
