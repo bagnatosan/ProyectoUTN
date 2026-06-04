@@ -29,6 +29,8 @@ class Product extends Model
         'suggested_price' => 'decimal:2',
     ];
 
+    
+
     // Relaciones
     public function businessProfile()
     {
