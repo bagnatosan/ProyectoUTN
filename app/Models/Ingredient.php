@@ -10,12 +10,12 @@ class Ingredient extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'business_profile_id',
-        'name',
-        'unit_measure',
-        'unit_cost',
-    ];
+   protected $fillable = [
+    'business_profile_id',
+    'name',
+    'unit_measure',
+    'unit_cost',
+];
 
     protected $casts = [
         'unit_cost' => 'decimal:2',

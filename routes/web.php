@@ -8,6 +8,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PublicCatalogController;
 use App\Http\Controllers\IngredientController;
+use App\Models\Ingredient;
+use Illuminate\Support\Facades\File;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\AvailabilitySlotController;
 use App\Http\Controllers\ReservationController;
@@ -60,7 +62,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('ingredients', IngredientController::class);
     Route::get('/products/{product}/recipe/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
     Route::put('/products/{product}/recipe/update', [RecipeController::class, 'update'])->name('recipes.update');
-
+    
+   
     // --- Programador 4: Disponibilidad y Reservas (Vendedor/Cliente logueado) ---
     Route::get('/availability/edit', [AvailabilitySlotController::class, 'edit'])->name('availability.edit');
     Route::put('/availability/update', [AvailabilitySlotController::class, 'update'])->name('availability.update');
@@ -70,6 +73,26 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/metrics', [DashboardController::class, 'index'])->name('dashboard.metrics');
 
 });
+Route::get('/costos', function () {
+    // 1. Buscamos los ingredientes de la base de datos
+    try {
+        $ingredients = \App\Models\Ingredient::all();
+    } catch (\Exception $e) {
+        $ingredients = collect();
+    }
+
+    // 2. Buscamos el CSS de tu amigo para mantener el modo oscuro global
+    $cssPath = resource_path('css/app.css');
+    $estilosAmigo = '';
+    if (Illuminate\Support\Facades\File::exists($cssPath)) {
+        $estilosAmigo = Illuminate\Support\Facades\File::get($cssPath);
+    }
+
+    // 3. Renderizamos la vista 'costos.blade.php' pasándole las variables
+    return view('costos', compact('ingredients', 'estilosAmigo'));
+});
+
+ 
 
 // --- Rutas Públicas (Programador 2 y 4) ---
 Route::get('/catalog/{id}', [PublicCatalogController::class, 'show'])->name('catalog.show');
