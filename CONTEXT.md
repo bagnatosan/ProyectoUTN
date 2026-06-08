@@ -36,57 +36,12 @@ El sistema se apoya en **8 modelos principales** con las siguientes interaccione
 ├── 1 ── 1..* [AvailabilitySlot] (Disponibilidad semanal)
 ├── 1 ── 1..* [Product] (Catálogo) ── 1..* [Category]
 └── 1 ── 1..* [Reservation] (Pedidos/Turnos del cliente)
-│
-└── Contiene ── [Product]
+    │
+    └── Contiene ── [Product]
 
 [Product] 1 ── 1..* [ProductIngredient] (Pivot) ── *..1 [Ingredient] (Materia Prima)
 
-
-
-
-Aquí tienes el archivo `CONTEXT.md` perfectamente estructurado, meticuloso y adaptado al plan de desarrollo de la UTN. Este archivo servirá como la "fuente de la verdad" técnica y operativa para los 5 programadores del equipo durante las 4 semanas de desarrollo.
-
-Puedes crearlo en la raíz de tu proyecto.
-
 ---
-
-```markdown
-# CONTEXT.md: Gestor de Ventas Online (Proyecto UTN - Junio 2026)
-
-## 1. Visión del Proyecto y Problema Comercial
-El **Gestor de Ventas Online** es un software ligero de gestión de reservas y automatización de pedidos diseñado específicamente para microemprendedores.
-
-### El Problema
-Los microemprendedores sufren pérdidas de ventas y errores logísticos debido a la descentralización de pedidos (mensajes dispersos en WhatsApp, Instagram, notas de voz, etc.). La falta de un canal unificado elimina la trazabilidad, generando confusión sobre las especificaciones del producto, el estado del pago y los plazos exactos de entrega.
-
-### La Solución (Enfoque MVP)
-Una plataforma web optimizada para móviles donde:
-1. El vendedor configura su perfil, catálogo de productos y disponibilidad horaria.
-2. El cliente interactúa con el catálogo, personaliza su pedido y reserva un bloque de fecha/hora según disponibilidad real.
-3. El vendedor centraliza el control financiero (costeo automático basado en recetas) y operativo (agenda diaria/semanal de pedidos) en un solo lugar.
-
----
-
-## 2. Límites del Alcance (Scope del MVP)
-
-| 🟢 INCLUIDO en el MVP | 🔴 EXCLUIDO del MVP |
-| :--- | :--- |
-| Perfil del negocio, contacto y descripción. | Chat dentro de la aplicación / Mensajería. |
-| Catálogo de productos público con fotos y filtros. | Pasarelas de pago integradas (se concreta fuera). |
-| Costeo automático por ingredientes (recetas). | Seguimiento automático de inventario / stock diario. |
-| Calendario de disponibilidad semanal y slots de tiempo. | Sistema de reseñas, valoraciones o fidelización. |
-| Formulario de reserva con validación temporal. | Mercado multivendedor (es una solución monomarca). |
-| Dashboard con métricas de ganancia y filtros. | App móvil nativa (se resuelve con Web Responsive). |
-
----
-
-## 3. Arquitectura de Datos (Modelos y Relaciones)
-
-
-
-[Product] 1 ── 1..* [ProductIngredient] (Pivot) ── *..1 [Ingredient] (Materia Prima)
-
-```
 
 ## 3. Arquitectura de Datos y Base de Datos
 
@@ -249,9 +204,3 @@ El desarrollo dura **4 semanas**: las semanas 1-3 son exclusivamente de Backend 
 Durante la última semana, el equipo congelará cambios en la base de datos y unificará la experiencia de usuario:
 1.  **Consistencia Estilística:** Uso compartido de la hoja de estilos global y variables CSS.
 2.  **Pruebas Cruzadas:** Cada programador testeará exhaustivamente de forma funcional el módulo de un compañero (ej: P1 testea a P2, P2 a P3, etc.) para garantizar la resiliencia del MVP ante fallos o ingresos de datos erróneos por parte del usuario.
-
-```
-
----
-
-Este archivo mantendrá al equipo alineado en todo momento con las reglas de desarrollo y la arquitectura planteada. ¿Con cuál de los flujos de la Semana 4 te gustaría que empecemos a diseñar o maquetar?
