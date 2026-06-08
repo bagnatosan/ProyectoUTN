@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Reservation;
+use App\Models\BusinessProfile;
 use Illuminate\Http\Request;
 
 class AvailabilitySlotController extends Controller
@@ -17,6 +19,15 @@ class AvailabilitySlotController extends Controller
         'monday', 'tuesday', 'wednesday', 'thursday',
         'friday', 'saturday', 'sunday'
     ];
+
+    /**
+     * Intervalo en minutos entre cada slot disponible.
+     *
+     * Define la granularidad de la agenda. 30 minutos es el estándar
+     * para sistemas de turnos. Si se necesita cambiar (ej: 15 o 60 min),
+     * solo se modifica esta constante.
+     */
+    private const SLOT_INTERVAL_MINUTES = 30;
 
     /**
      * Muestra el formulario de configuración de la agenda semanal.
@@ -101,5 +112,108 @@ class AvailabilitySlotController extends Controller
 
         return redirect()->route('availability.edit')
             ->with('success', 'Disponibilidad horaria guardada exitosamente.');
+    }
+
+    // =========================================================================
+    //  MOTOR DE DISPONIBILIDAD (ALGORITMO PRINCIPAL)
+    // =========================================================================
+
+    /**
+     * Obtiene los horarios libres para una fecha y negocio dados.
+     *
+     * ALGORITMO:
+     * 1. Determina el día de la semana de la fecha solicitada.
+     * 2. Busca los horarios teóricos (availability_slots) configurados para ese día.
+     * 3. Genera bloques de tiempo discretos (cada SLOT_INTERVAL_MINUTES min).
+     * 4. Busca reservas existentes para esa fecha (excluye canceladas).
+     * 5. Filtra los bloques ocupados y devuelve solo los libres.
+     *
+     * Endpoint público consumido vía Fetch desde el calendario del formulario
+     * de reservas. Responde en JSON para que el frontend lo renderice.
+     *
+     * @param Request $request  Espera: business_profile_id, date (Y-m-d)
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAvailableSlots(Request $request)
+    {
+        // ------------------------------------------------------------------
+        // Validación de entrada
+        // ------------------------------------------------------------------
+        $request->validate([
+            'business_profile_id' => 'required|integer|exists:business_profiles,id',
+            'date'                => 'required|date_format:Y-m-d|after_or_equal:today',
+        ], [
+            'business_profile_id.required' => 'El negocio es requerido.',
+            'business_profile_id.exists'   => 'El negocio no existe.',
+            'date.required'                => 'La fecha es requerida.',
+            'date.date_format'             => 'Formato de fecha inválido (Y-m-d).',
+            'date.after_or_equal'          => 'La fecha no puede ser anterior a hoy.',
+        ]);
+
+        $businessProfileId = $request->input('business_profile_id');
+        $date              = $request->input('date');
+
+        // ------------------------------------------------------------------
+        // Paso 1: determinar el día de la semana en inglés (monday, tuesday…)
+        // ------------------------------------------------------------------
+        $dayOfWeek = strtolower(date('l', strtotime($date)));
+
+        // ------------------------------------------------------------------
+        // Paso 2: obtener los horarios teóricos configurados para ese día
+        // ------------------------------------------------------------------
+        $theoreticalSlots = BusinessProfile::findOrFail($businessProfileId)
+            ->availabilitySlots()
+            ->where('weekday', $dayOfWeek)
+            ->where('is_active', true)
+            ->orderBy('start_time')
+            ->get();
+
+        if ($theoreticalSlots->isEmpty()) {
+            return response()->json([
+                'date'     => $date,
+                'day'      => $dayOfWeek,
+                'slots'    => [],
+                'message'  => 'No hay horarios configurados para este día.',
+            ]);
+        }
+
+        // ------------------------------------------------------------------
+        // Paso 3: generar todos los bloques de tiempo posibles
+        // ------------------------------------------------------------------
+        $allSlots = collect();
+        foreach ($theoreticalSlots as $slot) {
+            $start = \Carbon\Carbon::parse($slot->start_time);
+            $end   = \Carbon\Carbon::parse($slot->end_time);
+
+            while ($start->copy()->addMinutes(self::SLOT_INTERVAL_MINUTES)->lte($end)) {
+                $allSlots->push($start->format('H:i'));
+                $start->addMinutes(self::SLOT_INTERVAL_MINUTES);
+            }
+        }
+
+        // ------------------------------------------------------------------
+        // Paso 4: obtener horarios ocupados (reservas no canceladas)
+        // ------------------------------------------------------------------
+        $occupiedTimes = Reservation::where('reservation_date', $date)
+            ->whereNotIn('status', ['cancelled'])
+            ->whereHas('product', function ($query) use ($businessProfileId) {
+                $query->where('business_profile_id', $businessProfileId);
+            })
+            ->pluck('reservation_time')
+            ->map(fn ($time) => \Carbon\Carbon::parse($time)->format('H:i'));
+
+        // ------------------------------------------------------------------
+        // Paso 5: filtrar bloques libres (los no ocupados)
+        // ------------------------------------------------------------------
+        $freeSlots = $allSlots->reject(fn ($slot) => $occupiedTimes->contains($slot))->values();
+
+        return response()->json([
+            'date'    => $date,
+            'day'     => $dayOfWeek,
+            'slots'   => $freeSlots,
+            'message' => $freeSlots->isNotEmpty()
+                ? $freeSlots->count() . ' horarios disponibles.'
+                : 'No hay horarios disponibles para esta fecha.',
+        ]);
     }
 }
