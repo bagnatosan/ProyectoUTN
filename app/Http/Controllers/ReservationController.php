@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\BusinessProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class ReservationController extends Controller
 {
@@ -69,6 +70,17 @@ class ReservationController extends Controller
             'reservation_time.date_format' => 'Formato de hora inválido (HH:MM).',
             'notes.max'                 => 'Las notas no pueden exceder 1000 caracteres.',
         ]);
+
+        // ------------------------------------------------------------------
+        // Validación de hora futura (si la fecha es hoy, la hora no puede haber pasado)
+        // ------------------------------------------------------------------
+        if ($request->reservation_date === Carbon::today()->format('Y-m-d')) {
+            $request->validate([
+                'reservation_time' => 'after:' . Carbon::now()->format('H:i'),
+            ], [
+                'reservation_time.after' => 'La hora debe ser posterior a la actual.',
+            ]);
+        }
 
         // ------------------------------------------------------------------
         // Validación del producto (debe estar activo)
@@ -167,10 +179,13 @@ class ReservationController extends Controller
      */
     public function updateStatus(Request $request, Reservation $reservation)
     {
-        // Verificar que el autenticado sea dueño del negocio del producto
+        // Verificar que el autenticado sea dueño del negocio del producto.
+        // Usamos $reservation->product()->first() en vez de $reservation->product
+        // para evitar null si el producto fue soft-deleteado.
         $businessProfile = $request->user()->businessProfile;
+        $product = $reservation->product()->first();
 
-        if (! $businessProfile || $reservation->product->business_profile_id !== $businessProfile->id) {
+        if (! $businessProfile || ! $product || $product->business_profile_id !== $businessProfile->id) {
             return back()->with('error', 'No tenés permiso para modificar esta reserva.');
         }
 

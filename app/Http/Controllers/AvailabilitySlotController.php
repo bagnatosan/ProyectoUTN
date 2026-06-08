@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Reservation;
 use App\Models\BusinessProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AvailabilitySlotController extends Controller
 {
@@ -95,20 +97,20 @@ class AvailabilitySlotController extends Controller
             'slots.*.end_time.after' => 'La hora de fin debe ser posterior a la de inicio.',
         ]);
 
-        // Eliminación masiva: borra todos los slots del negocio en una sola query.
-        // Es más eficiente que iterar y eliminar uno por uno.
-        $businessProfile->availabilitySlots()->delete();
+        // Transacción: si falla la inserción, se revierte el delete.
+        // Esto evita perder la agenda si hay un error a mitad del reemplazo.
+        DB::transaction(function () use ($businessProfile, $request) {
+            $businessProfile->availabilitySlots()->delete();
 
-        // Inserción masiva de los nuevos slots recibidos.
-        // Se marcan como activos por defecto al crearse.
-        foreach ($request->slots as $slot) {
-            $businessProfile->availabilitySlots()->create([
-                'weekday'    => $slot['weekday'],
-                'start_time' => $slot['start_time'],
-                'end_time'   => $slot['end_time'],
-                'is_active'  => true,
-            ]);
-        }
+            foreach ($request->slots as $slot) {
+                $businessProfile->availabilitySlots()->create([
+                    'weekday'    => $slot['weekday'],
+                    'start_time' => $slot['start_time'],
+                    'end_time'   => $slot['end_time'],
+                    'is_active'  => true,
+                ]);
+            }
+        });
 
         return redirect()->route('availability.edit')
             ->with('success', 'Disponibilidad horaria guardada exitosamente.');
@@ -182,8 +184,8 @@ class AvailabilitySlotController extends Controller
         // ------------------------------------------------------------------
         $allSlots = collect();
         foreach ($theoreticalSlots as $slot) {
-            $start = \Carbon\Carbon::parse($slot->start_time);
-            $end   = \Carbon\Carbon::parse($slot->end_time);
+            $start = Carbon::parse($slot->start_time);
+            $end   = Carbon::parse($slot->end_time);
 
             while ($start->copy()->addMinutes(self::SLOT_INTERVAL_MINUTES)->lte($end)) {
                 $allSlots->push($start->format('H:i'));
@@ -200,7 +202,7 @@ class AvailabilitySlotController extends Controller
                 $query->where('business_profile_id', $businessProfileId);
             })
             ->pluck('reservation_time')
-            ->map(fn ($time) => \Carbon\Carbon::parse($time)->format('H:i'));
+            ->map(fn ($time) => Carbon::parse($time)->format('H:i'));
 
         // ------------------------------------------------------------------
         // Paso 5: filtrar bloques libres (los no ocupados)
