@@ -68,6 +68,7 @@ Route::middleware(['auth'])->group(function () {
 
     // --- Programador 5: Métricas y Dashboard Analítico ---
     Route::get('/dashboard/metrics', [DashboardController::class, 'index'])->name('dashboard.metrics');
+    Route::patch('/dashboard/reservations/{reservation}/status', [DashboardController::class, 'updateReservationStatus'])->name('dashboard.reservations.status');
 
 });
 
