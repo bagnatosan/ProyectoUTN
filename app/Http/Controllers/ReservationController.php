@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reservation;
+use App\Models\User;
 use App\Models\Product;
 use App\Models\BusinessProfile;
 use Illuminate\Http\Request;
@@ -155,8 +156,7 @@ class ReservationController extends Controller
      */
     public function clientHistory()
     {
-        $reservations = Auth::user()
-            ->reservations()
+        $reservations = Reservation::where('user_id', Auth::id())
             ->with('product')
             ->orderBy('reservation_date', 'desc')
             ->orderBy('reservation_time', 'desc')
