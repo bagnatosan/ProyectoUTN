@@ -45,7 +45,8 @@ class IngredientController extends Controller
         \App\Models\Ingredient::create($validated);
 
         // Redirecciona al panel con mensaje de éxito
-        return redirect()->route('ingredients.index')->with('success', '¡Ingrediente añadido con éxito!');
+        //return redirect()->route('ingredients.index')->with('success', '¡Ingrediente añadido con éxito!');
+        return redirect()->back()->with('success', 'Materia prima agregada correctamente.');
     }
 
     /**
@@ -67,7 +68,8 @@ class IngredientController extends Controller
 
         $ingredient->update($validated);
 
-        return redirect()->route('ingredients.index')->with('success', '¡Materia prima actualizada y costos recalculados!');
+        //return redirect()->route('ingredients.index')->with('success', '¡Materia prima actualizada y costos recalculados!');
+        return redirect()->back()->with('success', 'Materia prima agregada correctamente.');
     }
 
     /**
@@ -77,6 +79,7 @@ class IngredientController extends Controller
     {
         $ingredient->delete();
 
-        return redirect()->route('ingredients.index')->with('success', 'Ingrediente eliminado correctamente.');
+        //return redirect()->route('ingredients.index')->with('success', 'Ingrediente eliminado correctamente.');
+        return redirect()->back()->with('success', 'Materia prima agregada correctamente.');
     }
 }

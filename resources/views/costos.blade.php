@@ -44,10 +44,27 @@
         </aside>
 
         <main class="flex-1 p-8 overflow-y-auto">
-            <div class="mb-8">
-                <h2 class="text-2xl font-bold tracking-tight">Módulo de costos</h2>
-                <p class="text-gray-400 text-sm mt-1">Calculá el costo real de tus productos y tu margen de ganancia</p>
-            </div>
+            <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-800 pb-6">
+    <div>
+        <h2 class="text-2xl font-bold tracking-tight text-white">Módulo de costos</h2>
+        <p class="text-gray-400 text-sm mt-1">Calculá el costo real de tus productos y tu margen de ganancia</p>
+    </div>
+    
+    <div class="bg-gray-900/60 border border-gray-800 p-2 rounded-xl flex items-center gap-2 shadow-inner">
+        <label for="recipe_switcher" class="text-xs font-semibold text-gray-400 uppercase pl-2 tracking-wider">Receta Activa:</label>
+        <select id="recipe_switcher" 
+                onchange="window.location.href='/recipes/' + this.value + '/edit'" 
+                class="bg-gray-950 border border-gray-800 rounded-lg px-3 py-1.5 text-sm text-green-400 font-medium focus:outline-none focus:border-green-500 cursor-pointer">
+            
+            @foreach($allProducts ?? \App\Models\Product::all() as $p)
+                <option value="{{ $p->id }}" {{ (isset($product) && $product->id == $p->id) ? 'selected' : '' }}>
+                    {{ $p->name }}
+                </option>
+            @endforeach
+            
+        </select>
+    </div>
+</div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 

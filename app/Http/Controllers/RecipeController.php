@@ -9,21 +9,18 @@ use Illuminate\Http\Request;
 class RecipeController extends Controller
 {
    
-    public function edit($productId)
-    {
-        $product = Product::with('ingredients')->findOrFail($productId);
-        $ingredients = Ingredient::all(); // Materias primas disponibles a la izquierda
-        
-        
-        $cssPath = resource_path('css/app.css');
-        $estilosAmigo = '';
-        if (\Illuminate\Support\Facades\File::exists($cssPath)) {
-            $estilosAmigo = \Illuminate\Support\Facades\File::get($cssPath);
-        }
+    public function edit($id)
+{
+    
+    $product = \App\Models\Product::with('ingredients')->findOrFail($id);
+    $ingredients = \App\Models\Ingredient::all();
+    $allProducts = \App\Models\Product::all();
+    $estilosAmigo = ""; 
 
-        // Retorna la vista con todo lo que necesita
-        return view('costos', compact('product', 'ingredients', 'estilosAmigo'));
-    }
+    
+    return view('costos', compact('product', 'ingredients', 'allProducts', 'estilosAmigo'));
+    
+}
 
     // Guarda o actualiza ingredientes
     public function update(\Illuminate\Http\Request $request, $productId)
