@@ -27,9 +27,20 @@ class ProductController extends Controller implements HasMiddleware
     
 
     public function index()
-    {
-        return view('products.index');
-    }
+{
+    // 1. Traemos los productos reales del negocio actual
+    $businessProfileId = auth()->user()->business_profile_id ?? 1;
+    $products = Product::where('business_profile_id', $businessProfileId)->get();
+
+    // 2. Calculamos los contadores dinámicos para las tarjetitas de arriba
+    $totalProductos = $products->count();
+    $activos = $products->where('status', 'active')->count();
+    $inactivos = $products->where('status', 'inactive')->count();
+
+    // 3. Pasamos todo a la vista de tu compañero (revisá cómo se llama su vista, ej: 'products.index')
+    return view('products.index', compact('products', 'totalProductos', 'activos', 'inactivos'));
+}
+
 
     
     public function create(Request $request)
@@ -43,22 +54,41 @@ class ProductController extends Controller implements HasMiddleware
      * Store a newly created product in storage.
      */
     public function store(Request $request)
-    {
-        $request->validate($this->DataValidation());
+{
+    // 1. Validamos los datos básicos que vienen del formulario
+    $request->validate([
+        'name'        => 'required|string|max:255',
+        'description'=> 'nullable|string',
+        'price'       => 'required|numeric|min:0',
+        'category_id' => 'required', // Le exigimos que venga de la vista
+    ]);
 
+    // 2. RESCATE DE INTEGRIDAD 1: ID del negocio (el que ya arreglamos antes)
+    $businessProfileId = auth()->user()->business_profile_id 
+        ?? \DB::table('business_profiles')->value('id') 
+        ?? 1;
 
-        $product = Product::create([
-            'business_profile_id' => Auth::user()->businessProfile->id,
-            'name' => $request->name,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'image' => $this->ImagePath($request), //2mb
-            'is_active' => $request->is_active,
-        ]);
+    // 3. RESCATE DE INTEGRIDAD 2: ID de la Categoría
+    // Intentamos agarrar lo que el usuario seleccionó en el combo de la pantalla.
+    // Si por alguna razón viaja vacío, buscamos la primera categoría real que exista en Laragon,
+    // y si la tabla está virgen, le mandamos el ID 1 como último recurso.
+    $categoryId = $request->category_id 
+        ?? \DB::table('categories')->value('id') 
+        ?? 1;
 
-        return redirect()->route('products.index')->with('success', 'Producto creado con éxito.');
-    }
+    // 4. Creamos el producto pasándole TODOS los campos obligatorios
+    $product = Product::create([
+        'name'                => $request->name,
+        'description'         => $request->description,
+        'price'               => $request->price,
+        'status'              => $request->status ?? 'active',
+        'business_profile_id' => $businessProfileId,
+        'category_id'         => $categoryId, // <--- ¡Con esto matamos el último error!
+    ]);
+
+    // 5. Te mandamos directo a tu pantalla de costos premium
+    return redirect('/recipes/' . $product->id . '/edit')->with('success', '¡Producto creado con éxito! Ahora asignale sus ingredientes.');
+}
 
     /**
      * Show the form for editing the specified product.

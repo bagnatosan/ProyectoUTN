@@ -46,7 +46,7 @@ class IngredientController extends Controller
 
         // Redirecciona al panel con mensaje de éxito
         //return redirect()->route('ingredients.index')->with('success', '¡Ingrediente añadido con éxito!');
-        return redirect()->back()->with('success', 'Materia prima agregada correctamente.');
+        return redirect('/recipes/1/edit')->with('success', '¡Ingrediente guardado con éxito!');
     }
 
     /**
@@ -72,14 +72,40 @@ class IngredientController extends Controller
         return redirect()->back()->with('success', 'Materia prima agregada correctamente.');
     }
 
-    /**
-     * Elimina un ingrediente del inventario.
-     */
-    public function destroy(Ingredient $ingredient)
+    // 1. Para mostrar el formulario de "+ Nuevo Ingrediente"
+    public function create()
     {
-        $ingredient->delete();
-
-        //return redirect()->route('ingredients.index')->with('success', 'Ingrediente eliminado correctamente.');
-        return redirect()->back()->with('success', 'Materia prima agregada correctamente.');
+        return view('ingredients.create'); 
+        // Nota: Asegurate de tener el archivo resources/views/ingredients/create.blade.php creado
     }
+
+    // 2. Para mostrar el formulario de "✏️ Editar"
+    public function edit($id)
+    {
+        $ingredient = \App\Models\Ingredient::findOrFail($id);
+        return view('ingredients.edit', compact('ingredient'));
+        // Nota: Asegurate de tener el archivo resources/views/ingredients/edit.blade.php creado
+    }
+
+  
+public function show($id)
+{
+    // Si entran acá por un F5, los redirigimos suavemente de vuelta al panel de costos
+    return redirect('/recipes/2/edit')->with('info', 'Página recargada con éxito.');
+}
+
+    public function destroy($ingredient)
+{
+    
+    $id = is_object($ingredient) ? $ingredient->id : $ingredient;
+
+    // 2. Buscamos el ingrediente de forma segura en SQLite
+    $materiaPrima = \App\Models\Ingredient::findOrFail($id);
+    
+    // 3. Lo borramos de la base de datos
+    $materiaPrima->delete();
+
+    // 4. Volvemos al panel de costos con la receta activa actual (ej: la número 2)
+    return redirect()->back()->with('success', '¡Materia prima eliminada por completo!');
+}
 }

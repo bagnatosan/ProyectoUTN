@@ -57,4 +57,55 @@ class RecipeController extends Controller
     return redirect()->route('recipes.edit', $product->id)
                      ->with('success', '¡Receta actualizada y costos recalculados correctamente!');
 }
+
+public function addIngredient(Request $request, $recipeId)
+{
+    // 1. Validamos que vengan tanto el ingrediente como la cantidad
+    $request->validate([
+        'ingredient_id' => 'required',
+        'quantity'      => 'required|numeric|min:0.001'
+    ]);
+
+    // 2. Insertamos el cruce con la cantidad real enviada desde el formulario
+    \DB::table('product_ingredients')->insert([
+        'product_id'    => (int)$recipeId,
+        'ingredient_id' => (int)$request->ingredient_id,
+        'quantity'      => (float)$request->quantity, // <--- ¡Acá se vuelve dinámico!
+        'created_at'    => now(),
+        'updated_at'    => now()
+    ]);
+
+    return redirect('/recipes/' . $recipeId . '/edit')->with('success', '¡Ingrediente añadido a la receta con éxito!');
+}
+
+public function destroy($id)
+{
+    // 1. Buscamos el registro en la tabla intermedia (pivot)
+    // Nota: Si tus compañeros usaron un modelo intermedio llamado RecipeIngredient:
+    $relation = \App\Models\RecipeIngredient::find($id);
+
+    // 2. Si no existe como modelo propio, lo buscamos de forma directa en la base de datos de SQLite
+    if (!$relation) {
+        \DB::table('recipe_ingredient')->where('id', $id)->delete();
+    } else {
+        $relation->delete();
+    }
+
+    // 3. Volvemos al panel de costos premium con un mensaje de éxito
+    return redirect('/recipes/1/edit')->with('success', '¡Ingrediente quitado de la receta con éxito!');
+}
+
+public function removeIngredient($recipeId, $ingredientId)
+{
+    // Limpieza absoluta por ID de producto e ingrediente puros, forzando a entero por las dudas
+    \DB::table('product_ingredients')
+        ->where('product_id', (int)$recipeId)
+        ->where('ingredient_id', (int)$ingredientId)
+        ->delete();
+
+    // Recargamos la página limpiando la caché de la vista
+    return redirect('/recipes/' . $recipeId . '/edit')
+            ->with('success', '¡Ingrediente quitado de la receta con éxito!')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+}
 }
