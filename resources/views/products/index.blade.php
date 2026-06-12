@@ -124,7 +124,7 @@
                             <div class="flex items-center space-x-3">
                                 <div class="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden shrink-0">
                                     @if($product->image)
-                                        <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
                                     @else
                                         <!-- Placeholder icon -->
                                         <svg class="w-6 h-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
