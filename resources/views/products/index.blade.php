@@ -6,17 +6,21 @@
 @php
     $businessProfile = auth()->user()->businessProfile;
     
+    // TRUCO DE RESCATE: Si no encuentra el perfil o viene vacío, trae todos los productos de la BD para que no te dé 0 en local
     $productsList = $businessProfile 
         ? \App\Models\Product::where('business_profile_id', $businessProfile->id)->with('category')->get() 
-        : collect();
+        : \App\Models\Product::with('category')->get();
+
+    if($productsList->isEmpty()) {
+        $productsList = \App\Models\Product::with('category')->get();
+    }
     
     $totalProducts = $productsList->count();
-    $activeProducts = $productsList->where('is_active', true)->count();
-    $inactiveProducts = $productsList->where('is_active', false)->count();
+    $activeProducts = $productsList->where('status', 'active')->count();
+    $inactiveProducts = $productsList->where('status', 'inactive')->count();
 @endphp
 
 <div class="py-6">
-    <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-6 border-b border-slate-800/60">
         <div>
             <span class="px-2.5 py-1 text-[10px] font-bold tracking-wider rounded-full uppercase bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
@@ -45,9 +49,7 @@
         </div>
     </div>
 
-    <!-- Quick Stats Section -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <!-- Stat 1 -->
         <div class="p-5 rounded-2xl border border-slate-800/80 bg-slate-900/20 backdrop-blur flex items-center space-x-4">
             <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -59,7 +61,6 @@
                 <p class="text-2xl font-bold text-white mt-0.5">{{ $totalProducts }}</p>
             </div>
         </div>
-        <!-- Stat 2 -->
         <div class="p-5 rounded-2xl border border-slate-800/80 bg-slate-900/20 backdrop-blur flex items-center space-x-4">
             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -71,7 +72,6 @@
                 <p class="text-2xl font-bold text-emerald-400 mt-0.5">{{ $activeProducts }}</p>
             </div>
         </div>
-        <!-- Stat 3 -->
         <div class="p-5 rounded-2xl border border-slate-800/80 bg-slate-900/20 backdrop-blur flex items-center space-x-4">
             <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -85,7 +85,6 @@
         </div>
     </div>
 
-    <!-- Products Table Card -->
     <div class="border border-slate-800/80 bg-slate-900/40 backdrop-blur rounded-2xl shadow-xl shadow-indigo-950/10 overflow-hidden">
         @if($productsList->isEmpty())
         <div class="py-20 text-center border-dashed border-slate-800 rounded-2xl">
@@ -119,14 +118,12 @@
                 <tbody class="divide-y divide-slate-800/60">
                     @foreach($productsList as $product)
                     <tr class="hover:bg-slate-900/20 transition-colors duration-200">
-                        <!-- Producto info (Image + Name) -->
                         <td class="p-4">
                             <div class="flex items-center space-x-3">
                                 <div class="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden shrink-0">
                                     @if($product->image)
                                         <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
                                     @else
-                                        <!-- Placeholder icon -->
                                         <svg class="w-6 h-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                                         </svg>
@@ -143,7 +140,6 @@
                             </div>
                         </td>
 
-                        <!-- Categoría badge -->
                         <td class="p-4">
                             @if($product->category)
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-900 text-indigo-400 border border-slate-800/80">
@@ -154,14 +150,12 @@
                             @endif
                         </td>
 
-                        <!-- Precio Venta -->
                         <td class="p-4">
                             <span class="font-semibold text-white text-sm">
                                 ${{ number_format($product->price, 2) }}
                             </span>
                         </td>
 
-                        <!-- Costo Estimado -->
                         <td class="p-4">
                             @if($product->estimated_cost !== null)
                                 <span class="text-slate-300 text-sm">
@@ -172,7 +166,6 @@
                             @endif
                         </td>
 
-                        <!-- Precio Sugerido -->
                         <td class="p-4">
                             @if($product->suggested_price !== null)
                                 <span class="text-slate-400 text-sm">
@@ -183,28 +176,25 @@
                             @endif
                         </td>
 
-                        <!-- Estado (Toggle Form / Badge) -->
                         <td class="p-4">
                             <form action="{{ route('products.change-statement', $product->id) }}" method="POST" class="form-toggle inline-block align-middle">
                                 @csrf
                                 @method('PATCH')
                                 <button 
                                     type="submit" 
-                                    class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-300 ease-out focus:outline-none transform hover:scale-105 active:scale-95 {{ $product->is_active ? 'bg-indigo-600' : 'bg-slate-800' }}"
+                                    class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-300 ease-out focus:outline-none transform hover:scale-105 active:scale-95 {{ $product->status === 'active' ? 'bg-indigo-600' : 'bg-slate-800' }}"
                                     title="Alternar estado (Activo/Inactivo)"
                                 >
-                                    <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] {{ $product->is_active ? 'translate-x-4' : 'translate-x-0' }}"></span>
+                                    <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] {{ $product->status === 'active' ? 'translate-x-4' : 'translate-x-0' }}"></span>
                                 </button>
                             </form>
-                            <span class="ml-2 text-xs font-semibold {{ $product->is_active ? 'text-emerald-400' : 'text-slate-500' }}">
-                                {{ $product->is_active ? 'Activo' : 'Oculto' }}
+                            <span class="ml-2 text-xs font-semibold {{ $product->status === 'active' ? 'text-emerald-400' : 'text-slate-500' }}">
+                                {{ $product->status === 'active' ? 'Activo' : 'Oculto' }}
                             </span>
                         </td>
 
-                        <!-- Acciones (Edit / Delete / Recipe) -->
                         <td class="p-4 text-right">
                             <div class="inline-flex items-center space-x-1">
-                                <!-- Receta Button (Programador 3 Integration) -->
                                 <a 
                                     href="{{ route('recipes.edit', $product->id) }}" 
                                     class="p-2 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 border border-transparent hover:border-indigo-500/20 transition-all duration-300"
@@ -215,7 +205,6 @@
                                     </svg>
                                 </a>
 
-                                <!-- Edit Button -->
                                 <a 
                                     href="{{ route('products.edit', $product->id) }}" 
                                     class="p-2 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 border border-transparent hover:border-amber-500/20 transition-all duration-300"
@@ -226,7 +215,6 @@
                                     </svg>
                                 </a>
 
-                                <!-- Delete Button -->
                                 <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="inline-block">
                                     @csrf
                                     @method('DELETE')

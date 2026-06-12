@@ -6,22 +6,18 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Plataforma de Reservas y Emprendimientos')</title>
     <meta name="description" content="Regístrate como cliente para realizar reservas o como emprendedor para potenciar tu negocio.">
-    <!-- Vite Assets (CSS only) -->
     @vite(['resources/css/app.css'])
     <script src="{{ asset('js/app.js') }}" defer></script>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body class="h-full bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col">
     
-    <!-- Background Glow Effects -->
     <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/20 blur-[120px] pointer-events-none z-0"></div>
     <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/20 blur-[120px] pointer-events-none z-0"></div>
 
-    <!-- Navigation Header -->
     <header class="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/75 backdrop-blur-md">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
             
-            <!-- Logo -->
             <a href="{{ route('register.select') }}" class="flex items-center space-x-2 group">
                 <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-green-600 to-green-400 flex items-center justify-center font-bold text-white shadow-lg">
                     P
@@ -31,10 +27,8 @@
                 </span>
             </a>
 
-            <!-- Navigation Links -->
             <nav class="flex items-center space-x-1 text-sm font-medium">
-
-                <!-- VISITANTE: sin sesión -->
+                
                 @guest
                     <a href="{{ route('login') }}" 
                     class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('login') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
@@ -54,7 +48,6 @@
 
                 @auth
                     @if(auth()->user()->role === 'client')
-                        <!-- CLIENTE autenticado -->
                         <a href="{{ route('catalog.show', ['id' => 1]) }}" 
                         class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('catalog.show') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                             Catálogo
@@ -67,7 +60,6 @@
                     @endif
 
                     @if(auth()->user()->role === 'seller')
-                        <!-- SELLER autenticado -->
                         <span class="text-slate-600 px-1">|</span>
 
                         <a href="{{ route('dashboard') }}" 
@@ -90,8 +82,8 @@
                             Horarios
                         </a>
 
-                        <a href="{{ route('ingredients.index') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('ingredients.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        <a href="{{ url('/recipes/1/edit') }}" 
+                           class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->is('recipes/*') ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 font-semibold' : '' }}">
                             Costos
                         </a>
 
@@ -101,9 +93,14 @@
                         </a>
                     @endif
 
-                    <!-- User Dropdown Menu -->
+                    <form action="{{ route('logout') }}" method="POST" class="inline ml-2">
+                        @csrf
+                        <button type="submit" class="text-xs text-slate-400 hover:text-rose-400 border border-slate-800 px-3 py-1.5 rounded-lg transition-colors">
+                            Cerrar Sesión
+                        </button>
+                    </form>
+
                     <div class="relative inline-block text-left ml-2" id="user-menu-container">
-                        <!-- User Profile Trigger Button -->
                         <button type="button" 
                                 class="flex items-center space-x-2 text-sm text-slate-300 bg-slate-900/60 hover:bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 cursor-pointer transition-all duration-200 focus:outline-none" 
                                 id="nav-user-display-btn">
@@ -122,7 +119,6 @@
                             </svg>
                         </button>
 
-                        <!-- Hidden Dropdown Menu -->
                         <div class="absolute right-0 mt-2 w-48 origin-top-right rounded-xl border border-slate-800 bg-slate-950 p-2 shadow-2xl backdrop-blur-md transition-all duration-200 transform opacity-0 scale-95 pointer-events-none z-50" 
                              id="user-dropdown-menu">
                             <div class="px-3 py-2 border-b border-slate-900 mb-1">
@@ -148,10 +144,8 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
     <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="w-full max-w-4xl">
-            <!-- Flash Session Alerts -->
             @if (session('success'))
                 <div class="mb-8 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 flex items-start space-x-3 shadow-lg shadow-emerald-500/5 animate-fade-in" id="alert-success">
                     <svg class="w-5 h-5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -180,12 +174,10 @@
                 </div>
             @endif
 
-            <!-- Page Content -->
             @yield('content')
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500 relative z-10">
         <p>&copy; {{ date('Y') }} ProyectoUTN. Todos los derechos reservados.</p>
     </footer>

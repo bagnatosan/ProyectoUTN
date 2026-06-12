@@ -20,6 +20,8 @@ class Product extends Model
         'estimated_cost',
         'suggested_price',
         'is_active',
+        'business_profile_id',
+        'category_id',
     ];
 
     protected $casts = [
@@ -28,6 +30,8 @@ class Product extends Model
         'estimated_cost' => 'decimal:2',
         'suggested_price' => 'decimal:2',
     ];
+
+    
 
     // Relaciones
     public function businessProfile()

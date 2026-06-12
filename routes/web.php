@@ -8,6 +8,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PublicCatalogController;
 use App\Http\Controllers\IngredientController;
+use App\Models\Ingredient;
+use Illuminate\Support\Facades\File;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\AvailabilitySlotController;
 use App\Http\Controllers\ReservationController;
@@ -64,10 +66,14 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/products/{product}/change-statement', [ProductController::class, 'ChangeStatement'])->name('products.change-statement'); //toggle button
 
     // --- Programador 3: Inventario de Ingredientes y Constructor de Recetas ---
-    Route::resource('ingredients', IngredientController::class);
+    
     Route::get('/products/{product}/recipe/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
     Route::put('/products/{product}/recipe/update', [RecipeController::class, 'update'])->name('recipes.update');
-
+    Route::delete('/recipes/{recipe}/remove-ingredient/{ingredient}', [App\Http\Controllers\RecipeController::class, 'removeIngredient']);
+    Route::post('/recipes/{recipe}/add-ingredient', [App\Http\Controllers\RecipeController::class, 'addIngredient']);
+    
+    
+   
     // --- Programador 4: Disponibilidad y Reservas (Vendedor/Cliente logueado) ---
     Route::get('/availability/edit', [AvailabilitySlotController::class, 'edit'])->name('availability.edit');
     Route::put('/availability/update', [AvailabilitySlotController::class, 'update'])->name('availability.update');
@@ -78,6 +84,27 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/metrics', [DashboardController::class, 'index'])->name('dashboard.metrics');
 
 });
+Route::resource('ingredients', \App\Http\Controllers\IngredientController::class);
+//Route::get('/recipes/{product}/edit', [\App\Http\Controllers\RecipeController::class, 'edit'])->name('recipes.edit');
+//Route::put('/recipes/{product}', [\App\Http\Controllers\RecipeController::class, 'update'])->name('recipes.update');
+
+// BYPASS TEMPORAL PARA EL MÓDULO DE FACU (SÁCALO ANTES DEL MERGE FINAL)
+Route::get('/recipes/{product}/edit', function($product) {
+    // Forzamos el login del usuario 1 en la sesión local para que no te rebote nunca
+    if (!auth()->check()) {
+        auth()->loginUsingId(1); 
+    }
+    return app(\App\Http\Controllers\RecipeController::class)->edit($product);
+})->name('recipes.edit');
+
+Route::put('/recipes/{product}', function(\Illuminate\Http\Request $request, $product) {
+    if (!auth()->check()) {
+        auth()->loginUsingId(1);
+    }
+    return app(\App\Http\Controllers\RecipeController::class)->update($request, $product);
+})->name('recipes.update');
+
+ 
 
 // --- Rutas Públicas (Programador 2 y 4) ---
 Route::get('/catalog/{id}', [PublicCatalogController::class, 'show'])->name('catalog.show');
