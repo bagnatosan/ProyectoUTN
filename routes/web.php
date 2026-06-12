@@ -46,10 +46,17 @@ Route::post('/logout', function () {
 Route::middleware(['auth'])->group(function () {
 
     // --- Programador 1: Gestión de Perfil de Negocio (BusinessProfile) ---
-    Route::get('/profile/edit', [BusinessProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile/update', [BusinessProfileController::class, 'update'])->name('profile.update');
-
+    Route::middleware(['seller'])->group(function () {
+        Route::get('/profile/edit', [BusinessProfileController::class, 'edit'])->name('business_profile.edit');
+        Route::put('/profile/update', [BusinessProfileController::class, 'update'])->name('business_profile.update');
+        Route::put('/profile/password', [BusinessProfileController::class, 'updatePassword'])->name('business_profile.password');
+    });
     // --- Santiago Bagnato: Catálogo de Productos y Categorías ---
+    Route::middleware(['seller'])->group(function () {
+        Route::get('/profile/edit', [BusinessProfileController::class, 'edit'])->name('business_profile.edit');
+        Route::put('/profile/update', [BusinessProfileController::class, 'update'])->name('business_profile.update');
+    });
+    // --- Programador 2: Catálogo de Productos y Categorías ---
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'create'])->name('categories.create');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
