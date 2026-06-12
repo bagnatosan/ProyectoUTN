@@ -85,3 +85,9 @@ Route::get('/reservations/create', [ReservationController::class, 'create'])->na
 Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
 Route::get('/availability/slots', [AvailabilitySlotController::class, 'getAvailableSlots'])->name('availability.slots');
 
+// --- Administrador ---
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::delete('/users/{user}', [App\Http\Controllers\AdminController::class, 'deleteUser'])->name('admin.users.delete');
+});
+
