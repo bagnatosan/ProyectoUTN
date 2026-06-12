@@ -12,6 +12,7 @@
     <script src="/js/app.js" defer></script>
     
     
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col">
     
@@ -24,18 +25,38 @@
     <!-- Navigation Header -->
     <header class="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/75 backdrop-blur-md">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-            <!-- Logo / Brand Link -->
-            <a href="{{ route('register.select') }}" class="flex items-center space-x-2 group" id="nav-brand-link">
-                <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-all duration-300">
+            
+            <!-- Logo -->
+            <a href="{{ route('register.select') }}" class="flex items-center space-x-2 group">
+                <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-green-600 to-green-400 flex items-center justify-center font-bold text-white shadow-lg">
                     P
                 </span>
-                <span class="font-semibold text-lg tracking-tight bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent group-hover:from-white group-hover:to-indigo-200 transition-all duration-300">
+                <span class="font-semibold text-lg tracking-tight text-slate-100">
                     ProyectoUTN
                 </span>
             </a>
 
             <!-- Navigation Links -->
-            <nav class="flex items-center space-x-6 text-sm font-medium">
+            <nav class="flex items-center space-x-1 text-sm font-medium">
+
+                <!-- VISITANTE: sin sesión -->
+                @guest
+                    <a href="{{ route('login') }}" 
+                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('login') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        Login / Registro
+                    </a>
+
+                    <a href="{{ route('catalog.show', ['id' => 1]) }}" 
+                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('catalog.show') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        Catálogo
+                    </a>
+
+                    <a href="{{ route('reservations.create') }}" 
+                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.create') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        Reservar
+                    </a>
+                @endguest
+
                 @auth
                     <div class="relative inline-block text-left" id="user-menu-container">
                         <!-- User Profile Trigger Button -->
@@ -84,6 +105,7 @@
                         Iniciar Sesión
                     </a>
                 @endauth
+
             </nav>
         </div>
     </header>

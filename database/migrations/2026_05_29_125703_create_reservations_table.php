@@ -21,7 +21,7 @@ return new class extends Migration
                 $table->date('reservation_date');
                 $table->time('reservation_time');
                 $table->text('notes')->nullable();
-                $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled'])->default('pending');
+                $table->string('status')->default('pending');
                 $table->timestamps();
             });
     }
