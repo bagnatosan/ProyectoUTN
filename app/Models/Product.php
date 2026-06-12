@@ -20,6 +20,8 @@ class Product extends Model
         'estimated_cost',
         'suggested_price',
         'is_active',
+        'business_profile_id',
+        'category_id',
     ];
 
     protected $casts = [

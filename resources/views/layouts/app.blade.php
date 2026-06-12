@@ -81,9 +81,9 @@
                             Horarios
                         </a>
 
-                        <a href="/ProyectoUTN/public/recipes/1/edit" 
-                        class="px-3 py-1.5 rounded-lg text-emerald-400 font-semibold hover:text-emerald-300 hover:bg-slate-800 transition-all border border-emerald-500/20 bg-emerald-500/5">
-                             Costos
+                        <a href="{{ url('/recipes/1/edit') }}" 
+                            class="px-3 py-1.5 rounded-lg text-emerald-400 font-semibold hover:text-emerald-300 hover:bg-slate-800 transition-all border border-emerald-500/20 bg-emerald-500/5">
+                            Costos
                         </a>
 
                         <a href="#" 
