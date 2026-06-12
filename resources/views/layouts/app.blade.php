@@ -1,21 +1,26 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full">
+<html lang="es" class="min-h-screen">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Plataforma de Reservas y Emprendimientos')</title>
     <meta name="description" content="Regístrate como cliente para realizar reservas o como emprendedor para potenciar tu negocio.">
-    <!-- Vite Assets (CSS only) -->
-    @vite(['resources/css/app.css'])
+    <!-- Static Stylesheets (No NPM/Vite compilation needed) -->
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fonts.css') }}">
     <script src="/js/app.js" defer></script>
+    
+    
     <link rel="stylesheet" href="/css/app.css">
 </head>
-<body class="h-full bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col">
+<body class="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col">
     
-    <!-- Background Glow Effects -->
-    <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/20 blur-[120px] pointer-events-none z-0"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/20 blur-[120px] pointer-events-none z-0"></div>
+    <!-- Background Glow Effects (clipped inside inset-0 to prevent vertical overflow below footer) -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/20 blur-[120px]"></div>
+    </div>
 
     <!-- Navigation Header -->
     <header class="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/75 backdrop-blur-md">
@@ -53,70 +58,43 @@
                 @endguest
 
                 @auth
-                    @if(auth()->user()->role === 'client')
-                        <!-- CLIENTE autenticado -->
-                        <a href="{{ route('catalog.show', ['id' => 1]) }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('catalog.show') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Catálogo
-                        </a>
-
-                        <a href="{{ route('reservations.create') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.create') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Reservar
-                        </a>
-                    @endif
-
-                    @if(auth()->user()->role === 'seller')
-                        <!-- SELLER autenticado -->
-                        <span class="text-slate-600 px-1">|</span>
-
-                        <a href="{{ route('dashboard') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Dashboard
-                        </a>
-
-                        <a href="{{ route('products.index') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('products.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Productos
-                        </a>
-
-                        <a href="{{ route('reservations.create') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Reservas
-                        </a>
-
-                        <a href="{{ route('availability.edit') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('availability.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Horarios
-                        </a>
-
-                        <a href="{{ route('ingredients.index') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('ingredients.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Costos
-                        </a>
-
-                        <a href="{{ route('business_profile.edit') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('business_profile.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Perfil
-                        </a>
-                    @endif
-
-                    <!-- Logout -->
-                    <form action="{{ route('logout') }}" method="POST" class="inline ml-2">
-                        @csrf
-                        <button type="submit" class="text-xs text-slate-400 hover:text-rose-400 border border-slate-800 px-3 py-1.5 rounded-lg transition-colors">
-                            Cerrar Sesión
-                        </button>
-                    </form>
+                    <div class="flex items-center space-x-4">
+                        <span class="flex items-center space-x-2 text-sm text-slate-300 bg-slate-900/60 border border-slate-800 rounded-lg px-3 py-1.5" id="nav-user-display">
+                            <svg class="w-4 h-4 text-indigo-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span class="font-medium">
+                                @if(auth()->user()->role === 'seller' && auth()->user()->businessProfile)
+                                    {{ auth()->user()->businessProfile->business_name }}
+                                @else
+                                    {{ auth()->user()->name }}
+                                @endif
+                            </span>
+                        </span>
+                        <form action="{{ route('logout') }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" 
+                                    id="btn-logout"
+                                    class="text-xs font-semibold text-slate-400 hover:text-rose-400 border border-slate-800 hover:border-rose-950 bg-slate-950 px-3 py-1.5 rounded-lg transition-colors duration-200 cursor-pointer">
+                                Cerrar Sesión
+                            </button>
+                        </form>
+                    </div>
+                @else
+                    <a href="{{ route('login') }}" 
+                       id="nav-login-link"
+                       class="px-3.5 py-1.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 hover:border-indigo-500/50 text-indigo-300 font-semibold transition-all duration-300">
+                        Iniciar Sesión
+                    </a>
                 @endauth
 
             </nav>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="w-full max-w-4xl">
+    <!-- Main Content Area (removes flex-centering to allow natural top-down rendering on large content pages like /products) -->
+    <main class="flex-grow py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="w-full max-w-4xl mx-auto">
             <!-- Flash Session Alerts -->
             @if (session('success'))
                 <div class="mb-8 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 flex items-start space-x-3 shadow-lg shadow-emerald-500/5 animate-fade-in" id="alert-success">

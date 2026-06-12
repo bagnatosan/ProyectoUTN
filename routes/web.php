@@ -72,6 +72,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/availability/edit', [AvailabilitySlotController::class, 'edit'])->name('availability.edit');
     Route::put('/availability/update', [AvailabilitySlotController::class, 'update'])->name('availability.update');
     Route::get('/my-reservations', [ReservationController::class, 'clientHistory'])->name('reservations.client_history');
+    Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.update-status');
 
     // --- Programador 5: Métricas y Dashboard Analítico ---
     Route::get('/dashboard/metrics', [DashboardController::class, 'index'])->name('dashboard.metrics');
@@ -82,4 +83,5 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/catalog/{id}', [PublicCatalogController::class, 'show'])->name('catalog.show');
 Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
 Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
+Route::get('/availability/slots', [AvailabilitySlotController::class, 'getAvailableSlots'])->name('availability.slots');
 
