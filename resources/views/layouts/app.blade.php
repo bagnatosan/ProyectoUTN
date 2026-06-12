@@ -10,8 +10,6 @@
     @vite(['resources/css/app.css'])
     <script src="/js/app.js" defer></script>
     <link rel="stylesheet" href="/css/app.css">
-    
-    
 </head>
 <body class="h-full bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col">
     
@@ -35,30 +33,42 @@
 
             <!-- Navigation Links -->
             <nav class="flex items-center space-x-1 text-sm font-medium">
-                
-                <!-- SECCIÓN PÚBLICA -->
-                <!--<span class="text-xs text-slate-500 uppercase tracking-wider px-2">Público</span>-->
 
-                <a href="{{ route('login') }}" 
-                class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('login') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                    Login / Registro
-                </a>
+                <!-- VISITANTE: sin sesión -->
+                @guest
+                    <a href="{{ route('login') }}" 
+                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('login') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        Login / Registro
+                    </a>
 
-                <a href="{{ route('catalog.show', ['id' => 1]) }}" 
-                class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('catalog.show') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                    Catálogo
-                </a>
+                    <a href="{{ route('catalog.show', ['id' => 1]) }}" 
+                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('catalog.show') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        Catálogo
+                    </a>
 
-                <a href="{{ route('reservations.create') }}" 
-                class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.create') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                    Reservar
-                </a>
+                    <a href="{{ route('reservations.create') }}" 
+                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.create') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        Reservar
+                    </a>
+                @endguest
 
                 @auth
+                    @if(auth()->user()->role === 'client')
+                        <!-- CLIENTE autenticado -->
+                        <a href="{{ route('catalog.show', ['id' => 1]) }}" 
+                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('catalog.show') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                            Catálogo
+                        </a>
+
+                        <a href="{{ route('reservations.create') }}" 
+                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.create') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                            Reservar
+                        </a>
+                    @endif
+
                     @if(auth()->user()->role === 'seller')
-                        <!-- Separador -->
+                        <!-- SELLER autenticado -->
                         <span class="text-slate-600 px-1">|</span>
-                        <!--<span class="text-xs text-slate-500 uppercase tracking-wider px-2">Vendedor</span>-->
 
                         <a href="{{ route('dashboard') }}" 
                         class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
@@ -99,6 +109,7 @@
                         </button>
                     </form>
                 @endauth
+
             </nav>
         </div>
     </header>
