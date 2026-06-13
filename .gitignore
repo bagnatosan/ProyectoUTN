@@ -26,3 +26,12 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /backend/vendor/
+database/seeders/AvailabilitySlotSeeder.php
+database/seeders/CategorySeeder.php
+database/seeders/DatabaseSeeder.php
+database/seeders/DatabaseSeeder.php
+database/seeders/DatabaseSeeder.php
+database/seeders/IngredientSeeder.php
+database/seeders/ProductSeeder.php
+database/seeders/ReservationSeeder.php
+database/seeders/IngredientSeeder.php

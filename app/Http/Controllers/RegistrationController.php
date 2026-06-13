@@ -165,6 +165,12 @@ class RegistrationController extends Controller
         if (!Auth::check()) {
             return redirect()->route('register.select');
         }
+
+        if (Auth::user()->role === 'client') {
+            $businesses = BusinessProfile::all();
+            return view('dashboard', compact('businesses'));
+        }
+
         return view('dashboard');
     }
 }
