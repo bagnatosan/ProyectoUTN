@@ -9,6 +9,18 @@ use Illuminate\Http\Request;
 class RecipeController extends Controller
 {
    
+    public function index()
+    {
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+        $firstProduct = auth()->user()->businessProfile?->products()->first();
+        if ($firstProduct) {
+            return redirect()->route('recipes.edit', $firstProduct->id);
+        }
+        return redirect()->route('products.index')->with('info', 'Por favor, crea tu primer producto para poder acceder al módulo de costos.');
+    }
+
     public function edit($id)
 {
     

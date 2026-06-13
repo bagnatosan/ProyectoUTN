@@ -66,7 +66,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/products/{product}/change-statement', [ProductController::class, 'ChangeStatement'])->name('products.change-statement'); //toggle button
 
     // --- Programador 3: Inventario de Ingredientes y Constructor de Recetas ---
-    
+    Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
     Route::get('/products/{product}/recipe/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
     Route::put('/products/{product}/recipe/update', [RecipeController::class, 'update'])->name('recipes.update');
     Route::delete('/recipes/{recipe}/remove-ingredient/{ingredient}', [App\Http\Controllers\RecipeController::class, 'removeIngredient']);
