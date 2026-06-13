@@ -44,9 +44,12 @@ class IngredientController extends Controller
 
         \App\Models\Ingredient::create($validated);
 
-        // Redirecciona al panel con mensaje de éxito
-        //return redirect()->route('ingredients.index')->with('success', '¡Ingrediente añadido con éxito!');
-        return redirect('/recipes/1/edit')->with('success', '¡Ingrediente guardado con éxito!');
+        // Redirecciona de vuelta a la receta correspondiente si existe el parámetro
+        $productId = $request->input('product_id');
+        if ($productId) {
+            return redirect()->route('recipes.edit', $productId)->with('success', '¡Ingrediente guardado con éxito!');
+        }
+        return redirect()->route('products.index')->with('success', '¡Ingrediente guardado con éxito!');
     }
 
     /**

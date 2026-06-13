@@ -6,7 +6,7 @@
 <div class="w-full max-w-2xl mx-auto px-4 py-6">
     
    <div class="mb-4">
-    <a href="{{ url('/recipes/1/edit') }}" class="text-xs text-slate-400 hover:text-emerald-400 transition-colors flex items-center gap-1">
+    <a href="{{ request()->has('product_id') ? route('recipes.edit', request()->product_id) : route('products.index') }}" class="text-xs text-slate-400 hover:text-emerald-400 transition-colors flex items-center gap-1">
         ← Volver al Módulo de Costos
     </a>
     </div>
@@ -17,7 +17,7 @@
             <p class="text-slate-400 text-xs mt-1">Registrá una materia prima para poder usarla en el cálculo de tus recetas.</p>
         </div>
 
-        <form action="{{ url('/ingredients') }}" method="POST" class="space-y-5">
+        <form action="{{ url('/ingredients') }}{{ request()->has('product_id') ? '?product_id=' . request()->product_id : '' }}" method="POST" class="space-y-5">
             @csrf
 
             <div>
