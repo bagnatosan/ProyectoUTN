@@ -40,7 +40,7 @@ class IngredientController extends Controller
 
         // 💡 SOLUCIÓN: Buscamos el ID del negocio del usuario logueado.
         // Si no hay nadie logueado (porque estamos testeando), le clavamos el ID 1 por defecto.
-        $validated['business_profile_id'] = auth()->user()->business_profile_id ?? 1;
+        $validated['business_profile_id'] = auth()->user()->businessProfile?->id ?? 1;
 
         \App\Models\Ingredient::create($validated);
 
@@ -63,7 +63,7 @@ class IngredientController extends Controller
 
         // Aseguramos que mantenga el perfil si no estaba seteado
         if (!$ingredient->business_profile_id) {
-            $validated['business_profile_id'] = auth()->user()->business_profile_id ?? 1;
+            $validated['business_profile_id'] = auth()->user()->businessProfile?->id ?? 1;
         }
 
         $ingredient->update($validated);

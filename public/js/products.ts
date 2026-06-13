@@ -39,7 +39,7 @@ formToggle.forEach(formElement => {
                     span.classList.replace('translate-x-0', 'translate-x-4');
                     if (label) {
                         label.textContent = 'Activo';
-                        label.className = 'ml-2 text-xs font-semibold text-emerald-450';
+                        label.className = 'ml-2 text-xs font-semibold text-emerald-400';
                     }
                     if (activeCountEl) activeCountEl.textContent = String(activeCount + 1);
                     if (inactiveCountEl) inactiveCountEl.textContent = String(Math.max(0, inactiveCount - 1));
