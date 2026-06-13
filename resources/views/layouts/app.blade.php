@@ -6,12 +6,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Plataforma de Reservas y Emprendimientos')</title>
     <meta name="description" content="Regístrate como cliente para realizar reservas o como emprendedor para potenciar tu negocio.">
+    <!-- Vite Assets (CSS only) -->
     @vite(['resources/css/app.css'])
     <script src="{{ asset('js/app.js') }}" defer></script>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body class="h-full bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col">
     
+    <!-- Background Glow Effects -->
     <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/20 blur-[120px] pointer-events-none z-0"></div>
     <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/20 blur-[120px] pointer-events-none z-0"></div>
 
@@ -34,20 +36,18 @@
                     class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('login') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                         Login / Registro
                     </a>
-
-                    <a href="{{ route('catalog.show', ['id' => 1]) }}" 
-                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('catalog.show') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                        Catálogo
-                    </a>
-
-                    <a href="{{ route('reservations.create') }}" 
-                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.create') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                        Reservar
-                    </a>
                 @endguest
 
-                @auth
+                @auth                    @if(auth()->user()->role === 'admin')
+                        <!-- ADMIN autenticado -->
+                        <a href="{{ route('admin.dashboard') }}" 
+                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('admin.*') ? 'bg-purple-600/20 text-purple-400 border border-purple-600/30' : '' }}">
+                            Admin Panel
+                        </a>
+                    @endif
+
                     @if(auth()->user()->role === 'client')
+                        <!-- CLIENTE autenticado -->
                         <a href="{{ route('catalog.show', ['id' => 1]) }}" 
                         class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('catalog.show') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                             Catálogo
@@ -60,6 +60,7 @@
                     @endif
 
                     @if(auth()->user()->role === 'seller')
+                        <!-- SELLER autenticado -->
                         <span class="text-slate-600 px-1">|</span>
 
                         <a href="{{ route('dashboard') }}" 
@@ -93,14 +94,9 @@
                         </a>
                     @endif
 
-                    <form action="{{ route('logout') }}" method="POST" class="inline ml-2">
-                        @csrf
-                        <button type="submit" class="text-xs text-slate-400 hover:text-rose-400 border border-slate-800 px-3 py-1.5 rounded-lg transition-colors">
-                            Cerrar Sesión
-                        </button>
-                    </form>
-
+                    <!-- User Dropdown Menu -->
                     <div class="relative inline-block text-left ml-2" id="user-menu-container">
+                        <!-- User Profile Trigger Button -->
                         <button type="button" 
                                 class="flex items-center space-x-2 text-sm text-slate-300 bg-slate-900/60 hover:bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 cursor-pointer transition-all duration-200 focus:outline-none" 
                                 id="nav-user-display-btn">
@@ -123,7 +119,12 @@
                              id="user-dropdown-menu">
                             <div class="px-3 py-2 border-b border-slate-900 mb-1">
                                 <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Rol de acceso</p>
-                                <p class="text-xs text-indigo-400 font-medium capitalize">{{ auth()->user()->role === 'seller' ? 'Emprendedor' : 'Cliente' }}</p>
+                                <p class="text-xs font-medium capitalize {{ auth()->user()->role === 'admin' ? 'text-purple-400' : 'text-indigo-400' }}">
+                                    @if(auth()->user()->role === 'admin') Administrador
+                                    @elseif(auth()->user()->role === 'seller') Emprendedor
+                                    @else Cliente
+                                    @endif
+                                </p>
                             </div>
                             <form action="{{ route('logout') }}" method="POST" class="block">
                                 @csrf
@@ -144,6 +145,7 @@
         </div>
     </header>
 
+    <!-- Main Content Area -->
     <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="w-full max-w-4xl">
             @if (session('success'))
