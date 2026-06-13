@@ -16,8 +16,8 @@
     }
     
     $totalProducts = $productsList->count();
-    $activeProducts = $productsList->where('status', 'active')->count();
-    $inactiveProducts = $productsList->where('status', 'inactive')->count();
+    $activeProducts = $productsList->where('is_active', true)->count();
+    $inactiveProducts = $productsList->where('is_active', false)->count();
 @endphp
 
 <div class="py-6">
@@ -69,7 +69,7 @@
             </div>
             <div>
                 <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Activos en Catálogo</p>
-                <p class="text-2xl font-bold text-emerald-400 mt-0.5">{{ $activeProducts }}</p>
+                <p id="active-count" class="text-2xl font-bold text-emerald-400 mt-0.5">{{ $activeProducts }}</p>
             </div>
         </div>
         <div class="p-5 rounded-2xl border border-slate-800/80 bg-slate-900/20 backdrop-blur flex items-center space-x-4">
@@ -80,7 +80,7 @@
             </div>
             <div>
                 <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Inactivos / Ocultos</p>
-                <p class="text-2xl font-bold text-rose-400 mt-0.5">{{ $inactiveProducts }}</p>
+                <p id="inactive-count" class="text-2xl font-bold text-rose-400 mt-0.5">{{ $inactiveProducts }}</p>
             </div>
         </div>
     </div>
@@ -182,14 +182,14 @@
                                 @method('PATCH')
                                 <button 
                                     type="submit" 
-                                    class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-300 ease-out focus:outline-none transform hover:scale-105 active:scale-95 {{ $product->status === 'active' ? 'bg-indigo-600' : 'bg-slate-800' }}"
+                                    class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-300 ease-out focus:outline-none transform hover:scale-105 active:scale-95 {{ $product->is_active ? 'bg-indigo-600' : 'bg-slate-800' }}"
                                     title="Alternar estado (Activo/Inactivo)"
                                 >
-                                    <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] {{ $product->status === 'active' ? 'translate-x-4' : 'translate-x-0' }}"></span>
+                                    <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] {{ $product->is_active ? 'translate-x-4' : 'translate-x-0' }}"></span>
                                 </button>
                             </form>
-                            <span class="ml-2 text-xs font-semibold {{ $product->status === 'active' ? 'text-emerald-400' : 'text-slate-500' }}">
-                                {{ $product->status === 'active' ? 'Activo' : 'Oculto' }}
+                            <span class="ml-2 text-xs font-semibold {{ $product->is_active ? 'text-emerald-400' : 'text-slate-500' }}">
+                                {{ $product->is_active ? 'Activo' : 'Oculto' }}
                             </span>
                         </td>
 

@@ -34,8 +34,8 @@ class ProductController extends Controller implements HasMiddleware
 
     // 2. Calculamos los contadores dinámicos para las tarjetitas de arriba
     $totalProductos = $products->count();
-    $activos = $products->where('status', 'active')->count();
-    $inactivos = $products->where('status', 'inactive')->count();
+    $activos = $products->where('is_active', true)->count();
+    $inactivos = $products->where('is_active', false)->count();
 
     // 3. Pasamos todo a la vista de tu compañero (revisá cómo se llama su vista, ej: 'products.index')
     return view('products.index', compact('products', 'totalProductos', 'activos', 'inactivos'));
