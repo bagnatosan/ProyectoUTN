@@ -23,10 +23,12 @@
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
             
             <a href="{{ route('register.select') }}" class="flex items-center space-x-2 group">
-                <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-green-600 to-green-400 flex items-center justify-center font-bold text-white shadow-lg">
-                    P
-                </span>
-                <span class="font-semibold text-lg tracking-tight text-slate-100">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-emerald-450" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 22C2 22 6 18 12 18M12 18C18 18 22 22 22 22M12 18V2M12 6C9.5 8.5 7 11 7 14M12 10C14.5 12.5 17 15 17 18"/>
+                    </svg>
+                </div>
+                <span class="font-bold text-lg tracking-tight text-white">
                     ProyectoUTN
                 </span>
             </a>

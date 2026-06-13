@@ -4,54 +4,39 @@
 
 @section('content')
 <div class="space-y-8 animate-fade-in">
-    <!-- Perfil del Negocio Card -->
-    <div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 p-6 sm:p-8 backdrop-blur shadow-xl">
-        <!-- Background decorative glow -->
-        <div class="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-emerald-500/10 blur-2xl"></div>
-        
-        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 relative z-10">
-            <!-- Logo -->
-            <div class="shrink-0">
-                @if($business->logo)
-                    <img src="{{ asset('storage/' . $business->logo) }}" alt="Logo {{ $business->business_name }}" class="w-24 h-24 rounded-2xl object-cover border border-slate-700 shadow-md">
-                @else
-                    <div class="w-24 h-24 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center font-bold text-3xl text-white border border-emerald-500/30 shadow-md">
-                        {{ strtoupper(substr($business->business_name, 0, 1)) }}
-                    </div>
-                @endif
+    <!-- Perfil del Negocio Banner (Mockup style) -->
+    <div class="relative overflow-hidden rounded-3xl bg-[#133b2c] border border-[#1c4d36] p-8 text-center shadow-xl space-y-4">
+        <!-- Decorative subtle grid -->
+        <div class="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+
+        <div class="flex flex-col items-center space-y-3 relative z-10">
+            <!-- Leaf sprig logo -->
+            <div class="w-16 h-16 rounded-full bg-[#2d6a4f]/20 border border-[#2d6a4f]/30 flex items-center justify-center text-emerald-450 shadow-inner">
+                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 22C2 22 6 18 12 18M12 18C18 18 22 22 22 22M12 18V2M12 6C9.5 8.5 7 11 7 14M12 10C14.5 12.5 17 15 17 18"/>
+                </svg>
             </div>
 
-            <!-- Info -->
-            <div class="flex-grow text-center sm:text-left space-y-3">
-                <div>
-                    <h1 class="text-3xl font-extrabold text-white tracking-tight">{{ $business->business_name }}</h1>
-                    @if($business->description)
-                        <p class="text-slate-400 mt-2 text-sm sm:text-base leading-relaxed">{{ $business->description }}</p>
-                    @else
-                        <p class="text-slate-500 mt-2 text-sm italic">Sin descripción disponible.</p>
-                    @endif
-                </div>
-
-                <div class="flex flex-wrap justify-center sm:justify-start gap-4 text-xs text-slate-300">
+            <!-- Business name & info -->
+            <div class="space-y-1">
+                <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight leading-none">{{ $business->business_name }}</h1>
+                <p class="text-emerald-300/90 text-sm sm:text-base font-medium mt-1">
+                    {{ $business->description ?? 'Pedidos artesanales' }} 
                     @if($business->address)
-                        <span class="flex items-center gap-1.5 bg-slate-950/60 border border-slate-800 rounded-full px-3 py-1">
-                            <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                            </svg>
-                            {{ $business->address }}
-                        </span>
+                        • {{ $business->address }}
                     @endif
-                    @if($business->phone)
-                        <a href="https://wa.me/{{ preg_replace('/\D/', '', $business->phone) }}" target="_blank" class="flex items-center gap-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-full px-3 py-1 text-emerald-400 font-medium transition-colors">
-                            <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.18 1.449 4.725 1.45 5.556 0 10.074-4.522 10.077-10.077.001-2.691-1.042-5.222-2.937-7.12C16.518 1.51 13.98 1.465 11.298 1.465c-5.555 0-10.074 4.52-10.077 10.077-.001 1.765.463 3.489 1.345 5.008l-.985 3.593 3.682-.966c1.554.847 3.193 1.29 4.794 1.29zm10.978-7.525c-.302-.151-1.785-.882-2.057-.982-.272-.1-.47-.15-.668.151-.198.3-.765.982-.94 1.181-.173.2-.347.225-.648.075-.302-.15-1.272-.469-2.423-1.496-.895-.798-1.5-1.784-1.675-2.086-.175-.302-.018-.465.132-.614.135-.134.302-.351.453-.526.151-.175.202-.3.302-.5.101-.2.05-.376-.025-.526-.075-.15-.668-1.609-.915-2.203-.241-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.785-.73 2.033-1.433.248-.704.248-1.311.173-1.436-.075-.125-.272-.2-.574-.35z"/>
-                            </svg>
-                            {{ $business->phone }}
-                        </a>
-                    @endif
-                </div>
+                </p>
             </div>
+
+            <!-- Contact/Phone link -->
+            @if($business->phone)
+                <a href="https://wa.me/{{ preg_replace('/\D/', '', $business->phone) }}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#2d6a4f] hover:bg-[#20724b] text-white text-xs font-semibold rounded-full shadow-md transition-all">
+                    <svg class="w-3.5 h-3.5 text-emerald-350 fill-current" viewBox="0 0 24 24">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.18 1.449 4.725 1.45 5.556 0 10.074-4.522 10.077-10.077.001-2.691-1.042-5.222-2.937-7.12C16.518 1.51 13.98 1.465 11.298 1.465c-5.555 0-10.074 4.52-10.077 10.077-.001 1.765.463 3.489 1.345 5.008l-.985 3.593 3.682-.966c1.554.847 3.193 1.29 4.794 1.29zm10.978-7.525c-.302-.151-1.785-.882-2.057-.982-.272-.1-.47-.15-.668.151-.198.3-.765.982-.94 1.181-.173.2-.347.225-.648.075-.302-.15-1.272-.469-2.423-1.496-.895-.798-1.5-1.784-1.675-2.086-.175-.302-.018-.465.132-.614.135-.134.302-.351.453-.526.151-.175.202-.3.302-.5.101-.2.05-.376-.025-.526-.075-.15-.668-1.609-.915-2.203-.241-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.785-.73 2.033-1.433.248-.704.248-1.311.173-1.436-.075-.125-.272-.2-.574-.35z"/>
+                    </svg>
+                    <span>Enviar Mensaje</span>
+                </a>
+            @endif
         </div>
     </div>
 
@@ -76,7 +61,7 @@
 
         <!-- Filtros por Categoría (Pills) -->
         @if($categories->isNotEmpty())
-            <div class="flex flex-wrap gap-2 py-1" id="category-filters">
+            <div class="flex flex-wrap justify-center gap-2 py-1" id="category-filters">
                 <button data-category-id="all" class="category-pill px-4 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/10">
                     Todos
                 </button>
