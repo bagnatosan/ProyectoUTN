@@ -3,16 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     /**
-     * Display the seller dashboard (metrics, orders with search and filter).
+     * Muestra el dashboard de gestión de pedidos del vendedor.
+     *
+     * Renderiza la vista principal; los datos se cargan vía Fetch
+     * desde el frontend llamando a /dashboard/reservations.
      */
     public function index(Request $request)
     {
-        // Calculate metrics, fetch and filter reservations
         return view('dashboard.index');
     }
 }

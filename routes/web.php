@@ -28,8 +28,7 @@ Route::post('/register/seller', [RegistrationController::class, 'storeSeller'])-
 Route::get('/login', [RegistrationController::class, 'showLogin'])->name('login');
 Route::post('/login', [RegistrationController::class, 'login'])->name('login.store');
 
-// Existing Authenticated Dashboard Route
-Route::get('/dashboard', [RegistrationController::class, 'dashboard'])->name('dashboard');
+
 
 // Existing Logout Route
 Route::post('/logout', function () {
@@ -80,8 +79,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/my-reservations', [ReservationController::class, 'clientHistory'])->name('reservations.client_history');
     Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.update-status');
 
-    // --- Programador 5: Métricas y Dashboard Analítico ---
-    Route::get('/dashboard/metrics', [DashboardController::class, 'index'])->name('dashboard.metrics');
+    // --- Programador 5: Gestión de Pedidos (Vendedor) ---
+    Route::get('/reservations/manage', [ReservationController::class, 'manage'])->name('reservations.manage');
+    Route::get('/reservations/manage/data', [ReservationController::class, 'getReservations'])->name('reservations.manage.data');
 
 });
 Route::resource('ingredients', \App\Http\Controllers\IngredientController::class);

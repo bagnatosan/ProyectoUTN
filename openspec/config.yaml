@@ -1,0 +1,30 @@
+schema: spec-driven
+
+context: |
+  Proyecto: Gestor de Ventas Online (UTN - Junio 2026)
+  Stack: Laravel 10+/11+, Blade, CSS3 Nativo (BEM, Mobile-First), JavaScript Vanilla
+  Sin frameworks CSS/JS (Tailwind, Bootstrap, React, Vue, jQuery prohibidos)
+  8 modelos: User, BusinessProfile, Category, Product, Ingredient, ProductIngredient, AvailabilitySlot, Reservation
+  Soft Deletes en Product. Roles: admin, seller, client.
+  Ver CONTEXT.md en la raíz del proyecto para documentación completa.
+
+  AvailabilitySlot implementado:
+    Controlador: AvailabilitySlotController con edit(), update() y getAvailableSlots()
+    Estrategia: delete-and-reinsert envuelto en DB::transaction (rollback si falla inserción)
+    Validaciones: weekday (monday-sunday), start_time/end_time (HH:MM, end > start)
+    Requisito: BusinessProfile debe existir antes de configurar agenda
+    Rutas: GET /availability/edit, PUT /availability/update, GET /availability/slots
+
+  Motor de Disponibilidad (getAvailableSlots):
+    Algoritmo: 1) día semana de la fecha → 2) horarios teóricos (availability_slots) → 3) genera bloques de 30 min → 4) consulta reservas no canceladas → 5) resta ocupados → devuelve libres
+    Endpoint público JSON: GET /availability/slots?business_profile_id=X&date=Y-m-d
+    Validaciones: business_profile_id existe, date >= today, formato Y-m-d
+    Intervalo: 30 min (configurable via constante SLOT_INTERVAL_MINUTES)
+
+  Reservation implementado:
+    Controlador: ReservationController con create(), store(), clientHistory(), updateStatus()
+    create(): carga productos activos, acepta ?product_id=X para preselección
+    store(): validación completa + hora futura si date=today + doble verificación disponibilidad (slot teórico activo + sin reservas duplicadas)
+    clientHistory(): reservas del usuario autenticado con producto, ordenadas descendente
+    updateStatus(): cambia estado (pending/confirmed/completed/cancelled), solo dueño del negocio, null guard para soft-deletes
+    Rutas: GET /reservations/create, POST /reservations/store, GET /my-reservations, PATCH /reservations/{id}/status

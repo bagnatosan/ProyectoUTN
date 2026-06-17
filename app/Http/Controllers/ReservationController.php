@@ -166,6 +166,74 @@ class ReservationController extends Controller
     }
 
     // =========================================================================
+    //  GESTIÓN DE PEDIDOS (Vendedor)
+    // =========================================================================
+
+    /**
+     * Muestra la vista de gestión de pedidos del vendedor.
+     */
+    public function manage()
+    {
+        return view('reservations.manage');
+    }
+
+    /**
+     * Obtiene las reservas del vendedor autenticado en formato JSON.
+     *
+     * Filtra por productos que pertenezcan al perfil de negocio del vendedor.
+     * Aplica filtros temporales: today, tomorrow, week, month.
+     */
+    public function getReservations(Request $request)
+    {
+        $businessProfile = $request->user()->businessProfile;
+
+        if (! $businessProfile) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Primero debes completar tu perfil de negocio.',
+            ], 403);
+        }
+
+        $query = Reservation::whereHas('product', function ($q) use ($businessProfile) {
+            $q->where('business_profile_id', $businessProfile->id);
+        })->with(['product', 'user']);
+
+        // Filtro temporal
+        $filter = $request->input('filter', 'today');
+        $today = Carbon::today();
+
+        switch ($filter) {
+            case 'today':
+                $query->whereDate('reservation_date', $today);
+                break;
+            case 'tomorrow':
+                $query->whereDate('reservation_date', $today->copy()->addDay());
+                break;
+            case 'week':
+                $query->whereBetween('reservation_date', [
+                    $today->copy()->startOfWeek(),
+                    $today->copy()->endOfWeek(),
+                ]);
+                break;
+            case 'month':
+                $query->whereBetween('reservation_date', [
+                    $today->copy()->startOfMonth(),
+                    $today->copy()->endOfMonth(),
+                ]);
+                break;
+        }
+
+        $reservations = $query->orderBy('reservation_date')
+            ->orderBy('reservation_time')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $reservations,
+        ]);
+    }
+
+    // =========================================================================
     //  GESTIÓN DE ESTADOS (Panel del Vendedor)
     // =========================================================================
 
@@ -176,16 +244,21 @@ class ReservationController extends Controller
      * para confirmar, completar o cancelar turnos en un clic.
      *
      * Solo el dueño del negocio asociado al producto puede modificar estados.
+     * Responde en JSON si la petición es AJAX, o con redirect si es tradicional.
      */
     public function updateStatus(Request $request, Reservation $reservation)
     {
         // Verificar que el autenticado sea dueño del negocio del producto.
-        // Usamos $reservation->product()->first() en vez de $reservation->product
-        // para evitar null si el producto fue soft-deleteado.
         $businessProfile = $request->user()->businessProfile;
         $product = $reservation->product()->first();
 
         if (! $businessProfile || ! $product || $product->business_profile_id !== $businessProfile->id) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tenés permiso para modificar esta reserva.',
+                ], 403);
+            }
             return back()->with('error', 'No tenés permiso para modificar esta reserva.');
         }
 
@@ -207,6 +280,15 @@ class ReservationController extends Controller
             'cancelled' => 'Cancelada',
         ];
 
-        return back()->with('success', 'Reserva #' . $reservation->id . ' actualizada a "' . ($statusLabels[$request->status] ?? $request->status) . '".');
+        $message = 'Reserva #' . $reservation->id . ' actualizada a "' . ($statusLabels[$request->status] ?? $request->status) . '".';
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+            ]);
+        }
+
+        return back()->with('success', $message);
     }
 }
