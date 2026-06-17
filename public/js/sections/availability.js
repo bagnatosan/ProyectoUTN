@@ -1,7 +1,9 @@
-const AvailabilityEditor = (() => {
-  var DAYS_MAP = {
-    monday: 'Lunes', tuesday: 'Martes', wednesday: 'Miercoles',
-    thursday: 'Jueves', friday: 'Viernes', saturday: 'Sabado', sunday: 'Domingo',
+(function () {
+  'use strict';
+
+  var DAYS_LABELS = {
+    monday: 'Lunes', tuesday: 'Martes', wednesday: 'Miércoles',
+    thursday: 'Jueves', friday: 'Viernes', saturday: 'Sábado', sunday: 'Domingo'
   };
 
   var slotCounter = 0;
@@ -17,14 +19,13 @@ const AvailabilityEditor = (() => {
 
     if (!formEl) return;
 
-    formEl.querySelectorAll('.slot-remove').forEach(function (btn) {
+    formEl.querySelectorAll('.availability__btn-remove').forEach(function (btn) {
       btn.addEventListener('click', function () {
         removeSlot(this);
       });
-      btn.setAttribute('type', 'button');
     });
 
-    formEl.querySelectorAll('.btn-add-slot').forEach(function (btn) {
+    formEl.querySelectorAll('.availability__btn-add').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var day = btn.getAttribute('data-day');
         addSlot(day);
@@ -33,16 +34,15 @@ const AvailabilityEditor = (() => {
 
     formEl.addEventListener('submit', handleSubmit);
 
-    formEl.querySelectorAll('.slot-row').forEach(function (row) {
-      var tempId = row.getAttribute('data-slot-id');
-      if (!tempId) {
-        tempId = 'slot-' + (slotCounter++);
-        row.setAttribute('data-slot-id', tempId);
+    formEl.querySelectorAll('.availability__slot-row').forEach(function (row) {
+      var idx = row.getAttribute('data-index');
+      var num = parseInt(idx, 10);
+      if (!isNaN(num) && num >= slotCounter) {
+        slotCounter = num + 1;
       }
-      updateRowNames(row, tempId);
     });
 
-    Object.keys(DAYS_MAP).forEach(function (day) {
+    Object.keys(DAYS_LABELS).forEach(function (day) {
       updateDayState(day);
     });
   }
@@ -51,16 +51,14 @@ const AvailabilityEditor = (() => {
     var container = formEl.querySelector('[data-day-slots="' + day + '"]');
     if (!container) return;
 
-    var template = container.querySelector('.slot-template');
+    var template = container.querySelector('.availability__slot-template');
     if (!template) return;
 
     var clone = template.cloneNode(true);
-    clone.classList.remove('slot-template', 'hidden');
-    clone.classList.add('slot-row');
+    clone.classList.remove('availability__slot-template', 'hidden');
+    clone.classList.add('availability__slot-row');
     clone.removeAttribute('aria-hidden');
-
-    var tempId = 'slot-' + (slotCounter++);
-    clone.setAttribute('data-slot-id', tempId);
+    clone.setAttribute('data-index', slotCounter);
 
     clone.querySelectorAll('input').forEach(function (input) {
       input.value = '';
@@ -69,9 +67,7 @@ const AvailabilityEditor = (() => {
       }
     });
 
-    updateRowNames(clone, tempId);
-
-    var removeBtn = clone.querySelector('.slot-remove');
+    var removeBtn = clone.querySelector('.availability__btn-remove');
     if (removeBtn) {
       removeBtn.addEventListener('click', function () {
         removeSlot(this);
@@ -83,24 +79,34 @@ const AvailabilityEditor = (() => {
     var startInput = clone.querySelector('.slot-start');
     if (startInput) startInput.focus();
 
+    slotCounter++;
     updateDayState(day);
   }
 
   function removeSlot(element) {
-    var row = element.closest('.slot-row');
-    if (row) {
-      var day = row.querySelector('.slot-weekday');
-      var dayVal = day ? day.value : null;
-      row.remove();
-      if (dayVal) updateDayState(dayVal);
+    var row = element.closest('.availability__slot-row');
+    if (!row) return;
+
+    var day = row.querySelector('.slot-weekday');
+    var dayVal = day ? day.value : null;
+
+    var container = dayVal ? formEl.querySelector('[data-day-slots="' + dayVal + '"]') : null;
+    var rows = container ? container.querySelectorAll('.availability__slot-row') : [];
+
+    if (rows.length <= 1) {
+      alert('Debes tener al menos un horario por día. Si no deseas atender este día, simplemente deja el día sin horarios.');
+      return;
     }
+
+    row.remove();
+    if (dayVal) updateDayState(dayVal);
   }
 
   function updateDayState(day) {
     var container = formEl.querySelector('[data-day-slots="' + day + '"]');
     var emptyMsg = formEl.querySelector('[data-empty-day="' + day + '"]');
     if (!container) return;
-    var rows = container.querySelectorAll('.slot-row');
+    var rows = container.querySelectorAll('.availability__slot-row');
     if (emptyMsg) {
       if (rows.length === 0) {
         emptyMsg.classList.remove('hidden');
@@ -110,21 +116,26 @@ const AvailabilityEditor = (() => {
     }
   }
 
-  function updateRowNames(row, tempId) {
-    row.querySelectorAll('input').forEach(function (input) {
-      var name = input.getAttribute('name');
-      if (name) {
-        input.setAttribute('name', name.replace(/slots\[[^\]]*\]/, 'slots[' + tempId + ']'));
-      }
+  function reindex() {
+    var slotRows = formEl.querySelectorAll('.availability__slot-row');
+    var index = 0;
+    slotRows.forEach(function (row) {
+      row.querySelectorAll('input').forEach(function (input) {
+        var name = input.getAttribute('name');
+        if (name) {
+          input.setAttribute('name', name.replace(/slots\[\d+\]/, 'slots[' + index + ']'));
+        }
+      });
+      index++;
     });
   }
 
   function validateAll() {
     var errors = [];
-    var slotRows = formEl.querySelectorAll('.slot-row');
+    var slotRows = formEl.querySelectorAll('.availability__slot-row');
 
     if (slotRows.length === 0) {
-      errors.push('Debes agregar al menos un horario de atencion.');
+      errors.push('Debes agregar al menos un horario de atención.');
       return errors;
     }
 
@@ -141,7 +152,7 @@ const AvailabilityEditor = (() => {
 
       if (start >= end) {
         var dayInput = row.querySelector('.slot-weekday');
-        var dayName = dayInput ? (DAYS_MAP[dayInput.value] || dayInput.value) : '';
+        var dayName = dayInput ? (DAYS_LABELS[dayInput.value] || dayInput.value) : '';
         errors.push('En ' + dayName + ': la hora de fin debe ser posterior a la de inicio (' + start + ' - ' + end + ').');
       }
     });
@@ -154,7 +165,7 @@ const AvailabilityEditor = (() => {
       if (!byDay[day]) byDay[day] = [];
       byDay[day].push({
         start: row.querySelector('.slot-start') ? row.querySelector('.slot-start').value : '',
-        end: row.querySelector('.slot-end') ? row.querySelector('.slot-end').value : '',
+        end: row.querySelector('.slot-end') ? row.querySelector('.slot-end').value : ''
       });
     });
 
@@ -164,7 +175,7 @@ const AvailabilityEditor = (() => {
         for (var j = i + 1; j < slots.length; j++) {
           if (slots[i].start && slots[i].end && slots[j].start && slots[j].end) {
             if (slots[i].start < slots[j].end && slots[j].start < slots[i].end) {
-              var dayName = DAYS_MAP[day] || day;
+              var dayName = DAYS_LABELS[day] || day;
               errors.push('En ' + dayName + ': los horarios no pueden superponerse.');
               return;
             }
@@ -176,27 +187,13 @@ const AvailabilityEditor = (() => {
     return errors;
   }
 
-  function reindex() {
-    var slotRows = formEl.querySelectorAll('.slot-row');
-    var index = 0;
-    slotRows.forEach(function (row) {
-      row.querySelectorAll('input').forEach(function (input) {
-        var name = input.getAttribute('name');
-        if (name) {
-          input.setAttribute('name', name.replace(/slots\[[^\]]*\]/, 'slots[' + index + ']'));
-        }
-      });
-      index++;
-    });
-  }
-
   function showFeedback(errors) {
     if (!feedbackEl) return;
     if (!errors || errors.length === 0) {
-      feedbackEl.classList.add('form-feedback--hidden');
+      feedbackEl.classList.add('availability__feedback--hidden');
       return;
     }
-    feedbackEl.className = 'form-feedback form-feedback--error';
+    feedbackEl.className = 'availability__feedback availability__feedback--error';
     feedbackEl.setAttribute('role', 'alert');
     feedbackEl.innerHTML = '';
     errors.forEach(function (msg) {
@@ -204,7 +201,7 @@ const AvailabilityEditor = (() => {
       p.textContent = msg;
       feedbackEl.appendChild(p);
     });
-    feedbackEl.classList.remove('form-feedback--hidden');
+    feedbackEl.classList.remove('availability__feedback--hidden');
     feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -214,7 +211,6 @@ const AvailabilityEditor = (() => {
       e.preventDefault();
       showFeedback(errors);
       if (saveBtn) {
-        saveBtn.classList.remove('btn--loading');
         saveBtn.disabled = false;
       }
       return;
@@ -222,10 +218,15 @@ const AvailabilityEditor = (() => {
     reindex();
     showFeedback([]);
     if (saveBtn) {
-      saveBtn.classList.add('btn--loading');
       saveBtn.disabled = true;
     }
   }
 
-  return { init: init, addSlot: addSlot, removeSlot: removeSlot };
+  document.addEventListener('DOMContentLoaded', function () {
+    init({
+      formId: 'availability-form',
+      feedbackId: 'form-feedback',
+      saveBtnId: 'btn-save-availability'
+    });
+  });
 })();
