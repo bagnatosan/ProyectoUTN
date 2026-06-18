@@ -12,7 +12,13 @@ class PublicCatalogController extends Controller
      */
     public function show($id)
     {
-        $business = BusinessProfile::findOrFail($id);
-        return view('catalog.show', compact('business'));
+        $business = BusinessProfile::with(['products' => function ($query) {
+            $query->where('is_active', true)->with('category');
+        }])->findOrFail($id);
+
+        $products = $business->products;
+        $categories = $products->pluck('category')->unique('id')->filter();
+
+        return view('catalog.show', compact('business', 'products', 'categories'));
     }
 }

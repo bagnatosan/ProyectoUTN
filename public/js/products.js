@@ -21,13 +21,21 @@ formToggle.forEach(formElement => {
                 const button = eTarget.querySelector('button');
                 const span = button.querySelector('span');
                 const label = eTarget.nextElementSibling;
+                const activeCountEl = document.getElementById('active-count');
+                const inactiveCountEl = document.getElementById('inactive-count');
+                let activeCount = activeCountEl ? parseInt(activeCountEl.textContent || '0', 10) : 0;
+                let inactiveCount = inactiveCountEl ? parseInt(inactiveCountEl.textContent || '0', 10) : 0;
                 if (data.state) {
                     button.classList.replace('bg-slate-800', 'bg-indigo-600');
                     span.classList.replace('translate-x-0', 'translate-x-4');
                     if (label) {
                         label.textContent = 'Activo';
-                        label.className = 'ml-2 text-xs font-semibold text-emerald-450';
+                        label.className = 'ml-2 text-xs font-semibold text-emerald-400';
                     }
+                    if (activeCountEl)
+                        activeCountEl.textContent = String(activeCount + 1);
+                    if (inactiveCountEl)
+                        inactiveCountEl.textContent = String(Math.max(0, inactiveCount - 1));
                 }
                 else {
                     button.classList.replace('bg-indigo-600', 'bg-slate-800');
@@ -36,6 +44,10 @@ formToggle.forEach(formElement => {
                         label.textContent = 'Oculto';
                         label.className = 'ml-2 text-xs font-semibold text-slate-500';
                     }
+                    if (activeCountEl)
+                        activeCountEl.textContent = String(Math.max(0, activeCount - 1));
+                    if (inactiveCountEl)
+                        inactiveCountEl.textContent = String(inactiveCount + 1);
                 }
             }
         }

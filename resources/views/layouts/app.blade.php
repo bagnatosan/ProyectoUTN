@@ -1,28 +1,34 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full">
+<html lang="es" style="height: 100%;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Plataforma de Reservas y Emprendimientos')</title>
     <meta name="description" content="Regístrate como cliente para realizar reservas o como emprendedor para potenciar tu negocio.">
+    <!-- Vite Assets (CSS only) -->
     @vite(['resources/css/app.css'])
     <script src="{{ asset('js/app.js') }}" defer></script>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body class="h-full bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col" style="min-height: 100%; display: flex; flex-direction: column; margin: 0;">
     
-    <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/20 blur-[120px] pointer-events-none z-0"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/20 blur-[120px] pointer-events-none z-0"></div>
+    <!-- Background Glow Effects -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/20 blur-[120px]"></div>
+    </div>
 
     <header class="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/75 backdrop-blur-md">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
             
             <a href="{{ route('register.select') }}" class="flex items-center space-x-2 group">
-                <span class="w-8 h-8 rounded-lg bg-gradient-to-tr from-green-600 to-green-400 flex items-center justify-center font-bold text-white shadow-lg">
-                    P
-                </span>
-                <span class="font-semibold text-lg tracking-tight text-slate-100">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-emerald-450" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 22C2 22 6 18 12 18M12 18C18 18 22 22 22 22M12 18V2M12 6C9.5 8.5 7 11 7 14M12 10C14.5 12.5 17 15 17 18"/>
+                    </svg>
+                </div>
+                <span class="font-bold text-lg tracking-tight text-white">
                     ProyectoUTN
                 </span>
             </a>
@@ -34,32 +40,20 @@
                     class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('login') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                         Login / Registro
                     </a>
-
-                    <a href="{{ route('catalog.show', ['id' => 1]) }}" 
-                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('catalog.show') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                        Catálogo
-                    </a>
-
-                    <a href="{{ route('reservations.create') }}" 
-                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.create') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                        Reservar
-                    </a>
                 @endguest
 
-                @auth
-                    @if(auth()->user()->role === 'client')
-                        <a href="{{ route('catalog.show', ['id' => 1]) }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('catalog.show') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Catálogo
-                        </a>
-
-                        <a href="{{ route('reservations.create') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.create') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Reservar
+                @auth                    @if(auth()->user()->role === 'admin')
+                        <!-- ADMIN autenticado -->
+                        <a href="{{ route('admin.dashboard') }}" 
+                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('admin.*') ? 'bg-purple-600/20 text-purple-400 border border-purple-600/30' : '' }}">
+                            Admin Panel
                         </a>
                     @endif
 
+
+
                     @if(auth()->user()->role === 'seller')
+                        <!-- SELLER autenticado -->
                         <span class="text-slate-600 px-1">|</span>
 
                         <a href="{{ route('reservations.manage') }}" 
@@ -72,6 +66,11 @@
                             Productos
                         </a>
 
+                        <a href="{{ route('categories.index') }}" 
+                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('categories.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                            Categorías
+                        </a>
+
                         <a href="{{ route('reservations.create') }}" 
                         class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                             Reservas
@@ -82,10 +81,6 @@
                             Horarios
                         </a>
 
-                        <a href="{{ url('/recipes/1/edit') }}" 
-                           class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->is('recipes/*') ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 font-semibold' : '' }}">
-                            Costos
-                        </a>
 
                         <a href="{{ route('business_profile.edit') }}" 
                         class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('business_profile.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
@@ -93,14 +88,9 @@
                         </a>
                     @endif
 
-                    <form action="{{ route('logout') }}" method="POST" class="inline ml-2">
-                        @csrf
-                        <button type="submit" class="text-xs text-slate-400 hover:text-rose-400 border border-slate-800 px-3 py-1.5 rounded-lg transition-colors">
-                            Cerrar Sesión
-                        </button>
-                    </form>
-
+                    <!-- User Dropdown Menu -->
                     <div class="relative inline-block text-left ml-2" id="user-menu-container">
+                        <!-- User Profile Trigger Button -->
                         <button type="button" 
                                 class="flex items-center space-x-2 text-sm text-slate-300 bg-slate-900/60 hover:bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 cursor-pointer transition-all duration-200 focus:outline-none" 
                                 id="nav-user-display-btn">
@@ -123,7 +113,12 @@
                              id="user-dropdown-menu">
                             <div class="px-3 py-2 border-b border-slate-900 mb-1">
                                 <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Rol de acceso</p>
-                                <p class="text-xs text-indigo-400 font-medium capitalize">{{ auth()->user()->role === 'seller' ? 'Emprendedor' : 'Cliente' }}</p>
+                                <p class="text-xs font-medium capitalize {{ auth()->user()->role === 'admin' ? 'text-purple-400' : 'text-indigo-400' }}">
+                                    @if(auth()->user()->role === 'admin') Administrador
+                                    @elseif(auth()->user()->role === 'seller') Emprendedor
+                                    @else Cliente
+                                    @endif
+                                </p>
                             </div>
                             <form action="{{ route('logout') }}" method="POST" class="block">
                                 @csrf
@@ -144,7 +139,8 @@
         </div>
     </header>
 
-    <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+    <!-- Main Content Area -->
+    <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10" style="flex-grow: 1;">
         <div class="w-full max-w-4xl">
             @if (session('success'))
                 <div class="mb-8 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 flex items-start space-x-3 shadow-lg shadow-emerald-500/5 animate-fade-in" id="alert-success">

@@ -40,13 +40,16 @@ class IngredientController extends Controller
 
         // 💡 SOLUCIÓN: Buscamos el ID del negocio del usuario logueado.
         // Si no hay nadie logueado (porque estamos testeando), le clavamos el ID 1 por defecto.
-        $validated['business_profile_id'] = auth()->user()->business_profile_id ?? 1;
+        $validated['business_profile_id'] = auth()->user()->businessProfile?->id ?? 1;
 
         \App\Models\Ingredient::create($validated);
 
-        // Redirecciona al panel con mensaje de éxito
-        //return redirect()->route('ingredients.index')->with('success', '¡Ingrediente añadido con éxito!');
-        return redirect('/recipes/1/edit')->with('success', '¡Ingrediente guardado con éxito!');
+        // Redirecciona de vuelta a la receta correspondiente si existe el parámetro
+        $productId = $request->input('product_id');
+        if ($productId) {
+            return redirect()->route('recipes.edit', $productId)->with('success', '¡Ingrediente guardado con éxito!');
+        }
+        return redirect()->route('products.index')->with('success', '¡Ingrediente guardado con éxito!');
     }
 
     /**
@@ -63,7 +66,7 @@ class IngredientController extends Controller
 
         // Aseguramos que mantenga el perfil si no estaba seteado
         if (!$ingredient->business_profile_id) {
-            $validated['business_profile_id'] = auth()->user()->business_profile_id ?? 1;
+            $validated['business_profile_id'] = auth()->user()->businessProfile?->id ?? 1;
         }
 
         $ingredient->update($validated);

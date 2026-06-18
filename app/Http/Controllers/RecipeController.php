@@ -9,6 +9,18 @@ use Illuminate\Http\Request;
 class RecipeController extends Controller
 {
    
+    public function index()
+    {
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+        $firstProduct = auth()->user()->businessProfile?->products()->first();
+        if ($firstProduct) {
+            return redirect()->route('recipes.edit', $firstProduct->id);
+        }
+        return redirect()->route('products.index')->with('info', 'Por favor, crea tu primer producto para poder acceder al módulo de costos.');
+    }
+
     public function edit($id)
 {
     
@@ -58,6 +70,18 @@ class RecipeController extends Controller
                      ->with('success', '¡Receta actualizada y costos recalculados correctamente!');
 }
 
+private function recalculateProductCost($productId)
+{
+    $product = Product::findOrFail($productId);
+    $totalCost = 0;
+    foreach ($product->ingredients as $ingredient) {
+        $totalCost += $ingredient->unit_cost * $ingredient->pivot->quantity;
+    }
+    $product->estimated_cost = $totalCost;
+    $product->suggested_price = $totalCost * 3;
+    $product->save();
+}
+
 public function addIngredient(Request $request, $recipeId)
 {
     // 1. Validamos que vengan tanto el ingrediente como la cantidad
@@ -74,6 +98,8 @@ public function addIngredient(Request $request, $recipeId)
         'created_at'    => now(),
         'updated_at'    => now()
     ]);
+
+    $this->recalculateProductCost($recipeId);
 
     return redirect('/recipes/' . $recipeId . '/edit')->with('success', '¡Ingrediente añadido a la receta con éxito!');
 }
@@ -102,6 +128,8 @@ public function removeIngredient($recipeId, $ingredientId)
         ->where('product_id', (int)$recipeId)
         ->where('ingredient_id', (int)$ingredientId)
         ->delete();
+
+    $this->recalculateProductCost($recipeId);
 
     // Recargamos la página limpiando la caché de la vista
     return redirect('/recipes/' . $recipeId . '/edit')

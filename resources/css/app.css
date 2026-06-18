@@ -1,5 +1,345 @@
 @import "tailwindcss";
 
+@theme {
+  /* Background overrides */
+  --color-slate-950: #f5efe6;
+  --color-slate-900: #ffffff;
+  --color-slate-800: #e5dac9;
+  --color-slate-700: #d8cbb5;
+  --color-slate-650: #a89a85;
+  --color-slate-600: #8c7d67;
+  --color-slate-500: #8c7d67;
+  
+  /* Text overrides */
+  --color-slate-100: #133b2c;
+  --color-slate-200: #1c4d36;
+  --color-slate-300: #333333;
+  --color-slate-400: #4f5e55;
+  --color-slate-500: #7a8c80;
+
+  /* Primary Accent: Forest Green */
+  --color-indigo-650: #1b4332;
+  --color-indigo-600: #1b4332;
+  --color-indigo-500: #2d6a4f;
+  --color-indigo-400: #2d6a4f;
+  --color-indigo-300: #1b4332;
+  --color-emerald-600: #1b4332;
+  --color-emerald-500: #2d6a4f;
+  --color-green-600: #1b4332;
+  --color-green-500: #2d6a4f;
+
+  /* Secondary Accent: Orange/Peach */
+  --color-orange-500: #e99d62;
+  --color-orange-600: #d88448;
+}
+
+/* --------------------------------------------------
+   GLOBAL STYLES & OVERRIDES FOR THE LIGHT/ORGANIC THEME
+   -------------------------------------------------- */
+
+body {
+    background-color: #f5efe6 !important;
+    color: #333333 !important;
+}
+
+/* Background Glowing Blobs removal */
+div[class*="bg-indigo-900/20"], 
+div[class*="bg-purple-900/20"],
+.fixed.inset-0.overflow-hidden.pointer-events-none {
+    display: none !important;
+}
+
+/* Headings color override */
+h1, h2, h3, h4, h5, h6 {
+    color: #133b2c !important;
+}
+
+/* Text color fixes for standard utility classes */
+.text-white {
+    color: #133b2c !important;
+}
+.text-slate-100, .text-slate-200 {
+    color: #133b2c !important;
+}
+.text-slate-300 {
+    color: #333333 !important;
+}
+.text-slate-400 {
+    color: #4f5e55 !important;
+}
+.text-slate-500 {
+    color: #7a8c80 !important;
+}
+
+/* Card Backgrounds & Borders */
+.bg-slate-900\/40, .bg-slate-900\/20, .bg-slate-900, .bg-slate-950\/60, .bg-slate-950\/75 {
+    background-color: #ffffff !important;
+}
+.border-slate-800, .border-slate-900, .border-slate-800\/80, .border-slate-700 {
+    border-color: #e5dac9 !important;
+}
+
+/* Header/Navbar styles */
+header.bg-slate-950\/75 {
+    background-color: #133b2c !important;
+    border-bottom: 1px solid #1c4d36 !important;
+}
+header a, header span {
+    color: #ffffff !important;
+}
+header nav a,
+header nav a.text-slate-300,
+header nav a.text-slate-400,
+header nav a.text-slate-200,
+header nav a.text-slate-100,
+header nav a.text-white {
+    color: #ffffff !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    font-weight: 500 !important;
+}
+header nav a:hover,
+header nav a.text-slate-300:hover,
+header nav a.text-slate-400:hover,
+header nav a.text-slate-200:hover,
+header nav a.text-slate-100:hover,
+header nav a.text-white:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+header nav a.bg-green-600\/20,
+header nav a.bg-emerald-600\/20,
+header nav a.bg-purple-600\/20,
+header nav a[class*="bg-green-650"],
+header nav a[class*="bg-green-600"],
+header nav a[class*="bg-indigo-600"],
+header nav a[class*="bg-emerald-600"] {
+    background-color: #2d6a4f !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 9999px !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+
+/* Volver/Cancel buttons (secondary buttons) */
+a.inline-flex.bg-slate-900\/60,
+a.inline-flex.bg-slate-950\/80,
+a.bg-slate-950.hover\:bg-slate-900,
+button.bg-slate-950.hover\:bg-slate-900 {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #133b2c !important;
+    border: 1px solid #e5dac9 !important;
+}
+
+a.inline-flex.bg-slate-900\/60:hover,
+a.inline-flex.bg-slate-950\/80:hover,
+a.bg-slate-950.hover\:bg-slate-900:hover,
+button.bg-slate-950.hover\:bg-slate-900:hover {
+    background-color: #f5efe6 !important;
+    background: #f5efe6 !important;
+    color: #1b4332 !important;
+    border-color: #d8cbb5 !important;
+}
+
+a.inline-flex.bg-slate-900\/60 svg,
+a.inline-flex.bg-slate-950\/80 svg,
+a.inline-flex.bg-slate-900\/60:hover svg,
+a.inline-flex.bg-slate-950\/80:hover svg {
+    color: #133b2c !important;
+}
+
+/* User Profile Trigger Button & Dropdown Menu */
+#nav-user-display-btn {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+#nav-user-display-btn:hover {
+    background-color: rgba(255, 255, 255, 0.16) !important;
+}
+#nav-user-display-btn svg {
+    color: #ffffff !important;
+}
+#user-dropdown-menu {
+    background-color: #133b2c !important;
+    border: 1px solid #1c4d36 !important;
+    color: #ffffff !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+}
+#user-dropdown-menu div {
+    border-color: #1c4d36 !important;
+}
+#user-dropdown-menu p {
+    color: #a3b8ab !important;
+}
+#user-dropdown-menu p.text-indigo-400,
+#user-dropdown-menu p.text-purple-400 {
+    color: #ffffff !important;
+}
+#btn-logout {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+#btn-logout:hover {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+    color: #fca5a5 !important;
+}
+#btn-logout svg {
+    color: #a3b8ab !important;
+}
+#btn-logout:hover svg {
+    color: #fca5a5 !important;
+}
+
+/* Buttons style overrides */
+button[type="submit"], 
+a[class*="bg-gradient-to-r"], 
+a[class*="bg-indigo-650"], 
+a[class*="bg-indigo-600"], 
+a[class*="bg-emerald-600"], 
+button[class*="bg-indigo-600"],
+.bg-indigo-600, .bg-emerald-600, .bg-green-600 {
+    background: #1b4332 !important;
+    background-color: #1b4332 !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 10px rgba(27, 67, 50, 0.15) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+button[type="submit"]:hover, 
+a[class*="bg-gradient-to-r"]:hover, 
+a[class*="bg-indigo-650"]:hover, 
+a[class*="bg-indigo-600"]:hover, 
+a[class*="bg-emerald-600"]:hover, 
+button[class*="bg-indigo-600"]:hover,
+.bg-indigo-600:hover, .bg-emerald-600:hover, .bg-green-600:hover {
+    background: #2d6a4f !important;
+    background-color: #2d6a4f !important;
+    box-shadow: 0 4px 14px rgba(45, 106, 79, 0.25) !important;
+}
+
+/* Toggle Switch Styles */
+.form-toggle button[type="submit"] {
+    background: none !important;
+    background-color: #e5dac9 !important;
+    box-shadow: none !important;
+}
+.form-toggle button[type="submit"].bg-indigo-600 {
+    background: #2d6a4f !important;
+    background-color: #2d6a4f !important;
+}
+
+/* Inputs and Forms */
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+input[type="number"], 
+input[type="time"], 
+input[type="date"], 
+textarea, 
+select {
+    background-color: #fbf9f6 !important;
+    border: 1px solid #e5dac9 !important;
+    color: #133b2c !important;
+    border-radius: 0.75rem !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+input[type="text"]::placeholder, 
+input[type="email"]::placeholder, 
+input[type="password"]::placeholder, 
+textarea::placeholder {
+    color: #a3b2a7 !important;
+}
+input[type="text"]:focus, 
+input[type="email"]:focus, 
+input[type="password"]:focus, 
+textarea:focus, 
+select:focus {
+    border-color: #2d6a4f !important;
+    outline: none !important;
+    box-shadow: 0 0 0 1px #2d6a4f !important;
+}
+
+/* Accent buttons (orange/peach) like "Reservar" */
+.product-card a.bg-gradient-to-tr,
+.category-pill.bg-emerald-500 {
+    background: #e99d62 !important;
+    background-color: #e99d62 !important;
+    color: #ffffff !important;
+    border-color: #e99d62 !important;
+    box-shadow: 0 4px 12px rgba(233, 157, 98, 0.2) !important;
+}
+.product-card a.bg-gradient-to-tr:hover,
+.category-pill.bg-emerald-500:hover {
+    background: #d88448 !important;
+    background-color: #d88448 !important;
+}
+
+/* Table styling for dark theme to light theme */
+table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    width: 100% !important;
+    background-color: #ffffff !important;
+}
+th {
+    background-color: #fcfaf7 !important;
+    color: #133b2c !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    font-size: 0.75rem !important;
+    border-bottom: 1px solid #e5dac9 !important;
+}
+td {
+    border-bottom: 1px solid #e5dac9 !important;
+    color: #333333 !important;
+}
+tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Badges */
+.bg-indigo-500\/10, .bg-purple-500\/10, .bg-emerald-500\/10 {
+    background-color: #fcfaf7 !important;
+    border-color: #e5dac9 !important;
+    color: #133b2c !important;
+}
+
+/* Alert status text fix */
+.text-emerald-300, .text-emerald-200 {
+    color: #065f46 !important;
+}
+.text-rose-300, .text-rose-200 {
+    color: #991b1b !important;
+}
+.bg-emerald-500\/10 {
+    background-color: #d1fae5 !important;
+    border-color: #a7f3d0 !important;
+}
+.bg-rose-500\/10 {
+    background-color: #fee2e2 !important;
+    border-color: #fecaca !important;
+}
+
+/* Profile specific glow overrides */
+.absolute.-right-10.-top-10.h-32.w-32.rounded-full.bg-emerald-500\/10 {
+    display: none !important;
+}
+
+/* Footer style override */
+footer {
+    background-color: #ffffff !important;
+    border-top: 1px solid #e5dac9 !important;
+    color: #7a8c80 !important;
+}
+
 /* --------------------------------------------------
    CAT ANIMATIONS (Error 403 Page)
    -------------------------------------------------- */

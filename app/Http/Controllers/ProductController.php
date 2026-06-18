@@ -29,13 +29,13 @@ class ProductController extends Controller implements HasMiddleware
     public function index()
 {
     // 1. Traemos los productos reales del negocio actual
-    $businessProfileId = auth()->user()->business_profile_id ?? 1;
+    $businessProfileId = auth()->user()->businessProfile?->id ?? 1;
     $products = Product::where('business_profile_id', $businessProfileId)->get();
 
     // 2. Calculamos los contadores dinámicos para las tarjetitas de arriba
     $totalProductos = $products->count();
-    $activos = $products->where('status', 'active')->count();
-    $inactivos = $products->where('status', 'inactive')->count();
+    $activos = $products->where('is_active', true)->count();
+    $inactivos = $products->where('is_active', false)->count();
 
     // 3. Pasamos todo a la vista de tu compañero (revisá cómo se llama su vista, ej: 'products.index')
     return view('products.index', compact('products', 'totalProductos', 'activos', 'inactivos'));
@@ -64,8 +64,8 @@ class ProductController extends Controller implements HasMiddleware
     ]);
 
     // 2. RESCATE DE INTEGRIDAD 1: ID del negocio (el que ya arreglamos antes)
-    $businessProfileId = auth()->user()->business_profile_id 
-        ?? \DB::table('business_profiles')->value('id') 
+    $businessProfileId = auth()->user()->businessProfile?->id 
+        ?? \DB::table('business_profiles')->where('user_id', auth()->id())->value('id') 
         ?? 1;
 
     // 3. RESCATE DE INTEGRIDAD 2: ID de la Categoría
@@ -167,7 +167,7 @@ class ProductController extends Controller implements HasMiddleware
 
     public function productBelongsToSeller(Product $product)
     {
-        if($product->business_profile_id === Auth::user()->businessProfile->id)
+        if($product->business_profile_id == Auth::user()->businessProfile->id)
             return true;
         else 
             return false;

@@ -31,7 +31,7 @@
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-xs font-bold text-emerald-400 tracking-wider uppercase">Materias primas</h3>
                 
-                <a href="{{ url('/ingredients/create') }}" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors duration-200 flex items-center shadow-md shadow-emerald-500/5">
+                <a href="{{ url('/ingredients/create') }}?product_id={{ $product->id ?? 1 }}" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors duration-200 flex items-center shadow-md shadow-emerald-500/5">
                     + Nuevo Ingrediente
                 </a>
             </div>
@@ -146,9 +146,9 @@
                 </table>
             </div>
 
-            <button type="button" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs py-2.5 rounded-lg transition-colors mb-6 shadow-md shadow-emerald-500/10">
+            <a href="{{ route('products.index') }}" class="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 rounded-lg transition-all duration-200 mb-6 shadow-md cursor-pointer">
                 Guardar Cambios en la Receta
-            </button>
+            </a>
 
             <div class="space-y-2.5 pt-4 border-t border-slate-800/80 text-xs tracking-wide">
     
