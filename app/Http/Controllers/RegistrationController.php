@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\BusinessProfile;
+use App\Services\GeocodingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +17,15 @@ class RegistrationController extends Controller
      */
     public function select()
     {
-        if (Auth::check()) {
-            return redirect()->route('dashboard');
-        }
         return view('register.select');
+    }
+
+    /**
+     * Show the registration hub (client vs entrepreneur).
+     */
+    public function registerHub()
+    {
+        return view('register.hub');
     }
 
     /**
@@ -51,7 +57,7 @@ class RegistrationController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
             'role' => 'client',
         ]);
 
@@ -75,7 +81,7 @@ class RegistrationController extends Controller
     /**
      * Store a new seller user and their business profile.
      */
-    public function storeSeller(Request $request)
+    public function storeSeller(Request $request, GeocodingService $geocodingService)
     {
         if (Auth::check()) {
             return redirect()->route('dashboard');
@@ -90,27 +96,31 @@ class RegistrationController extends Controller
             'business_name' => 'required|string|max:255',
             'description' => 'required|string',
             'phone' => 'required|string|max:50',
-            'logo' => 'required|url',
+            'logo' => 'nullable|url',
             'address' => 'nullable|string|max:255',
         ]);
 
-        // Wrap in transaction to ensure consistency and return user
-        $user = DB::transaction(function () use ($validated) {
+        $user = DB::transaction(function () use ($validated, $geocodingService) {
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
+                'password' => $validated['password'],
                 'role' => 'seller',
             ]);
 
-            BusinessProfile::create([
+            $profile = BusinessProfile::create([
                 'user_id' => $user->id,
                 'business_name' => $validated['business_name'],
                 'description' => $validated['description'],
                 'phone' => $validated['phone'],
-                'logo' => $validated['logo'],
+                'logo' => $validated['logo'] ?? null,
                 'address' => $validated['address'] ?? null,
             ]);
+
+            if (!blank($profile->address)) {
+                $geocodingService->syncProfileCoordinates($profile, $profile->address, null, null, true);
+                $profile->save();
+            }
 
             return $user;
         });
@@ -127,7 +137,7 @@ class RegistrationController extends Controller
     public function showLogin()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->route('dashboard')->with('info', 'Ya tenés una sesión activa. Cerrá sesión si querés ingresar con otra cuenta.');
         }
         return view('auth.login');
     }
@@ -149,7 +159,12 @@ class RegistrationController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('dashboard'))->with('success', '¡Inicio de sesión exitoso!');
+            $user = Auth::user();
+            $redirect = $user->role === 'admin'
+                ? route('admin.dashboard')
+                : route('dashboard');
+
+            return redirect()->intended($redirect)->with('success', '¡Inicio de sesión exitoso!');
         }
 
         return back()->withErrors([

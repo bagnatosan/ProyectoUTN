@@ -4,24 +4,20 @@
 
 @section('content')
 <div class="max-w-2xl mx-auto animate-fade-in">
-    <!-- Back to Selection Link -->
-    <a href="{{ route('register.select') }}" class="inline-flex items-center space-x-2 text-sm text-slate-400 hover:text-purple-400 mb-6 transition-colors duration-200">
+    <a href="{{ route('register.hub') }}" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 mb-6 transition-colors">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
-        <span>Volver a la selección de rol</span>
+        <span>Volver a opciones de registro</span>
     </a>
 
-    <!-- Registration Card -->
     <div class="relative rounded-2xl border border-slate-800 bg-slate-900/40 p-8 shadow-2xl backdrop-blur-sm">
-        <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-t-2xl"></div>
+        <div class="absolute inset-x-0 top-0 h-1 auth-accent-bar-seller rounded-t-2xl"></div>
 
         <div class="mb-8">
-            <span class="px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-purple-400 bg-purple-500/10 rounded-full border border-purple-500/20 uppercase">
-                Cuenta Emprendedor
-            </span>
-            <h1 class="text-2xl font-extrabold text-white mt-2">Registra tu Emprendimiento</h1>
-            <p class="text-xs text-slate-400 mt-1">Completa los datos de tu cuenta personal y el perfil comercial de tu negocio.</p>
+            <span class="auth-role-badge auth-role-badge-seller">Cuenta Emprendedor</span>
+            <h1 class="text-2xl font-extrabold mt-2">Registro de emprendimiento</h1>
+            <p class="text-xs text-slate-400 mt-1">Completá tus datos personales y el perfil comercial de tu negocio.</p>
         </div>
 
         <form action="{{ route('register.seller.store') }}" method="POST" class="space-y-8" id="seller-registration-form">
@@ -193,7 +189,7 @@
                     <!-- Logo URL -->
                     <div class="space-y-1.5">
                         <label for="logo" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-                            URL del Logo
+                            URL del Logo <span class="normal-case font-normal text-slate-500">(Opcional)</span>
                         </label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
@@ -205,10 +201,10 @@
                                    name="logo" 
                                    id="logo" 
                                    value="{{ old('logo') }}" 
-                                   required 
                                    placeholder="https://ejemplo.com/logo.png"
                                    class="block w-full pl-10 pr-4 py-2.5 bg-slate-950/60 border @error('logo') border-rose-500 focus:ring-rose-500 @else border-slate-800 focus:ring-purple-500 @enderror rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200">
                         </div>
+                        <p class="text-xs text-slate-500">Si no tenés uno ahora, podés subir una imagen después desde tu perfil de negocio.</p>
                         @error('logo')
                             <p class="text-rose-500 text-xs mt-1 font-medium">{{ $message }}</p>
                         @enderror
@@ -259,10 +255,15 @@
             <!-- Submit Button -->
             <button type="submit" 
                     id="btn-submit-seller-registration"
-                    class="w-full py-3 px-4 rounded-xl text-center text-sm font-semibold bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-600/20 hover:shadow-purple-500/30 transition-all duration-300 transform active:scale-[0.98]">
-                Registrar Emprendedor y Negocio
+                    class="w-full py-3 px-4 rounded-xl text-center text-sm font-semibold home-btn-peach transition-all duration-300 transform active:scale-[0.98]">
+                Registrar emprendimiento
             </button>
         </form>
+
+        <p class="text-center text-xs text-slate-400 mt-5">
+            ¿Ya tenés cuenta?
+            <a href="{{ route('login') }}" class="font-semibold hover:underline" style="color:#d88448">Iniciá sesión</a>
+        </p>
     </div>
 </div>
 @endsection

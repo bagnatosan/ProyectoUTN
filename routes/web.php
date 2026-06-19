@@ -14,15 +14,21 @@ use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\AvailabilitySlotController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MapController;
+use App\Http\Controllers\EntrepreneurContactController;
 
 // Existing Registration Select & Form Routes
 Route::get('/', [RegistrationController::class, 'select'])->name('register.select');
+
+Route::get('/register', [RegistrationController::class, 'registerHub'])->name('register.hub');
 
 Route::get('/register/client', [RegistrationController::class, 'createClient'])->name('register.client');
 Route::post('/register/client', [RegistrationController::class, 'storeClient'])->name('register.client.store');
 
 Route::get('/register/seller', [RegistrationController::class, 'createSeller'])->name('register.seller');
 Route::post('/register/seller', [RegistrationController::class, 'storeSeller'])->name('register.seller.store');
+
+Route::post('/contacto/emprendedores', [EntrepreneurContactController::class, 'store'])->name('entrepreneur.contact.store');
 
 // Existing Login Routes
 Route::get('/login', [RegistrationController::class, 'showLogin'])->name('login');
@@ -82,6 +88,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // --- Rutas Públicas (Programador 2 y 4) ---
+Route::get('/mapa', [MapController::class, 'index'])->name('map.index');
+Route::get('/mapa/emprendimientos', [MapController::class, 'markers'])->name('map.markers');
+Route::post('/mapa/geocodificar', [MapController::class, 'geocode'])->name('map.geocode');
 Route::get('/catalog/{id}', [PublicCatalogController::class, 'show'])->name('catalog.show');
 Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
 Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');

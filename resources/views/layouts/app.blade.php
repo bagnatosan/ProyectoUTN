@@ -10,6 +10,7 @@
     @vite(['resources/css/app.css'])
     <script src="{{ asset('js/app.js') }}" defer></script>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @stack('styles')
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col" style="min-height: 100%; display: flex; flex-direction: column; margin: 0;">
     
@@ -20,7 +21,7 @@
     </div>
 
     <header class="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/75 backdrop-blur-md">
-        <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="container mx-auto px-4 min-h-16 py-2 flex items-center justify-between gap-3">
             
             <a href="{{ route('register.select') }}" class="flex items-center space-x-2 group">
                 <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
@@ -33,12 +34,31 @@
                 </span>
             </a>
 
-            <nav class="flex items-center space-x-1 text-sm font-medium">
+            <div class="flex items-center gap-2 min-w-0 flex-1 justify-end">
+            <nav class="flex items-center space-x-1 text-sm font-medium overflow-x-auto min-w-0">
+
+                <a href="{{ route('map.index') }}"
+                   class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('map.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                    Mapa
+                </a>
+
+                @auth
+                    @if(auth()->user()->role === 'client')
+                        <a href="{{ route('dashboard') }}"
+                           class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') || request()->routeIs('catalog.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                            Catálogos
+                        </a>
+                    @endif
+                @endauth
                 
                 @guest
-                    <a href="{{ route('login') }}" 
+                    <a href="{{ route('login') }}"
                     class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('login') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                        Login / Registro
+                        Ingresar
+                    </a>
+                    <a href="{{ route('register.hub') }}"
+                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('register.*') && !request()->routeIs('register.select') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        Registrarse
                     </a>
                 @endguest
 
@@ -53,13 +73,13 @@
 
 
                     @if(auth()->user()->role === 'seller')
-                        <!-- SELLER autenticado -->
-                        <span class="text-slate-600 px-1">|</span>
+                        <span class="text-slate-600 px-1 shrink-0">|</span>
 
                         <a href="{{ route('dashboard') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                             Dashboard
                         </a>
+
 
                         <!-- Dropdown Catálogo: agrupa Productos, Categorías e Ingredientes -->
                         <div class="relative inline-block text-left" id="catalogo-menu-container">
@@ -89,25 +109,22 @@
                             </div>
                         </div>
 
+
                         <a href="{{ route('reservations.create') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                             Reservas
                         </a>
 
                         <a href="{{ route('availability.edit') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('availability.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('availability.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                             Horarios
-                        </a>
-
-
-                        <a href="{{ route('business_profile.edit') }}" 
-                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('business_profile.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Perfil
                         </a>
                     @endif
 
+            </nav>
+
                     <!-- User Dropdown Menu -->
-                    <div class="relative inline-block text-left ml-2" id="user-menu-container">
+                    <div class="relative shrink-0" id="user-menu-container">
                         <!-- User Profile Trigger Button -->
                         <button type="button" 
                                 class="flex items-center space-x-2 text-sm text-slate-300 bg-slate-900/60 hover:bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 cursor-pointer transition-all duration-200 focus:outline-none" 
@@ -127,7 +144,7 @@
                             </svg>
                         </button>
 
-                        <div class="absolute right-0 mt-2 w-48 origin-top-right rounded-xl border border-slate-800 bg-slate-950 p-2 shadow-2xl backdrop-blur-md transition-all duration-200 transform opacity-0 scale-95 pointer-events-none z-50" 
+                        <div class="absolute right-0 mt-2 w-52 origin-top-right rounded-xl border border-slate-800 bg-slate-950 p-2 shadow-2xl backdrop-blur-md z-[60] user-dropdown-panel" 
                              id="user-dropdown-menu">
                             <div class="px-3 py-2 border-b border-slate-900 mb-1">
                                 <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Rol de acceso</p>
@@ -138,28 +155,41 @@
                                     @endif
                                 </p>
                             </div>
-                            <form action="{{ route('logout') }}" method="POST" class="block">
+
+                            @if(auth()->user()->role === 'seller')
+                                <div class="py-1 mb-1 border-b border-slate-900">
+                                    <a href="{{ route('business_profile.edit') }}" class="nav-dropdown-link {{ request()->routeIs('business_profile.*') ? 'nav-dropdown-link-active' : '' }}">Perfil</a>
+                                </div>
+                            @endif
+
+                            @if(auth()->user()->role === 'client')
+                                <div class="py-1 mb-1 border-b border-slate-900">
+                                    <a href="{{ route('reservations.client_history') }}" class="nav-dropdown-link {{ request()->routeIs('reservations.client_history') ? 'nav-dropdown-link-active' : '' }}">Mis reservas</a>
+                                </div>
+                            @endif
+
+                            <form action="{{ route('logout') }}" method="POST" class="block pt-1">
                                 @csrf
                                 <button type="submit" 
                                         id="btn-logout"
-                                        class="w-full flex items-center space-x-2 text-left text-xs font-semibold text-slate-400 hover:text-rose-450 hover:bg-rose-500/10 p-2.5 rounded-lg transition-all duration-200 cursor-pointer">
-                                    <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        class="nav-dropdown-logout w-full flex items-center space-x-2 text-left text-xs font-semibold p-2.5 rounded-lg transition-all duration-200 cursor-pointer">
+                                    <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                                     </svg>
-                                    <span>Cerrar Sesión</span>
+                                    <span>Salir</span>
                                 </button>
                             </form>
                         </div>
                     </div>
                 @endauth
 
-            </nav>
+            </div>
         </div>
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10" style="flex-grow: 1;">
-        <div class="w-full max-w-4xl">
+    <main class="flex-grow flex @yield('main_align', 'items-center justify-center') py-12 px-4 sm:px-6 lg:px-8 relative z-10" style="flex-grow: 1;">
+        <div class="w-full @yield('content_width', 'max-w-4xl')">
             @if (session('success'))
                 <div class="mb-8 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 flex items-start space-x-3 shadow-lg shadow-emerald-500/5 animate-fade-in" id="alert-success">
                     <svg class="w-5 h-5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -168,6 +198,18 @@
                     <div>
                         <p class="font-medium text-emerald-200">¡Acción exitosa!</p>
                         <p class="text-sm mt-0.5">{{ session('success') }}</p>
+                    </div>
+                </div>
+            @endif
+
+            @if (session('info'))
+                <div class="mb-8 p-4 rounded-xl border border-indigo-500/20 bg-indigo-500/10 text-indigo-300 flex items-start space-x-3 shadow-lg animate-fade-in" id="alert-info">
+                    <svg class="w-5 h-5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                    </svg>
+                    <div>
+                        <p class="font-medium text-indigo-200">Sesión activa</p>
+                        <p class="text-sm mt-0.5">{{ session('info') }}</p>
                     </div>
                 </div>
             @endif
@@ -223,5 +265,6 @@
             }
         });
     </script>
+    @stack('scripts')
 </body>
 </html>
