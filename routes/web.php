@@ -57,29 +57,25 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/profile/update', [BusinessProfileController::class, 'update'])->name('business_profile.update');
         Route::put('/profile/password', [BusinessProfileController::class, 'updatePassword'])->name('business_profile.password');
     });
-    // --- Santiago Bagnato: Catálogo de Productos y Categorías ---
-    Route::middleware(['seller'])->group(function () {
-        Route::get('/profile/edit', [BusinessProfileController::class, 'edit'])->name('business_profile.edit');
-        Route::put('/profile/update', [BusinessProfileController::class, 'update'])->name('business_profile.update');
-    });
+
     // --- Programador 2: Catálogo de Productos y Categorías ---
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'create'])->name('categories.create');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-    Route::put('/categories/{category}' , [CategoryController::class , 'update'])->name('categories.update');
+    Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
 
     Route::resource('products', ProductController::class);
     Route::patch('/products/{product}/change-statement', [ProductController::class, 'ChangeStatement'])->name('products.change-statement'); //toggle button
 
     // --- Programador 3: Inventario de Ingredientes y Constructor de Recetas ---
     Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
-    Route::get('/products/{product}/recipe/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
-    Route::put('/products/{product}/recipe/update', [RecipeController::class, 'update'])->name('recipes.update');
-    Route::delete('/recipes/{recipe}/remove-ingredient/{ingredient}', [App\Http\Controllers\RecipeController::class, 'removeIngredient']);
-    Route::post('/recipes/{recipe}/add-ingredient', [App\Http\Controllers\RecipeController::class, 'addIngredient']);
-    
-    
-   
+    Route::get('/recipes/{product}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
+    Route::post('/recipes/{recipe}/add-ingredient', [RecipeController::class, 'addIngredient'])->name('recipes.add-ingredient');
+    Route::delete('/recipes/{recipe}/remove-ingredient/{ingredient}', [RecipeController::class, 'removeIngredient'])->name('recipes.remove-ingredient');
+    Route::get('/ingredients/{ingredient}/valid-units', [RecipeController::class, 'validUnits'])->name('ingredients.valid-units');
+
+    Route::resource('ingredients', IngredientController::class);
+
     // --- Programador 4: Disponibilidad y Reservas (Vendedor/Cliente logueado) ---
     Route::get('/availability/edit', [AvailabilitySlotController::class, 'edit'])->name('availability.edit');
     Route::put('/availability/update', [AvailabilitySlotController::class, 'update'])->name('availability.update');
@@ -90,11 +86,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/metrics', [DashboardController::class, 'index'])->name('dashboard.metrics');
 
 });
-Route::resource('ingredients', \App\Http\Controllers\IngredientController::class);
-Route::get('/recipes/{product}/edit', [\App\Http\Controllers\RecipeController::class, 'edit'])->name('recipes.edit');
-Route::put('/recipes/{product}', [\App\Http\Controllers\RecipeController::class, 'update'])->name('recipes.update');
-
- 
 
 // --- Rutas Públicas (Programador 2 y 4) ---
 Route::get('/mapa', [MapController::class, 'index'])->name('map.index');
@@ -110,4 +101,3 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::delete('/users/{user}', [App\Http\Controllers\AdminController::class, 'deleteUser'])->name('admin.users.delete');
 });
-

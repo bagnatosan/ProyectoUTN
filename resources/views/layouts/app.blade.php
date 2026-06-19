@@ -80,15 +80,35 @@
                             Dashboard
                         </a>
 
-                        <a href="{{ route('products.index') }}" 
-                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('products.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Productos
-                        </a>
 
-                        <a href="{{ route('categories.index') }}" 
-                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('categories.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Categorías
-                        </a>
+                        <!-- Dropdown Catálogo: agrupa Productos, Categorías e Ingredientes -->
+                        <div class="relative inline-block text-left" id="catalogo-menu-container">
+                            <button type="button"
+                                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1 {{ request()->routeIs('categories.*') || request()->routeIs('products.*') || request()->routeIs('ingredients.*') || request()->routeIs('recipes.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}"
+                                    id="catalogo-trigger-btn">
+                                <span>Catálogo</span>
+                                <svg class="w-3 h-3 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" id="catalogo-arrow">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </button>
+
+                            <div class="absolute left-0 mt-2 w-44 origin-top-left rounded-xl border border-slate-800 bg-slate-950 p-1.5 shadow-2xl backdrop-blur-md transition-all duration-200 transform opacity-0 scale-95 pointer-events-none z-50"
+                                 id="catalogo-dropdown-menu">
+                                <a href="{{ route('categories.index') }}"
+                                   class="block text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('categories.*') ? 'text-green-400' : '' }}">
+                                    Categorías
+                                </a>
+                                <a href="{{ route('products.index') }}"
+                                   class="block text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('products.*') ? 'text-green-400' : '' }}">
+                                    Productos
+                                </a>
+                                <a href="{{ route('ingredients.index') }}"
+                                   class="block text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('ingredients.*') ? 'text-green-400' : '' }}">
+                                    Ingredientes
+                                </a>
+                            </div>
+                        </div>
+
 
                         <a href="{{ route('reservations.create') }}" 
                         class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
@@ -218,6 +238,33 @@
         <p>&copy; {{ date('Y') }} ProyectoUTN. Todos los derechos reservados.</p>
     </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const trigger = document.getElementById('catalogo-trigger-btn');
+            const menu = document.getElementById('catalogo-dropdown-menu');
+            const arrow = document.getElementById('catalogo-arrow');
+
+            if (trigger && menu) {
+                trigger.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const isOpen = !menu.classList.contains('pointer-events-none');
+
+                    if (isOpen) {
+                        menu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                        if (arrow) arrow.classList.remove('rotate-180');
+                    } else {
+                        menu.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                        if (arrow) arrow.classList.add('rotate-180');
+                    }
+                });
+
+                document.addEventListener('click', function () {
+                    menu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                    if (arrow) arrow.classList.remove('rotate-180');
+                });
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

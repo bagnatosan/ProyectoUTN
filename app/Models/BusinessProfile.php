@@ -19,6 +19,7 @@ class BusinessProfile extends Model
         'address',
         'latitude',
         'longitude',
+        'profit_margin',
     ];
 
     // Relaciones

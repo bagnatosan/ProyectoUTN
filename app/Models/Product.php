@@ -20,8 +20,7 @@ class Product extends Model
         'estimated_cost',
         'suggested_price',
         'is_active',
-        'business_profile_id',
-        'category_id',
+        'custom_margin',
     ];
 
     protected $casts = [
@@ -52,7 +51,7 @@ class Product extends Model
     public function ingredients()
     {
         return $this->belongsToMany(Ingredient::class, 'product_ingredients')
-                    ->withPivot('quantity')
+                    ->withPivot('quantity', 'quantity_unit')
                     ->withTimestamps();
     }
 }

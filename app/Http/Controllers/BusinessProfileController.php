@@ -54,6 +54,7 @@ class BusinessProfileController extends Controller
             'latitude'      => 'nullable|numeric|between:-90,90',
             'longitude'     => 'nullable|numeric|between:-180,180',
             'logo'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'profit_margin' => 'nullable|numeric|min:1|max:50',
         ]);
 
         $user    = Auth::user();
@@ -74,6 +75,7 @@ class BusinessProfileController extends Controller
         $profile->description   = $validated['description'] ?? $profile->description;
         $profile->phone         = $validated['phone'] ?? $profile->phone;
         $profile->address       = $validated['address'] ?? null;
+        $profile->profit_margin = $validated['profit_margin'] ?? $profile->profit_margin ?? 3;
 
         $latitude = isset($validated['latitude']) ? (float) $validated['latitude'] : null;
         $longitude = isset($validated['longitude']) ? (float) $validated['longitude'] : null;

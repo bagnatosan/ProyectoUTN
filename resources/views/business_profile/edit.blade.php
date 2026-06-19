@@ -115,6 +115,25 @@
                     </div>
 
                     <div class="profile-section-divider">
+                        <span class="profile-section-label">Costos</span>
+                    </div>
+
+                    <div class="profile-field">
+                        <label for="profit_margin" class="profile-label">Margen de ganancia general</label>
+                        <div class="flex flex-col sm:flex-row sm:items-start gap-3">
+                            <input type="number" name="profit_margin" id="profit_margin" step="0.1" min="1" max="50"
+                                value="{{ old('profit_margin', $profile->profit_margin ?? 3) }}"
+                                class="profile-input w-full sm:w-28 @error('profit_margin') profile-input-error @enderror">
+                            <p class="profile-field-hint sm:pt-2">
+                                Multiplicador sobre el costo (ej: 3 = 300%). Se usa como margen por defecto en todos tus productos, salvo que definas uno personalizado en un producto puntual.
+                            </p>
+                        </div>
+                        @error('profit_margin')
+                            <p class="profile-field-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="profile-section-divider">
                         <span class="profile-section-label">Ubicación</span>
                     </div>
 
