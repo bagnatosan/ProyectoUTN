@@ -9,7 +9,7 @@
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
-        <span>Volver a la selección de rol</span>
+        <span>Volver al inicio</span>
     </a>
 
     <!-- Registration Card -->
