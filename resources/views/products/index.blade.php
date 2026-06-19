@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Mis Productos | ProyectoUTN')
+@section('title', 'Mis Productos')
 
 @section('content')
 @php
