@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Helpers\UnitConverter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -113,6 +114,7 @@ class ProductController extends Controller implements HasMiddleware
             'price' => $request->price,
             'image' => $this->ImagePath($request), //2mb
             'is_active' => $request->is_active,
+            'custom_margin' => $request->filled('custom_margin') ? $request->custom_margin : null,
         ];
 
         if($request->hasFile('image')) 
@@ -120,7 +122,26 @@ class ProductController extends Controller implements HasMiddleware
 
         $product->update($data);
 
+        // El margen pudo haber cambiado: recalculamos el precio sugerido con el costo ya guardado
+        $this->recalculateSuggestedPrice($product);
+
         return redirect()->route('products.index')->with('success', 'Producto actualizado con éxito.');
+    }
+
+    /**
+     * Recalcula el precio sugerido de un producto usando su costo estimado ya guardado
+     * y el margen vigente (personalizado del producto, o el general del negocio).
+     */
+    private function recalculateSuggestedPrice(Product $product)
+    {
+        $product->refresh()->loadMissing('businessProfile');
+
+        $margin = $product->custom_margin
+            ?? $product->businessProfile?->profit_margin
+            ?? 3;
+
+        $product->suggested_price = ($product->estimated_cost ?? 0) * $margin;
+        $product->save();
     }
 
     /**
@@ -182,6 +203,7 @@ class ProductController extends Controller implements HasMiddleware
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:2048', //2mb
             'is_active' => 'required|boolean',
+            'custom_margin' => 'nullable|numeric|min:1|max:50',
         ];
 
         return $data;

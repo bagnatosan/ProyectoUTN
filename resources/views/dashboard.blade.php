@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', auth()->user()->role === 'client' ? 'Catálogos Disponibles | ProyectoUTN' : 'Panel de Control | ProyectoUTN')
+@section('title', auth()->user()->role === 'client' ? 'Catálogos Disponibles' : 'Panel de Control')
 
 @section('content')
 @if(auth()->user()->role === 'client')

@@ -4,27 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 
 class IngredientController extends Controller
 {
     /**
-     * Muestra el panel unificado de costos e ingredientes.
+     * Muestra el catálogo de materias primas del vendedor logueado.
      */
     public function index()
     {
-        // 1. Traemos todos los ingredientes reales
-        $ingredients = Ingredient::all();
+        $businessProfileId = auth()->user()->businessProfile?->id;
 
-        // 2. Traemos el CSS global para mantener el modo oscuro global
-        $cssPath = resource_path('css/app.css');
-        $estilosAmigo = '';
-        if (File::exists($cssPath)) {
-            $estilosAmigo = File::get($cssPath);
-        }
+        $ingredients = Ingredient::where('business_profile_id', $businessProfileId)
+            ->orderBy('name')
+            ->get();
 
-        // Retornamos TU vista espectacular
-        return view('costos', compact('ingredients', 'estilosAmigo'));
+        return view('ingredients.index', compact('ingredients'));
+    }
+
+    /**
+     * Muestra el formulario para crear un ingrediente nuevo.
+     */
+    public function create()
+    {
+        return view('ingredients.create');
     }
 
     /**
@@ -33,82 +35,86 @@ class IngredientController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name'         => 'required|string|max:255',
             'unit_measure' => 'required|string|max:50',
-            'unit_cost' => 'required|numeric|min:0',
+            'unit_cost'    => 'required|numeric|min:0',
         ]);
 
-        // 💡 SOLUCIÓN: Buscamos el ID del negocio del usuario logueado.
-        // Si no hay nadie logueado (porque estamos testeando), le clavamos el ID 1 por defecto.
-        $validated['business_profile_id'] = auth()->user()->businessProfile?->id ?? 1;
+        $businessProfileId = auth()->user()->businessProfile?->id;
 
-        \App\Models\Ingredient::create($validated);
-
-        // Redirecciona de vuelta a la receta correspondiente si existe el parámetro
-        $productId = $request->input('product_id');
-        if ($productId) {
-            return redirect()->route('recipes.edit', $productId)->with('success', '¡Ingrediente guardado con éxito!');
+        if (!$businessProfileId) {
+            return redirect()->back()->with('error', 'No se encontró un perfil de negocio asociado a tu cuenta.');
         }
-        return redirect()->route('products.index')->with('success', '¡Ingrediente guardado con éxito!');
+
+        $validated['business_profile_id'] = $businessProfileId;
+
+        Ingredient::create($validated);
+
+        // Si vino un redirect_to (ej: desde el modal del módulo de costos), volvemos ahí
+        if ($request->filled('redirect_to')) {
+            return redirect($request->input('redirect_to'))
+                ->with('success', '¡Ingrediente guardado con éxito!');
+        }
+
+        return redirect()->route('ingredients.index')->with('success', '¡Ingrediente guardado con éxito!');
     }
 
     /**
-     * Actualiza el costo o los datos de un ingrediente.
-     * Al ejecutarse esto, los Observers de tu amiga recalculan los productos automáticamente.
+     * Muestra el formulario de edición de un ingrediente.
+     */
+    public function edit($id)
+    {
+        $ingredient = Ingredient::findOrFail($id);
+        $this->authorizeOwnership($ingredient);
+
+        return view('ingredients.edit', compact('ingredient'));
+    }
+
+    /**
+     * Actualiza los datos de un ingrediente existente.
      */
     public function update(Request $request, Ingredient $ingredient)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'unit_measure' => 'required|string|max:50',
-            'unit_cost' => 'required|numeric|min:0',
-        ]);
+        $this->authorizeOwnership($ingredient);
 
-        // Aseguramos que mantenga el perfil si no estaba seteado
-        if (!$ingredient->business_profile_id) {
-            $validated['business_profile_id'] = auth()->user()->businessProfile?->id ?? 1;
-        }
+        $validated = $request->validate([
+            'name'         => 'required|string|max:255',
+            'unit_measure' => 'required|string|max:50',
+            'unit_cost'    => 'required|numeric|min:0',
+        ]);
 
         $ingredient->update($validated);
 
-        //return redirect()->route('ingredients.index')->with('success', '¡Materia prima actualizada y costos recalculados!');
-        return redirect()->back()->with('success', 'Materia prima agregada correctamente.');
+        return redirect()->route('ingredients.index')
+            ->with('success', 'Materia prima actualizada correctamente.');
     }
 
-    // 1. Para mostrar el formulario de "+ Nuevo Ingrediente"
-    public function create()
-    {
-        return view('ingredients.create'); 
-        // Nota: Asegurate de tener el archivo resources/views/ingredients/create.blade.php creado
-    }
-
-    // 2. Para mostrar el formulario de "✏️ Editar"
-    public function edit($id)
-    {
-        $ingredient = \App\Models\Ingredient::findOrFail($id);
-        return view('ingredients.edit', compact('ingredient'));
-        // Nota: Asegurate de tener el archivo resources/views/ingredients/edit.blade.php creado
-    }
-
-  
-public function show($id)
-{
-    // Si entran acá por un F5, los redirigimos suavemente de vuelta al panel de costos
-    return redirect('/recipes/2/edit')->with('info', 'Página recargada con éxito.');
-}
-
+    /**
+     * Elimina un ingrediente del catálogo.
+     */
     public function destroy($ingredient)
-{
-    
-    $id = is_object($ingredient) ? $ingredient->id : $ingredient;
+    {
+        $id = is_object($ingredient) ? $ingredient->id : $ingredient;
+        $materiaPrima = Ingredient::findOrFail($id);
 
-    // 2. Buscamos el ingrediente de forma segura en SQLite
-    $materiaPrima = \App\Models\Ingredient::findOrFail($id);
-    
-    // 3. Lo borramos de la base de datos
-    $materiaPrima->delete();
+        $this->authorizeOwnership($materiaPrima);
 
-    // 4. Volvemos al panel de costos con la receta activa actual (ej: la número 2)
-    return redirect()->back()->with('success', '¡Materia prima eliminada por completo!');
-}
+        $materiaPrima->delete();
+
+        return redirect()->route('ingredients.index')
+            ->with('success', '¡Materia prima eliminada correctamente!');
+    }
+
+    /**
+     * Verifica que el ingrediente pertenezca al negocio del usuario logueado.
+     * Evita que un vendedor edite o borre ingredientes de otro.
+     */
+    private function authorizeOwnership(Ingredient $ingredient): void
+    {
+        $businessProfileId = auth()->user()->businessProfile?->id;
+
+        if ($ingredient->business_profile_id !== $businessProfileId) {
+            abort(403, 'No tenés permiso para modificar este ingrediente.');
+        }
+    }
 }
