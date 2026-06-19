@@ -4,24 +4,21 @@
 
 @section('content')
 <div class="max-w-md mx-auto">
-    <!-- Back to Selection Link -->
-    <a href="{{ route('register.select') }}" class="inline-flex items-center space-x-2 text-sm text-slate-400 hover:text-indigo-400 mb-6 transition-colors duration-200">
+    <a href="{{ route('register.hub') }}" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 mb-6 transition-colors">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
-        <span>Volver al inicio</span>
+        <span>Volver a opciones de registro</span>
     </a>
 
     <!-- Registration Card -->
     <div class="relative rounded-2xl border border-slate-800 bg-slate-900/40 p-8 shadow-2xl backdrop-blur-sm">
-        <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-t-2xl"></div>
+        <div class="absolute inset-x-0 top-0 h-1 auth-accent-bar-client rounded-t-2xl"></div>
 
         <div class="mb-8">
-            <span class="px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-indigo-400 bg-indigo-500/10 rounded-full border border-indigo-500/20 uppercase">
-                Cuenta Cliente
-            </span>
-            <h1 class="text-2xl font-extrabold text-white mt-2">Crear cuenta nueva</h1>
-            <p class="text-xs text-slate-400 mt-1">Completa los datos a continuación para registrarte como cliente.</p>
+            <span class="auth-role-badge auth-role-badge-client">Cuenta Cliente</span>
+            <h1 class="text-2xl font-extrabold mt-2">Registro de cliente</h1>
+            <p class="text-xs text-slate-400 mt-1">Completá tus datos para explorar emprendimientos y reservar.</p>
         </div>
 
         <form action="{{ route('register.client.store') }}" method="POST" class="space-y-6" id="client-registration-form">
@@ -125,10 +122,15 @@
             <!-- Submit Button -->
             <button type="submit" 
                     id="btn-submit-client-registration"
-                    class="w-full py-3 px-4 rounded-xl text-center text-sm font-semibold bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-cyan-500 text-white shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 transition-all duration-300 transform active:scale-[0.98]">
+                    class="w-full py-3 px-4 rounded-xl text-center text-sm font-semibold auth-role-btn auth-role-btn-client transition-all duration-300 transform active:scale-[0.98]">
                 Crear mi cuenta
             </button>
         </form>
+
+        <p class="text-center text-xs text-slate-400 mt-5">
+            ¿Ya tenés cuenta?
+            <a href="{{ route('login') }}" class="text-indigo-400 font-semibold hover:underline">Iniciá sesión</a>
+        </p>
     </div>
 </div>
 @endsection

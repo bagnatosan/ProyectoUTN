@@ -114,6 +114,33 @@ class RegistrationTest extends TestCase
     }
 
     /**
+     * Test seller registration works without a logo.
+     */
+    public function test_seller_registration_works_without_logo(): void
+    {
+        $response = $this->post('/register/seller', [
+            'name' => 'Seller Sin Logo',
+            'email' => 'seller-sin-logo@test.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'business_name' => 'Negocio Sin Logo',
+            'description' => 'Descripción del negocio',
+            'phone' => '+5491122334455',
+        ]);
+
+        $response->assertRedirect(route('dashboard'));
+
+        $user = User::where('email', 'seller-sin-logo@test.com')->first();
+        $this->assertNotNull($user);
+
+        $this->assertDatabaseHas('business_profiles', [
+            'user_id' => $user->id,
+            'business_name' => 'Negocio Sin Logo',
+            'logo' => null,
+        ]);
+    }
+
+    /**
      * Test guests are redirected from dashboard to role selection.
      */
     public function test_guest_redirected_from_dashboard(): void
@@ -199,8 +226,8 @@ class RegistrationTest extends TestCase
     {
         $response = $this->get('/login');
         $response->assertStatus(200);
-        $response->assertSee('Ingresar a tu Cuenta');
-        $response->assertSee('Iniciar Sesión');
+        $response->assertSee('Iniciar sesión');
+        $response->assertSee('Ingresar');
     }
 
     /**

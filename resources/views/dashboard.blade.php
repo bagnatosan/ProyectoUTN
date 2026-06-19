@@ -174,6 +174,12 @@ document.addEventListener('DOMContentLoaded', function() {
         Este es tu panel de control. Has ingresado correctamente en la plataforma y tu sesión se encuentra activa.
     </p>
 
+    @if(auth()->user()->role === 'seller')
+        <p class="text-xs text-slate-500 mt-3 max-w-md mx-auto">
+            ¿Querés explorar como cliente? Usá <strong>Salir</strong> en la navbar y registrate o ingresá con una cuenta cliente.
+        </p>
+    @endif
+
     <!-- Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-12 max-w-lg mx-auto">
         @if(auth()->user()->role === 'admin')

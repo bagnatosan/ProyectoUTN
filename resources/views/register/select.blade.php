@@ -25,13 +25,17 @@
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8 animate-fade-in-up animate-delay-3">
-            <a href="#registro-cliente"
+            <a href="{{ route('register.client') }}"
                class="inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-cyan-500 text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 transform hover:scale-[1.02]">
                 Soy cliente
             </a>
+            <a href="{{ route('map.index') }}"
+               class="inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold bg-slate-900/40 border border-slate-800 transition-all duration-300 transform hover:scale-[1.02]">
+                Ver mapa
+            </a>
             <a href="#para-emprendedores"
                class="home-btn-outline-peach inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 transform hover:scale-[1.02]">
-                Tengo un emprendimiento
+                Soy emprendedor
             </a>
         </div>
 
@@ -72,91 +76,46 @@
     </section>
 
     {{-- Para clientes --}}
-    <section id="registro-cliente" class="relative z-10 scroll-mt-24">
-        <div class="text-center mb-10 home-scroll-reveal">
-            <span class="px-3 py-1 text-xs font-semibold tracking-wider text-indigo-400 bg-indigo-500/10 rounded-full border border-indigo-500/20 uppercase">
-                Para clientes
-            </span>
-            <h2 class="text-2xl md:text-3xl font-extrabold mt-4">Tu próxima reserva, a un clic</h2>
-            <p class="text-slate-400 mt-2 max-w-xl mx-auto text-sm md:text-base">
-                Descubrí emprendimientos de tu zona, mirá disponibilidad y reservá sin llamadas ni mensajes.
-            </p>
-        </div>
+    <section id="clientes" class="relative z-10 scroll-mt-24">
+        <div class="rounded-3xl border border-slate-800 bg-slate-900/40 p-8 md:p-12 overflow-hidden relative">
+            <div class="absolute top-0 left-0 w-64 h-64 rounded-full opacity-30 pointer-events-none" style="background: radial-gradient(circle, rgba(45,106,79,0.2) 0%, transparent 70%);"></div>
 
-        <div class="grid md:grid-cols-3 gap-6 mb-12">
-            @foreach ([
-                ['1', 'Explorá', 'Navegá catálogos de negocios locales y encontrá lo que necesitás.', 'home-scroll-reveal-delay-1'],
-                ['2', 'Elegí', 'Seleccioná producto o turno según la disponibilidad publicada.', 'home-scroll-reveal-delay-2'],
-                ['3', 'Reservá', 'Confirmá tu reserva y recibí la confirmación al instante.', 'home-scroll-reveal-delay-3'],
-            ] as $step)
-                <div class="home-step-card home-scroll-reveal {{ $step[3] }} rounded-2xl border border-slate-800 bg-slate-900/40 p-6 transition-all duration-300">
-                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-sm font-bold text-indigo-400">
-                        {{ $step[0] }}
-                    </span>
-                    <h3 class="text-lg font-bold mt-4">{{ $step[1] }}</h3>
-                    <p class="text-sm text-slate-400 mt-2">{{ $step[2] }}</p>
-                </div>
-            @endforeach
-        </div>
-
-        <div class="max-w-md mx-auto home-scroll-reveal @if($errors->any()) animate-shake @endif" id="home-client-form">
-            <div class="relative rounded-2xl border border-slate-800 bg-slate-900/40 p-8 shadow-2xl">
-                <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-t-2xl"></div>
-
-                <div class="mb-8 text-center">
-                    <span class="px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-indigo-400 bg-indigo-500/10 rounded-full border border-indigo-500/20 uppercase">
-                        Cuenta Cliente
-                    </span>
-                    <h3 class="text-2xl font-extrabold mt-2">Creá tu cuenta gratis</h3>
-                    <p class="text-xs text-slate-400 mt-1">En menos de un minuto tenés acceso a catálogos y reservas.</p>
-                </div>
-
-                <form action="{{ route('register.client.store') }}" method="POST" class="space-y-5" id="client-registration-form">
-                    @csrf
-
-                    <div class="space-y-1.5">
-                        <label for="name" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Nombre completo</label>
-                        <input type="text" name="name" id="name" value="{{ old('name') }}" required autocomplete="name" placeholder="Ej. Juan Pérez"
-                               class="block w-full px-4 py-3 bg-slate-950/60 border @error('name') border-rose-500 @else border-slate-800 @enderror rounded-xl text-sm">
-                        @error('name')
-                            <p class="text-rose-500 text-xs mt-1 font-medium">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Correo electrónico</label>
-                        <input type="email" name="email" id="email" value="{{ old('email') }}" required autocomplete="email" placeholder="ejemplo@correo.com"
-                               class="block w-full px-4 py-3 bg-slate-950/60 border @error('email') border-rose-500 @else border-slate-800 @enderror rounded-xl text-sm">
-                        @error('email')
-                            <p class="text-rose-500 text-xs mt-1 font-medium">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Contraseña</label>
-                        <input type="password" name="password" id="password" required autocomplete="new-password" placeholder="••••••••"
-                               class="block w-full px-4 py-3 bg-slate-950/60 border @error('password') border-rose-500 @else border-slate-800 @enderror rounded-xl text-sm">
-                        @error('password')
-                            <p class="text-rose-500 text-xs mt-1 font-medium">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label for="password_confirmation" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Confirmar contraseña</label>
-                        <input type="password" name="password_confirmation" id="password_confirmation" required autocomplete="new-password" placeholder="••••••••"
-                               class="block w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm">
-                    </div>
-
-                    <button type="submit" id="btn-submit-client-registration"
-                            class="w-full py-3 px-4 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-600 to-indigo-500 transition-all duration-300 transform active:scale-[0.98]">
-                        Crear mi cuenta
-                    </button>
-                </form>
-
-                <p class="text-center text-xs text-slate-400 mt-5">
-                    ¿Ya tenés cuenta?
-                    <a href="{{ route('login') }}" class="text-indigo-400 font-semibold hover:underline">Iniciá sesión</a>
+            <div class="relative z-10 text-center mb-10 home-scroll-reveal">
+                <span class="px-3 py-1 text-xs font-semibold tracking-wider text-indigo-400 bg-indigo-500/10 rounded-full border border-indigo-500/20 uppercase">
+                    Para clientes
+                </span>
+                <h2 class="text-2xl md:text-3xl font-extrabold mt-4">Tu próxima reserva, a un clic</h2>
+                <p class="text-slate-400 mt-2 max-w-xl mx-auto text-sm md:text-base">
+                    Descubrí emprendimientos de tu zona, mirá disponibilidad y reservá sin llamadas ni mensajes.
                 </p>
+            </div>
+
+            <div class="relative z-10 grid md:grid-cols-3 gap-6 mb-10">
+                @foreach ([
+                    ['1', 'Explorá', 'Navegá catálogos de negocios locales y encontrá lo que necesitás.', 'home-scroll-reveal-delay-1'],
+                    ['2', 'Elegí', 'Seleccioná producto o turno según la disponibilidad publicada.', 'home-scroll-reveal-delay-2'],
+                    ['3', 'Reservá', 'Confirmá tu reserva y recibí la confirmación al instante.', 'home-scroll-reveal-delay-3'],
+                ] as $step)
+                    <div class="home-step-card home-scroll-reveal {{ $step[3] }} rounded-2xl border border-slate-800 bg-slate-950/60 p-6 transition-all duration-300">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-sm font-bold text-indigo-400">
+                            {{ $step[0] }}
+                        </span>
+                        <h3 class="text-lg font-bold mt-4">{{ $step[1] }}</h3>
+                        <p class="text-sm text-slate-400 mt-2">{{ $step[2] }}</p>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="relative z-10 text-center home-scroll-reveal pt-8 border-t border-slate-800">
+                <p class="text-sm text-slate-400 mb-5">Creá tu cuenta gratis y empezá a explorar emprendimientos locales.</p>
+                <div class="home-cta-actions">
+                    <a href="{{ route('register.client') }}" class="auth-role-btn auth-role-btn-client auth-role-btn-inline">
+                        Registrarme
+                    </a>
+                    <a href="{{ route('login') }}" class="auth-role-btn-outline auth-role-btn-outline-client auth-role-btn-inline">
+                        Iniciar sesión
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -213,13 +172,19 @@
                 @endforeach
             </div>
 
-            <div class="text-center home-scroll-reveal">
-                <a href="{{ route('register.seller') }}"
-                   id="btn-select-seller"
-                   class="home-btn-peach inline-flex items-center justify-center px-8 py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 transform hover:scale-[1.02]">
-                    Registrar mi emprendimiento
-                </a>
-                <p class="text-xs text-slate-400 mt-3">Configuración inicial en pocos minutos</p>
+            <div class="text-center home-scroll-reveal pt-4 border-t border-slate-800">
+                <p class="text-sm text-slate-400 mb-5">¿Listo para publicar tu negocio?</p>
+                <div class="home-cta-actions">
+                    <a href="{{ route('register.seller') }}"
+                       id="btn-select-seller"
+                       class="home-btn-peach auth-role-btn-inline inline-flex items-center justify-center px-8 py-3 rounded-xl text-sm font-semibold transition-all duration-300">
+                        Registrar mi emprendimiento
+                    </a>
+                </div>
+                <p class="text-xs text-slate-400 mt-4">
+                    ¿Tenés dudas antes de registrarte?
+                    <a href="#contacto-emprendedores" class="font-semibold hover:underline" style="color:#d88448">Escribinos</a>
+                </p>
             </div>
         </div>
     </section>
@@ -283,25 +248,105 @@
     </section>
 
     {{-- Footer CTA --}}
-    <section class="relative z-10 text-center pb-4 home-scroll-reveal">
+    <section class="relative z-10 text-center home-scroll-reveal">
         <h2 class="text-lg font-bold mb-4">¿Listo para empezar?</h2>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a href="#registro-cliente" class="inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-600 to-indigo-500 transition-all duration-300">
-                Crear cuenta cliente
+            <a href="{{ route('register.client') }}" class="inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-600 to-indigo-500 transition-all duration-300">
+                Registrarme como cliente
             </a>
             <a href="{{ route('register.seller') }}" class="home-btn-peach inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300">
                 Registrar emprendimiento
             </a>
+            <a href="{{ route('register.hub') }}" class="auth-role-btn-outline auth-role-btn-outline-neutral">
+                Ver opciones de registro
+            </a>
+        </div>
+    </section>
+
+    {{-- Contacto emprendedores (final de página) --}}
+    <section id="contacto-emprendedores" class="relative z-10 scroll-mt-24 home-scroll-reveal pb-4">
+        <div class="rounded-3xl border border-slate-800 bg-slate-900/40 p-8 md:p-12 overflow-hidden relative">
+            <div class="absolute top-0 right-0 w-64 h-64 rounded-full opacity-30 pointer-events-none" style="background: radial-gradient(circle, rgba(233,157,98,0.25) 0%, transparent 70%);"></div>
+
+            <div class="relative z-10 text-center mb-8">
+                <span class="px-3 py-1 text-xs font-semibold tracking-wider rounded-full border uppercase" style="color: #d88448; background: #fff7f0; border-color: #e99d62;">
+                    Contacto emprendedores
+                </span>
+                <h2 class="text-2xl md:text-3xl font-extrabold mt-4">¿Querés sumarte o tenés consultas?</h2>
+                <p class="text-slate-400 mt-2 max-w-xl mx-auto text-sm md:text-base">
+                    Escribinos y te ayudamos a publicar tu emprendimiento en la plataforma.
+                </p>
+            </div>
+
+            @if (session('contact_success'))
+                <div class="max-w-xl mx-auto mb-6 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 text-sm">
+                    {{ session('contact_success') }}
+                </div>
+            @endif
+
+            <div class="max-w-xl mx-auto">
+                <form action="{{ route('entrepreneur.contact.store') }}" method="POST" class="space-y-4 rounded-2xl border border-slate-800 bg-slate-950/60 p-6 @if($errors->has('business_name') || $errors->has('contact_name') || $errors->has('email') || $errors->has('message')) animate-shake @endif">
+                    @csrf
+
+                    @if ($errors->has('business_name') || $errors->has('contact_name') || $errors->has('email') || $errors->has('phone') || $errors->has('message'))
+                        <div class="p-3 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-300 text-sm">
+                            <ul class="list-disc list-inside space-y-1">
+                                @foreach (['business_name', 'contact_name', 'email', 'phone', 'message'] as $field)
+                                    @error($field)
+                                        <li>{{ $message }}</li>
+                                    @enderror
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label for="contact_business_name" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Nombre del negocio</label>
+                            <input type="text" name="business_name" id="contact_business_name" value="{{ old('business_name') }}" required
+                                   class="block w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label for="contact_name" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Tu nombre</label>
+                            <input type="text" name="contact_name" id="contact_name" value="{{ old('contact_name') }}" required
+                                   class="block w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label for="contact_email" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Email</label>
+                            <input type="email" name="email" id="contact_email" value="{{ old('email') }}" required
+                                   class="block w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label for="contact_phone" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Teléfono (opcional)</label>
+                            <input type="text" name="phone" id="contact_phone" value="{{ old('phone') }}"
+                                   class="block w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="contact_message" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Mensaje</label>
+                        <textarea name="message" id="contact_message" rows="4" required placeholder="Contanos sobre tu emprendimiento o tu consulta..."
+                                  class="block w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm resize-none">{{ old('message') }}</textarea>
+                    </div>
+
+                    <button type="submit" class="home-btn-peach w-full py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300">
+                        Enviar consulta
+                    </button>
+                </form>
+            </div>
         </div>
     </section>
 </div>
 
-@if($errors->any())
+@if(session('contact_success') || ($errors->has('business_name') || $errors->has('message')))
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var form = document.getElementById('home-client-form');
-        if (form) {
-            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var target = document.getElementById('contacto-emprendedores');
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     });
 </script>
@@ -309,6 +354,23 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        function revealInViewport() {
+            document.querySelectorAll('.home-scroll-reveal:not(.is-visible)').forEach(function (el) {
+                var rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    el.classList.add('is-visible');
+                }
+            });
+        }
+
+        function revealWithin(target) {
+            if (!target) return;
+            target.classList.add('is-visible');
+            target.querySelectorAll('.home-scroll-reveal').forEach(function (el) {
+                el.classList.add('is-visible');
+            });
+        }
+
         document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
             anchor.addEventListener('click', function (e) {
                 var targetId = this.getAttribute('href');
@@ -316,12 +378,15 @@
                 var target = document.querySelector(targetId);
                 if (target) {
                     e.preventDefault();
+                    revealWithin(target);
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
         });
 
-        var revealElements = document.querySelectorAll('.home-scroll-reveal');
+        revealInViewport();
+
+        var revealElements = document.querySelectorAll('.home-scroll-reveal:not(.is-visible)');
         if ('IntersectionObserver' in window && revealElements.length) {
             var observer = new IntersectionObserver(function (entries) {
                 entries.forEach(function (entry) {
@@ -330,10 +395,17 @@
                         observer.unobserve(entry.target);
                     }
                 });
-            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+            }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
             revealElements.forEach(function (el) { observer.observe(el); });
         } else {
             revealElements.forEach(function (el) { el.classList.add('is-visible'); });
+        }
+
+        if (window.location.hash) {
+            var hashTarget = document.querySelector(window.location.hash);
+            if (hashTarget) {
+                revealWithin(hashTarget);
+            }
         }
     });
 </script>
