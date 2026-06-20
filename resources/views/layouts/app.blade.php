@@ -190,7 +190,7 @@
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-grow flex @yield('main_align', 'items-center justify-center') py-12 px-4 sm:px-6 lg:px-8 relative z-10" style="flex-grow: 1;">
+    <main class="min-h-screen bg-slate-950 w-full flex flex-col items-center justify-start">
         <div class="w-full @yield('content_width', 'max-w-4xl')">
             @if (session('success'))
                 <div class="mb-8 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 flex items-start space-x-3 shadow-lg shadow-emerald-500/5 animate-fade-in" id="alert-success">
