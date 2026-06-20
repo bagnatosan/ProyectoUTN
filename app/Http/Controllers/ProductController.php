@@ -108,17 +108,17 @@ class ProductController extends Controller implements HasMiddleware
         $request->validate($this->DataValidation());
 
         $data = [
-            'name' => $request->name,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'image' => $this->ImagePath($request), //2mb
-            'is_active' => $request->is_active,
-            'custom_margin' => $request->filled('custom_margin') ? $request->custom_margin : null,
-        ];
+                'name' => $request->name,
+                'description' => $request->description,
+                'category_id' => $request->category_id,
+                'price' => $request->price,
+                'is_active' => $request->is_active,
+                'custom_margin' => $request->filled('custom_margin') ? $request->custom_margin : null,
+            ];
 
-        if($request->hasFile('image')) 
-            $data['image'] = $this->ImagePath($request);
+        if($request->hasFile('image')) {
+                $data['image'] = $this->ImagePath($request);
+            }
 
         $product->update($data);
 
@@ -197,8 +197,8 @@ class ProductController extends Controller implements HasMiddleware
     public function DataValidation()
     {
         $data = [
-            'name' => 'required|string|max:30',
-            'description' => 'nullable|string|max:50',
+            'name' => 'required|string|max:100',
+            'description' => 'nullable|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:2048', //2mb
