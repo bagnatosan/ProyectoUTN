@@ -146,7 +146,7 @@
                             </svg>
                         </button>
 
-                        <div class="absolute right-0 mt-2 w-52 origin-top-right rounded-xl border border-slate-800 bg-slate-950 p-2 shadow-2xl backdrop-blur-md z-[60] user-dropdown-panel" 
+                        <div class="absolute right-0 mt-2 w-52 origin-top-right rounded-xl border border-slate-800 bg-slate-950 p-2 shadow-2xl backdrop-blur-md transition-all duration-200 transform opacity-0 scale-95 pointer-events-none z-[60] user-dropdown-panel" 
                              id="user-dropdown-menu">
                             <div class="px-3 py-2 border-b border-slate-900 mb-1">
                                 <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Rol de acceso</p>
@@ -242,11 +242,42 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const trigger = document.getElementById('catalogo-trigger-btn');
-            const menu = document.getElementById('catalogo-dropdown-menu');
-            const arrow = document.getElementById('catalogo-arrow');
 
-            if (trigger && menu) {
+            // Dropdown de USUARIO: usa la clase 'is-open' (CSS custom del tema claro)
+            function setupDropdownIsOpen(triggerId, menuId, arrowId) {
+                const trigger = document.getElementById(triggerId);
+                const menu = document.getElementById(menuId);
+                const arrow = arrowId ? document.getElementById(arrowId) : null;
+
+                if (!trigger || !menu) return;
+
+                trigger.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const isOpen = menu.classList.contains('is-open');
+
+                    if (isOpen) {
+                        menu.classList.remove('is-open');
+                        if (arrow) arrow.classList.remove('is-open');
+                    } else {
+                        menu.classList.add('is-open');
+                        if (arrow) arrow.classList.add('is-open');
+                    }
+                });
+
+                document.addEventListener('click', function () {
+                    menu.classList.remove('is-open');
+                    if (arrow) arrow.classList.remove('is-open');
+                });
+            }
+
+            // Dropdown de CATÁLOGO: usa las clases de Tailwind (opacity-0/scale-95/pointer-events-none)
+            function setupDropdownTailwind(triggerId, menuId, arrowId) {
+                const trigger = document.getElementById(triggerId);
+                const menu = document.getElementById(menuId);
+                const arrow = arrowId ? document.getElementById(arrowId) : null;
+
+                if (!trigger || !menu) return;
+
                 trigger.addEventListener('click', function (e) {
                     e.stopPropagation();
                     const isOpen = !menu.classList.contains('pointer-events-none');
@@ -265,6 +296,10 @@
                     if (arrow) arrow.classList.remove('rotate-180');
                 });
             }
+
+            setupDropdownTailwind('catalogo-trigger-btn', 'catalogo-dropdown-menu', 'catalogo-arrow');
+            setupDropdownIsOpen('nav-user-display-btn', 'user-dropdown-menu', 'nav-user-arrow');
+
         });
     </script>
     @stack('scripts')
