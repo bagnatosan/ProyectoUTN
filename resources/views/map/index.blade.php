@@ -3,7 +3,7 @@
 @section('title', 'Mapa de Emprendimientos | ProyectoUTN')
 
 @section('main_align', 'items-start')
-@section('content_width', 'max-w-6xl')
+@section('content_width', 'max-w-6xl mx-auto')
 
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">

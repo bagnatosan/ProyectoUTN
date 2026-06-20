@@ -3,7 +3,7 @@
 @section('title', 'ProyectoUTN | Reservas y Emprendimientos Locales')
 
 @section('main_align', 'items-start')
-@section('content_width', 'max-w-6xl')
+@section('content_width', 'max-w-6xl mx-auto')
 
 @section('content')
 <div class="relative space-y-24 md:space-y-32">
