@@ -7,7 +7,7 @@
 
     <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-5">
         <div>
-            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Módulo de costos</h2>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white">"¿Cuánto te cuesta producir?"</h2>
             <p class="text-slate-400 text-xs sm:text-sm mt-0.5">Calculá el costo real de tus productos y tu margen de ganancia</p>
         </div>
 

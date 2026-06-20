@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class RegistrationController extends Controller
 {
@@ -96,11 +97,17 @@ class RegistrationController extends Controller
             'business_name' => 'required|string|max:255',
             'description' => 'required|string',
             'phone' => 'required|string|max:50',
-            'logo' => 'nullable|url',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'address' => 'nullable|string|max:255',
         ]);
 
-        $user = DB::transaction(function () use ($validated, $geocodingService) {
+        // El logo se sube ANTES de la transacción, así si falla el guardado en DB
+        // no nos quedamos con un archivo huérfano en el storage.
+        $logoPath = $request->hasFile('logo')
+            ? $request->file('logo')->store('logos', 'public')
+            : null;
+
+        $user = DB::transaction(function () use ($validated, $geocodingService, $logoPath) {
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
@@ -113,7 +120,7 @@ class RegistrationController extends Controller
                 'business_name' => $validated['business_name'],
                 'description' => $validated['description'],
                 'phone' => $validated['phone'],
-                'logo' => $validated['logo'] ?? null,
+                'logo' => $logoPath,
                 'address' => $validated['address'] ?? null,
             ]);
 

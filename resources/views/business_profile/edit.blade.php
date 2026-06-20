@@ -3,7 +3,7 @@
 @section('title', 'Perfil del Emprendimiento | ProyectoUTN')
 
 @section('main_align', 'items-start')
-@section('content_width', 'max-w-5xl')
+@section('content_width', 'max-w-6xl mx-auto')
 
 @php
     $logoUrl = null;

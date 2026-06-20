@@ -10,9 +10,9 @@
 
         <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800/80">
             <div>
-                <span class="px-2.5 py-1 text-[10px] font-bold tracking-wider rounded-full uppercase bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                <!--<span class="px-2.5 py-1 text-[10px] font-bold tracking-wider rounded-full uppercase bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
                     Módulo de Catálogo
-                </span>
+                </span>-->
                 <h1 class="text-2xl font-bold tracking-tight text-white mt-3">
                     Agregar Nuevo Producto
                 </h1>

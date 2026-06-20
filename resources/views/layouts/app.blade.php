@@ -190,7 +190,7 @@
     </header>
 
     <!-- Main Content Area -->
-    <main class="min-h-screen bg-slate-950 w-full flex flex-col items-center justify-start">
+    <main class="flex-grow flex @yield('main_align', 'items-center justify-center') py-12 px-4 sm:px-6 lg:px-8 relative z-10" style="flex-grow: 1;">
         <div class="w-full @yield('content_width', 'max-w-4xl')">
             @if (session('success'))
                 <div class="mb-8 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 flex items-start space-x-3 shadow-lg shadow-emerald-500/5 animate-fade-in" id="alert-success">
@@ -243,64 +243,82 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            // Dropdown de USUARIO: usa la clase 'is-open' (CSS custom del tema claro)
-            function setupDropdownIsOpen(triggerId, menuId, arrowId) {
-                const trigger = document.getElementById(triggerId);
-                const menu = document.getElementById(menuId);
-                const arrow = arrowId ? document.getElementById(arrowId) : null;
+    // Lista de todos los dropdowns registrados, para poder cerrarlos entre sí
+    const allDropdowns = [];
 
-                if (!trigger || !menu) return;
+    // Dropdown de USUARIO: usa la clase 'is-open' (CSS custom del tema claro)
+    function setupDropdownIsOpen(triggerId, menuId, arrowId) {
+        const trigger = document.getElementById(triggerId);
+        const menu = document.getElementById(menuId);
+        const arrow = arrowId ? document.getElementById(arrowId) : null;
 
-                trigger.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    const isOpen = menu.classList.contains('is-open');
+        if (!trigger || !menu) return;
 
-                    if (isOpen) {
-                        menu.classList.remove('is-open');
-                        if (arrow) arrow.classList.remove('is-open');
-                    } else {
-                        menu.classList.add('is-open');
-                        if (arrow) arrow.classList.add('is-open');
-                    }
-                });
+        function close() {
+            menu.classList.remove('is-open');
+            if (arrow) arrow.classList.remove('is-open');
+        }
 
-                document.addEventListener('click', function () {
-                    menu.classList.remove('is-open');
-                    if (arrow) arrow.classList.remove('is-open');
-                });
-            }
+        function isOpen() {
+            return menu.classList.contains('is-open');
+        }
 
-            // Dropdown de CATÁLOGO: usa las clases de Tailwind (opacity-0/scale-95/pointer-events-none)
-            function setupDropdownTailwind(triggerId, menuId, arrowId) {
-                const trigger = document.getElementById(triggerId);
-                const menu = document.getElementById(menuId);
-                const arrow = arrowId ? document.getElementById(arrowId) : null;
+        function open() {
+            menu.classList.add('is-open');
+            if (arrow) arrow.classList.add('is-open');
+        }
 
-                if (!trigger || !menu) return;
-
-                trigger.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    const isOpen = !menu.classList.contains('pointer-events-none');
-
-                    if (isOpen) {
-                        menu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-                        if (arrow) arrow.classList.remove('rotate-180');
-                    } else {
-                        menu.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
-                        if (arrow) arrow.classList.add('rotate-180');
-                    }
-                });
-
-                document.addEventListener('click', function () {
-                    menu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-                    if (arrow) arrow.classList.remove('rotate-180');
-                });
-            }
-
-            setupDropdownTailwind('catalogo-trigger-btn', 'catalogo-dropdown-menu', 'catalogo-arrow');
-            setupDropdownIsOpen('nav-user-display-btn', 'user-dropdown-menu', 'nav-user-arrow');
-
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const wasOpen = isOpen();
+            allDropdowns.forEach(d => d.close());
+            if (!wasOpen) open();
         });
+
+        allDropdowns.push({ close });
+    }
+
+    // Dropdown de CATÁLOGO: usa las clases de Tailwind (opacity-0/scale-95/pointer-events-none)
+    function setupDropdownTailwind(triggerId, menuId, arrowId) {
+            const trigger = document.getElementById(triggerId);
+            const menu = document.getElementById(menuId);
+            const arrow = arrowId ? document.getElementById(arrowId) : null;
+
+            if (!trigger || !menu) return;
+
+            function close() {
+                menu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                if (arrow) arrow.classList.remove('rotate-180');
+            }
+
+            function isOpen() {
+                return !menu.classList.contains('pointer-events-none');
+            }
+
+            function open() {
+                menu.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                if (arrow) arrow.classList.add('rotate-180');
+            }
+
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const wasOpen = isOpen();
+                allDropdowns.forEach(d => d.close());
+                if (!wasOpen) open();
+            });
+
+            allDropdowns.push({ close });
+        }
+
+        setupDropdownTailwind('catalogo-trigger-btn', 'catalogo-dropdown-menu', 'catalogo-arrow');
+        setupDropdownIsOpen('nav-user-display-btn', 'user-dropdown-menu', 'nav-user-arrow');
+
+        // Click en cualquier otro lugar de la página cierra todos los dropdowns
+        document.addEventListener('click', function () {
+            allDropdowns.forEach(d => d.close());
+        });
+
+    });
     </script>
     @stack('scripts')
 </body>

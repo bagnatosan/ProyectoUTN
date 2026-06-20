@@ -23,9 +23,9 @@
 <div class="py-6">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-6 border-b border-slate-800/60">
         <div>
-            <span class="px-2.5 py-1 text-[10px] font-bold tracking-wider rounded-full uppercase bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+            <!--<span class="px-2.5 py-1 text-[10px] font-bold tracking-wider rounded-full uppercase bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
                 Módulo de Catálogo
-            </span>
+            </span>-->
             <h1 class="text-3xl font-bold tracking-tight text-white mt-3 font-sans">
                 Mis Productos
             </h1>

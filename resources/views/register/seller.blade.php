@@ -20,7 +20,7 @@
             <p class="text-xs text-slate-400 mt-1">Completá tus datos personales y el perfil comercial de tu negocio.</p>
         </div>
 
-        <form action="{{ route('register.seller.store') }}" method="POST" class="space-y-8" id="seller-registration-form">
+        <form action="{{ route('register.seller.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8" id="seller-registration-form">
             @csrf
 
             <!-- Section 1: Personal Details -->
@@ -186,25 +186,41 @@
                         @enderror
                     </div>
 
-                    <!-- Logo URL -->
+                    <!-- Logo (subida de archivo) -->
                     <div class="space-y-1.5">
                         <label for="logo" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-                            URL del Logo <span class="normal-case font-normal text-slate-500">(Opcional)</span>
+                            Logo del negocio <span class="normal-case font-normal text-slate-500">(Opcional)</span>
                         </label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <div class="flex items-center gap-3">
+                            <label for="logo" class="flex items-center justify-center w-12 h-12 rounded-xl bg-slate-950/60 border @error('logo') border-rose-500 @else border-slate-800 @enderror shrink-0 overflow-hidden cursor-pointer">
+                                <img id="logo-preview" class="hidden w-full h-full object-cover" alt="Vista previa del logo">
+                                <svg id="logo-placeholder-icon" class="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                            </span>
-                            <input type="url" 
-                                   name="logo" 
-                                   id="logo" 
-                                   value="{{ old('logo') }}" 
-                                   placeholder="https://ejemplo.com/logo.png"
-                                   class="block w-full pl-10 pr-4 py-2.5 bg-slate-950/60 border @error('logo') border-rose-500 focus:ring-rose-500 @else border-slate-800 focus:ring-purple-500 @enderror rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200">
+                            </label>
+                            <div class="flex-1">
+                                <label for="logo" class="inline-flex items-center px-3 py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 cursor-pointer transition-colors">
+                                    Subir imagen
+                                </label>
+                                <input type="file"
+                                       name="logo"
+                                       id="logo"
+                                       accept="image/jpeg,image/png,image/jpg,image/webp"
+                                       class="hidden"
+                                       onchange="
+                                           const file = this.files[0];
+                                           const preview = document.getElementById('logo-preview');
+                                           const icon = document.getElementById('logo-placeholder-icon');
+                                           if (file) {
+                                               preview.src = URL.createObjectURL(file);
+                                               preview.classList.remove('hidden');
+                                               icon.classList.add('hidden');
+                                           }
+                                       ">
+                                <p class="text-xs text-slate-500 mt-1">JPG, PNG o WEBP, máx 2MB.</p>
+                            </div>
                         </div>
-                        <p class="text-xs text-slate-500">Si no tenés uno ahora, podés subir una imagen después desde tu perfil de negocio.</p>
+                        <p class="text-xs text-slate-500">Si no tenés uno ahora, podés subirlo después desde tu perfil de negocio.</p>
                         @error('logo')
                             <p class="text-rose-500 text-xs mt-1 font-medium">{{ $message }}</p>
                         @enderror
