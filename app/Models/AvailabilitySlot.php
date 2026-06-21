@@ -21,9 +21,23 @@ class AvailabilitySlot extends Model
         'is_active' => 'boolean',
     ];
 
-    // Relaciones
     public function businessProfile()
     {
         return $this->belongsTo(BusinessProfile::class);
+    }
+
+    public function scopeForDay($query, string $day)
+    {
+        return $query->where('weekday', $day);
+    }
+
+    public function scopeForUser($query, int $userId)
+    {
+        return $query->whereHas('businessProfile', fn ($q) => $q->where('user_id', $userId));
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 }
