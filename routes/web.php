@@ -80,6 +80,21 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/availability/update', [AvailabilitySlotController::class, 'update'])->name('availability.update');
     Route::get('/my-reservations', [ReservationController::class, 'clientHistory'])->name('reservations.client_history');
     Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.update-status');
+    Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
+
+    // --- Notificaciones ---
+    Route::get('/notifications', function () {
+        return view('notifications.index');
+    })->name('notifications.index');
+    Route::post('/notifications/{id}/mark-as-read', function ($id) {
+        $notification = auth()->user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
+        return response()->json(['success' => true]);
+    })->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', function () {
+        auth()->user()->unreadNotifications->markAsRead();
+        return redirect()->back()->with('success', 'Todas las notificaciones marcadas como leídas.');
+    })->name('notifications.mark-all-read');
 
     // --- Programador 5: Gestión de Pedidos (Vendedor) ---
     Route::get('/reservations/manage', [ReservationController::class, 'manage'])->name('reservations.manage');
