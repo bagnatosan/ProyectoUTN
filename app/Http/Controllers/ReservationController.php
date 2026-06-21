@@ -6,23 +6,21 @@ use App\Models\Reservation;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\BusinessProfile;
+use App\Services\AvailabilityService;
+use App\Http\Requests\StoreReservationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class ReservationController extends Controller
 {
-    /**
-     * Estados válidos para una reserva.
-     */
     private const VALID_STATUSES = ['pending', 'confirmed', 'completed', 'cancelled'];
 
-    /**
-     * Muestra el formulario público para crear una nueva reserva.
-     *
-     * Carga solo productos activos. Si se pasa ?product_id=X por query string,
-     * precarga ese producto en el formulario.
-     */
+    public function __construct(
+        private AvailabilityService $availabilityService,
+    ) {}
+
     public function create(Request $request)
     {
         $products = Product::where('is_active', true)->get();
@@ -36,124 +34,52 @@ class ReservationController extends Controller
         return view('reservations.create', compact('products', 'selectedProduct'));
     }
 
-    /**
-     * Guarda una nueva reserva en la base de datos.
-     *
-     * Incluye doble validación de disponibilidad en servidor:
-     * 1. Verifica que exista un AvailabilitySlot activo que cubra la hora solicitada.
-     * 2. Verifica que no haya otra reserva (no cancelada) en el mismo horario.
-     *
-     * Si el usuario está autenticado, asocia la reserva a su cuenta.
-     */
-    public function store(Request $request)
+    public function store(StoreReservationRequest $request)
     {
-        // ------------------------------------------------------------------
-        // Validación de campos del formulario
-        // ------------------------------------------------------------------
-        $request->validate([
-            'product_id'      => 'required|integer|exists:products,id',
-            'client_name'     => 'required|string|max:255',
-            'client_email'    => 'required|email|max:255',
-            'client_phone'    => 'nullable|string|max:50',
-            'reservation_date' => 'required|date_format:Y-m-d|after_or_equal:today',
-            'reservation_time' => 'required|date_format:H:i',
-            'notes'           => 'nullable|string|max:1000',
-        ], [
-            'product_id.required'       => 'Debes seleccionar un producto.',
-            'product_id.exists'         => 'El producto seleccionado no existe.',
-            'client_name.required'      => 'El nombre es obligatorio.',
-            'client_email.required'     => 'El correo electrónico es obligatorio.',
-            'client_email.email'        => 'El correo electrónico no es válido.',
-            'reservation_date.required' => 'La fecha es obligatoria.',
-            'reservation_date.date_format' => 'Formato de fecha inválido.',
-            'reservation_date.after_or_equal' => 'La fecha no puede ser anterior a hoy.',
-            'reservation_time.required' => 'La hora es obligatoria.',
-            'reservation_time.date_format' => 'Formato de hora inválido (HH:MM).',
-            'notes.max'                 => 'Las notas no pueden exceder 1000 caracteres.',
-        ]);
-
-        // ------------------------------------------------------------------
-        // Validación de hora futura (si la fecha es hoy, la hora no puede haber pasado)
-        // ------------------------------------------------------------------
-        if ($request->reservation_date === Carbon::today()->format('Y-m-d')) {
-            $request->validate([
-                'reservation_time' => 'after:' . Carbon::now()->format('H:i'),
-            ], [
-                'reservation_time.after' => 'La hora debe ser posterior a la actual.',
-            ]);
-        }
-
-        // ------------------------------------------------------------------
-        // Validación del producto (debe estar activo)
-        // ------------------------------------------------------------------
         $product = Product::where('is_active', true)->find($request->product_id);
 
-        if (! $product) {
+        if (!$product) {
             return back()->withInput()
                 ->withErrors(['product_id' => 'El producto seleccionado no está disponible.']);
         }
 
-        // ------------------------------------------------------------------
-        // Validación de disponibilidad en servidor (doble chequeo)
-        // ------------------------------------------------------------------
-        $date      = $request->reservation_date;
-        $time      = $request->reservation_time;
-        $dayOfWeek = strtolower(date('l', strtotime($date)));
         $businessProfileId = $product->business_profile_id;
 
-        // Paso 1: verificar que exista un slot teórico activo que cubra esta hora
-        $hasCoverage = BusinessProfile::findOrFail($businessProfileId)
-            ->availabilitySlots()
-            ->where('weekday', $dayOfWeek)
-            ->where('is_active', true)
-            ->where('start_time', '<=', $time)
-            ->where('end_time', '>', $time)
-            ->exists();
+        $reservation = DB::transaction(function () use ($request, $product, $businessProfileId) {
+            $isAvailable = $this->availabilityService->isSlotAvailable(
+                $businessProfileId,
+                $request->reservation_date,
+                $request->reservation_time,
+            );
 
-        if (! $hasCoverage) {
-            return back()->withInput()
-                ->withErrors(['reservation_time' => 'El horario seleccionado no está dentro de la disponibilidad del vendedor.']);
+            if (!$isAvailable) {
+                DB::rollBack();
+                return back()->withInput()
+                    ->withErrors(['reservation_time' => 'Este horario ya no está disponible. Por favor elegí otro.']);
+            }
+
+            return Reservation::create([
+                'product_id'       => $product->id,
+                'user_id'          => Auth::check() ? Auth::id() : null,
+                'client_name'      => $request->client_name,
+                'client_email'     => $request->client_email,
+                'client_phone'     => $request->client_phone,
+                'reservation_date' => $request->reservation_date,
+                'reservation_time' => $request->reservation_time,
+                'notes'            => $request->notes,
+                'status'           => 'pending',
+            ]);
+        });
+
+        if (!$reservation) {
+            return $reservation;
         }
-
-        // Paso 2: verificar que no haya otra reserva no cancelada en el mismo horario
-        $alreadyBooked = Reservation::where('reservation_date', $date)
-            ->where('reservation_time', $time)
-            ->whereNotIn('status', ['cancelled'])
-            ->whereHas('product', function ($query) use ($businessProfileId) {
-                $query->where('business_profile_id', $businessProfileId);
-            })
-            ->exists();
-
-        if ($alreadyBooked) {
-            return back()->withInput()
-                ->withErrors(['reservation_time' => 'Este horario ya está ocupado. Por favor elegí otro.']);
-        }
-
-        // ------------------------------------------------------------------
-        // Creación de la reserva
-        // ------------------------------------------------------------------
-        $reservation = Reservation::create([
-            'product_id'       => $product->id,
-            'user_id'          => Auth::check() ? Auth::id() : null,
-            'client_name'      => $request->client_name,
-            'client_email'     => $request->client_email,
-            'client_phone'     => $request->client_phone,
-            'reservation_date' => $date,
-            'reservation_time' => $time,
-            'notes'            => $request->notes,
-            'status'           => 'pending',
-        ]);
 
         return redirect()->route('reservations.create')
-            ->with('success', 'Reserva solicitada con éxito. Te confirmaremos pronto el turno para el ' . $date . ' a las ' . $time . '.');
+            ->with('success', 'Reserva solicitada con éxito. Te confirmaremos pronto el turno para el '
+                . $request->reservation_date . ' a las ' . $request->reservation_time . '.');
     }
 
-    /**
-     * Muestra el historial de reservas del cliente autenticado.
-     *
-     * Las reservas se ordenan de la más reciente a la más antigua
-     * para que el cliente vea primero sus próximos turnos.
-     */
     public function clientHistory()
     {
         if (Auth::user()->role !== 'client') {
@@ -169,29 +95,16 @@ class ReservationController extends Controller
         return view('reservations.client_history', compact('reservations'));
     }
 
-    // =========================================================================
-    //  GESTIÓN DE PEDIDOS (Vendedor)
-    // =========================================================================
-
-    /**
-     * Muestra la vista de gestión de pedidos del vendedor.
-     */
     public function manage()
     {
         return view('reservations.manage');
     }
 
-    /**
-     * Obtiene las reservas del vendedor autenticado en formato JSON.
-     *
-     * Filtra por productos que pertenezcan al perfil de negocio del vendedor.
-     * Aplica filtros temporales: today, tomorrow, week, month.
-     */
     public function getReservations(Request $request)
     {
         $businessProfile = $request->user()->businessProfile;
 
-        if (! $businessProfile) {
+        if (!$businessProfile) {
             return response()->json([
                 'success' => false,
                 'message' => 'Primero debes completar tu perfil de negocio.',
@@ -202,7 +115,6 @@ class ReservationController extends Controller
             $q->where('business_profile_id', $businessProfile->id);
         })->with(['product', 'user']);
 
-        // Filtro temporal
         $filter = $request->input('filter', 'today');
         $today = Carbon::today();
 
@@ -237,26 +149,12 @@ class ReservationController extends Controller
         ]);
     }
 
-    // =========================================================================
-    //  GESTIÓN DE ESTADOS (Panel del Vendedor)
-    // =========================================================================
-
-    /**
-     * Actualiza el estado de una reserva.
-     *
-     * Endpoint usado por el vendedor desde su dashboard/pedidos diarios
-     * para confirmar, completar o cancelar turnos en un clic.
-     *
-     * Solo el dueño del negocio asociado al producto puede modificar estados.
-     * Responde en JSON si la petición es AJAX, o con redirect si es tradicional.
-     */
     public function updateStatus(Request $request, Reservation $reservation)
     {
-        // Verificar que el autenticado sea dueño del negocio del producto.
         $businessProfile = $request->user()->businessProfile;
         $product = $reservation->product()->first();
 
-        if (! $businessProfile || ! $product || $product->business_profile_id !== $businessProfile->id) {
+        if (!$businessProfile || !$product || $product->business_profile_id !== $businessProfile->id) {
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -294,5 +192,63 @@ class ReservationController extends Controller
         }
 
         return back()->with('success', $message);
+    }
+
+    public function cancel(Request $request, Reservation $reservation)
+    {
+        $this->authorize('cancel', $reservation);
+
+        if (!$reservation->isCancellable()) {
+            return $this->cancelErrorResponse($request, 'Esta reserva no se puede cancelar porque su estado es "' . $reservation->status . '".');
+        }
+
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        $cancelledBy = Auth::user()->role === 'client' ? 'client' : 'seller';
+
+        DB::transaction(function () use ($reservation, $request, $cancelledBy) {
+            $reservation->update([
+                'status'             => 'cancelled',
+                'cancellation_reason' => $request->reason,
+                'cancelled_by'       => $cancelledBy,
+            ]);
+        });
+
+        $this->sendCancellationNotifications($reservation, $cancelledBy, $request->reason);
+
+        $message = 'Reserva cancelada exitosamente.';
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+            ]);
+        }
+
+        return back()->with('success', $message);
+    }
+
+    private function sendCancellationNotifications(Reservation $reservation, string $cancelledBy, ?string $reason): void
+    {
+        $notification = new \App\Notifications\ReservationCancelled($reservation, $cancelledBy, $reason);
+
+        if ($reservation->user) {
+            $reservation->user->notify($notification);
+        }
+
+        $seller = $reservation->product?->businessProfile?->user;
+        if ($seller && (!$reservation->user || $seller->id !== $reservation->user->id)) {
+            $seller->notify($notification);
+        }
+    }
+
+    private function cancelErrorResponse(Request $request, string $message)
+    {
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['success' => false, 'message' => $message], 422);
+        }
+        return back()->with('error', $message);
     }
 }
