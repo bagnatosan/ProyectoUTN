@@ -17,6 +17,9 @@ class BusinessProfile extends Model
         'phone',
         'logo',
         'address',
+        'latitude',
+        'longitude',
+        'profit_margin',
     ];
 
     // Relaciones
@@ -38,5 +41,18 @@ class BusinessProfile extends Model
     public function ingredients()
     {
         return $this->hasMany(Ingredient::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'latitude' => 'float',
+            'longitude' => 'float',
+        ];
+    }
+
+    public function hasCoordinates(): bool
+    {
+        return $this->latitude !== null && $this->longitude !== null;
     }
 }

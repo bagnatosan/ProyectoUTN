@@ -156,6 +156,10 @@ class ReservationController extends Controller
      */
     public function clientHistory()
     {
+        if (Auth::user()->role !== 'client') {
+            abort(403, 'Esta sección es solo para clientes.');
+        }
+
         $reservations = Reservation::where('user_id', Auth::id())
             ->with('product')
             ->orderBy('reservation_date', 'desc')

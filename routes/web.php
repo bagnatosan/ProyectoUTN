@@ -14,15 +14,21 @@ use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\AvailabilitySlotController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MapController;
+use App\Http\Controllers\EntrepreneurContactController;
 
 // Existing Registration Select & Form Routes
 Route::get('/', [RegistrationController::class, 'select'])->name('register.select');
+
+Route::get('/register', [RegistrationController::class, 'registerHub'])->name('register.hub');
 
 Route::get('/register/client', [RegistrationController::class, 'createClient'])->name('register.client');
 Route::post('/register/client', [RegistrationController::class, 'storeClient'])->name('register.client.store');
 
 Route::get('/register/seller', [RegistrationController::class, 'createSeller'])->name('register.seller');
 Route::post('/register/seller', [RegistrationController::class, 'storeSeller'])->name('register.seller.store');
+
+Route::post('/contacto/emprendedores', [EntrepreneurContactController::class, 'store'])->name('entrepreneur.contact.store');
 
 // Existing Login Routes
 Route::get('/login', [RegistrationController::class, 'showLogin'])->name('login');
@@ -50,29 +56,25 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/profile/update', [BusinessProfileController::class, 'update'])->name('business_profile.update');
         Route::put('/profile/password', [BusinessProfileController::class, 'updatePassword'])->name('business_profile.password');
     });
-    // --- Santiago Bagnato: Catálogo de Productos y Categorías ---
-    Route::middleware(['seller'])->group(function () {
-        Route::get('/profile/edit', [BusinessProfileController::class, 'edit'])->name('business_profile.edit');
-        Route::put('/profile/update', [BusinessProfileController::class, 'update'])->name('business_profile.update');
-    });
+
     // --- Programador 2: Catálogo de Productos y Categorías ---
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'create'])->name('categories.create');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-    Route::put('/categories/{category}' , [CategoryController::class , 'update'])->name('categories.update');
+    Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
 
     Route::resource('products', ProductController::class);
     Route::patch('/products/{product}/change-statement', [ProductController::class, 'ChangeStatement'])->name('products.change-statement'); //toggle button
 
     // --- Programador 3: Inventario de Ingredientes y Constructor de Recetas ---
     Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
-    Route::get('/products/{product}/recipe/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
-    Route::put('/products/{product}/recipe/update', [RecipeController::class, 'update'])->name('recipes.update');
-    Route::delete('/recipes/{recipe}/remove-ingredient/{ingredient}', [App\Http\Controllers\RecipeController::class, 'removeIngredient']);
-    Route::post('/recipes/{recipe}/add-ingredient', [App\Http\Controllers\RecipeController::class, 'addIngredient']);
-    
-    
-   
+    Route::get('/recipes/{product}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
+    Route::post('/recipes/{recipe}/add-ingredient', [RecipeController::class, 'addIngredient'])->name('recipes.add-ingredient');
+    Route::delete('/recipes/{recipe}/remove-ingredient/{ingredient}', [RecipeController::class, 'removeIngredient'])->name('recipes.remove-ingredient');
+    Route::get('/ingredients/{ingredient}/valid-units', [RecipeController::class, 'validUnits'])->name('ingredients.valid-units');
+
+    Route::resource('ingredients', IngredientController::class);
+
     // --- Programador 4: Disponibilidad y Reservas (Vendedor/Cliente logueado) ---
     Route::get('/availability/edit', [AvailabilitySlotController::class, 'edit'])->name('availability.edit');
     Route::put('/availability/update', [AvailabilitySlotController::class, 'update'])->name('availability.update');
@@ -84,29 +86,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservations/manage/data', [ReservationController::class, 'getReservations'])->name('reservations.manage.data');
 
 });
-Route::resource('ingredients', \App\Http\Controllers\IngredientController::class);
-//Route::get('/recipes/{product}/edit', [\App\Http\Controllers\RecipeController::class, 'edit'])->name('recipes.edit');
-//Route::put('/recipes/{product}', [\App\Http\Controllers\RecipeController::class, 'update'])->name('recipes.update');
-
-// BYPASS TEMPORAL PARA EL MÓDULO DE FACU (SÁCALO ANTES DEL MERGE FINAL)
-Route::get('/recipes/{product}/edit', function($product) {
-    // Forzamos el login del usuario 1 en la sesión local para que no te rebote nunca
-    if (!auth()->check()) {
-        auth()->loginUsingId(1); 
-    }
-    return app(\App\Http\Controllers\RecipeController::class)->edit($product);
-})->name('recipes.edit');
-
-Route::put('/recipes/{product}', function(\Illuminate\Http\Request $request, $product) {
-    if (!auth()->check()) {
-        auth()->loginUsingId(1);
-    }
-    return app(\App\Http\Controllers\RecipeController::class)->update($request, $product);
-})->name('recipes.update');
-
- 
 
 // --- Rutas Públicas (Programador 2 y 4) ---
+Route::get('/mapa', [MapController::class, 'index'])->name('map.index');
+Route::get('/mapa/emprendimientos', [MapController::class, 'markers'])->name('map.markers');
+Route::post('/mapa/geocodificar', [MapController::class, 'geocode'])->name('map.geocode');
 Route::get('/catalog/{id}', [PublicCatalogController::class, 'show'])->name('catalog.show');
 Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
 Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
@@ -117,4 +101,3 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::delete('/users/{user}', [App\Http\Controllers\AdminController::class, 'deleteUser'])->name('admin.users.delete');
 });
-

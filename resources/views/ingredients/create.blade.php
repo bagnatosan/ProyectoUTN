@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Nuevo Ingrediente - ProyectoUTN')
+@section('title', 'Nuevo Ingrediente')
 
 @section('content')
 <div class="w-full max-w-2xl mx-auto px-4 py-6">
-    
-   <div class="mb-4">
-    <a href="{{ request()->has('product_id') ? route('recipes.edit', request()->product_id) : route('products.index') }}" class="text-xs text-slate-400 hover:text-emerald-400 transition-colors flex items-center gap-1">
-        ← Volver al Módulo de Costos
-    </a>
+
+    <div class="mb-4">
+        <a href="{{ route('ingredients.index') }}" class="text-xs text-slate-400 hover:text-emerald-400 transition-colors flex items-center gap-1">
+            ← Volver a Mis Ingredientes
+        </a>
     </div>
 
     <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-6 backdrop-blur-sm shadow-xl">
@@ -17,7 +17,7 @@
             <p class="text-slate-400 text-xs mt-1">Registrá una materia prima para poder usarla en el cálculo de tus recetas.</p>
         </div>
 
-        <form action="{{ url('/ingredients') }}{{ request()->has('product_id') ? '?product_id=' . request()->product_id : '' }}" method="POST" class="space-y-5">
+        <form action="{{ route('ingredients.store') }}" method="POST" class="space-y-5">
             @csrf
 
             <div>
@@ -52,7 +52,7 @@
             </div>
 
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800/60">
-                <a href="{{ url()->previous() }}" class="text-xs font-bold text-slate-400 hover:text-slate-200 px-4 py-2 transition-colors">
+                <a href="{{ route('ingredients.index') }}" class="text-xs font-bold text-slate-400 hover:text-slate-200 px-4 py-2 transition-colors">
                     Cancelar
                 </a>
                 <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold px-5 py-2.5 rounded-lg transition-colors shadow-md shadow-emerald-500/10">
