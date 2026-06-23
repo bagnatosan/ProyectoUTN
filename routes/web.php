@@ -48,6 +48,8 @@ Route::post('/logout', function () {
 // NUEVAS RUTAS SEGÚN EL PLAN DE DESARROLLO
 // ==========================================
 
+Route::get('/dashboard', [RegistrationController::class, 'dashboard'])->name('dashboard');
+
 Route::middleware(['auth'])->group(function () {
 
     // --- Programador 1: Gestión de Perfil de Negocio (BusinessProfile) ---
