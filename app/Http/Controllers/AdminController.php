@@ -22,7 +22,11 @@ class AdminController extends Controller
 
         $users = User::orderBy('created_at', 'desc')->get();
 
-        return view('admin.dashboard', compact('stats', 'users'));
+        $products = Product::with('businessProfile')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.dashboard', compact('stats', 'users', 'products'));
     }
 
     public function deleteUser(User $user)
@@ -34,5 +38,12 @@ class AdminController extends Controller
         $user->delete();
 
         return back()->with('success', 'Usuario eliminado correctamente.');
+    }
+
+    public function deleteProduct(Product $product)
+    {
+        $product->delete();
+
+        return back()->with('success', 'Producto eliminado correctamente.');
     }
 }

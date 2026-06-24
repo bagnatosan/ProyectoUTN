@@ -46,7 +46,8 @@ class ProductController extends Controller implements HasMiddleware
     
     public function create(Request $request)
     {
-        $categories = Category::all();
+        $businessProfileId = auth()->user()->businessProfile?->id;
+        $categories = Category::where('business_profile_id', $businessProfileId)->orderBy('name')->get();
         return view('products.create', compact('categories'));
 
     }
@@ -69,13 +70,18 @@ class ProductController extends Controller implements HasMiddleware
         ?? \DB::table('business_profiles')->where('user_id', auth()->id())->value('id') 
         ?? 1;
 
-    // 3. RESCATE DE INTEGRIDAD 2: ID de la Categoría
-    // Intentamos agarrar lo que el usuario seleccionó en el combo de la pantalla.
-    // Si por alguna razón viaja vacío, buscamos la primera categoría real que exista en Laragon,
-    // y si la tabla está virgen, le mandamos el ID 1 como último recurso.
-    $categoryId = $request->category_id 
-        ?? \DB::table('categories')->value('id') 
-        ?? 1;
+    // 3. Validamos que la categoría elegida pertenezca a ESTE negocio.
+    // Antes, si category_id venía vacío, se buscaba "la primera categoría que exista"
+    // sin filtrar, lo que podía asociar el producto a la categoría de otro vendedor.
+    $categoryId = \App\Models\Category::where('id', $request->category_id)
+        ->where('business_profile_id', $businessProfileId)
+        ->value('id');
+
+    if (!$categoryId) {
+        return back()
+            ->withInput()
+            ->withErrors(['category_id' => 'La categoría seleccionada no es válida.']);
+    }
 
     // 4. Creamos el producto pasándole TODOS los campos obligatorios
     $product = Product::create([
@@ -84,7 +90,7 @@ class ProductController extends Controller implements HasMiddleware
         'price'               => $request->price,
         'status'              => $request->status ?? 'active',
         'business_profile_id' => $businessProfileId,
-        'category_id'         => $categoryId, // <--- ¡Con esto matamos el último error!
+        'category_id'         => $categoryId,
     ]);
 
     // 5. Te mandamos directo a tu pantalla de costos premium
@@ -96,7 +102,8 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function edit(Product $product)
     {
-        $categories = Category::all();
+        $businessProfileId = auth()->user()->businessProfile?->id;
+        $categories = Category::where('business_profile_id', $businessProfileId)->orderBy('name')->get();
         return view('products.edit', compact('product', 'categories'));
     }
 
