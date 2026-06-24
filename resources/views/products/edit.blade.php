@@ -118,16 +118,16 @@
             </div>
 
             <!-- Fila: Estado Activo y Costos Informativos -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-100 border border-slate-300 p-4 rounded-xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-800/30 border border-slate-700/60 p-4 rounded-xl">
                 <!-- Visibilidad (Estado) -->
                 <div>
-                    <label for="is_active" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
+                    <label for="is_active" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
                         Visibilidad en el Catálogo
                     </label>
                     <select 
                         name="is_active" 
                         id="is_active" 
-                        class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 cursor-pointer"
+                        class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
                     >
                         <option value="1" {{ old('is_active', $product->is_active) ? 'selected' : '' }}>Activo (Visible para clientes)</option>
                         <option value="0" {{ !old('is_active', $product->is_active) ? 'selected' : '' }}>Inactivo (Oculto en catálogo)</option>
@@ -136,23 +136,23 @@
 
                 <!-- Resumen de Costos Receta (Informativo / Deshabilitado) -->
                 <div class="flex flex-col justify-center text-xs space-y-1">
-                    <p class="text-slate-600 font-semibold uppercase tracking-wider">Costo Estimado de Receta:</p>
-                    <p class="text-slate-700 font-medium">
+                    <p class="text-slate-400 font-semibold uppercase tracking-wider">Costo Estimado de Receta:</p>
+                    <p class="text-slate-300 font-medium">
                         @if($product->estimated_cost !== null)
-                            <span class="text-sm font-bold text-slate-900">${{ number_format($product->estimated_cost, 2) }}</span>
+                            <span class="text-sm font-bold text-emerald-400">${{ number_format($product->estimated_cost, 2) }}</span>
                         @else
                             <span class="text-slate-500 italic">No calculado (sin receta)</span>
                         @endif
                     </p>
-                    <p class="text-[10px] text-slate-600 mt-1">
-                        Sugerido para venta: <span class="font-semibold text-slate-700">${{ number_format($product->suggested_price ?? 0, 2) }}</span>
+                    <p class="text-[10px] text-slate-500 mt-1">
+                        Sugerido para venta: <span class="font-semibold text-emerald-400">${{ number_format($product->suggested_price ?? 0, 2) }}</span>
                     </p>
                 </div>
             </div>
 
             <!-- Margen personalizado para este producto -->
-            <div class="bg-slate-100 border border-slate-300 p-4 rounded-xl">
-                <label for="custom_margin" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
+            <div class="bg-slate-800/30 border border-slate-700/60 p-4 rounded-xl">
+                <label for="custom_margin" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
                     Margen personalizado para este producto
                 </label>
                 <div class="flex items-center gap-3">
@@ -165,16 +165,16 @@
                         max="50"
                         value="{{ old('custom_margin', $product->custom_margin) }}"
                         placeholder="Ej: 4"
-                        class="w-28 bg-white border @error('custom_margin') border-rose-500 focus:ring-rose-500/30 @else border-slate-300 focus:border-indigo-500 focus:ring-indigo-500/30 @enderror rounded-xl px-3 py-2.5 text-sm text-amber-600 font-mono font-semibold placeholder-slate-400 focus:outline-none focus:ring-1 transition-all duration-300"
+                        class="w-28 bg-slate-950 border @error('custom_margin') border-rose-500 focus:ring-rose-500/30 @else border-slate-700 focus:border-indigo-500 focus:ring-indigo-500/30 @enderror rounded-xl px-3 py-2.5 text-sm text-amber-400 font-mono font-semibold placeholder-slate-500 focus:outline-none focus:ring-1 transition-all duration-300"
                     >
-                    <p class="text-[11px] text-slate-600 leading-relaxed">
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
                         Dejalo vacío para usar el margen general de tu negocio
-                        (actualmente <span class="font-semibold text-slate-700">x{{ $product->businessProfile->profit_margin ?? 3 }}</span>).
+                        (actualmente <span class="font-semibold text-emerald-400">x{{ $product->businessProfile->profit_margin ?? 3 }}</span>).
                         Completalo solo si querés un margen distinto para este producto puntual.
                     </p>
                 </div>
                 @error('custom_margin')
-                    <p class="text-xs text-rose-600 mt-1.5">{{ $message }}</p>
+                    <p class="text-xs text-rose-400 mt-1.5">{{ $message }}</p>
                 @enderror
             </div>
 

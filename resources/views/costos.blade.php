@@ -153,24 +153,24 @@
 </div>
 
 <!-- Modal rápido para crear un ingrediente nuevo sin salir de la pantalla -->
-<div id="new_ingredient_modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-white border border-slate-200 rounded-xl p-5 w-full max-w-sm shadow-2xl">
-        <h3 class="text-sm font-bold text-slate-800 mb-3">Nuevo ingrediente</h3>
+<div id="new_ingredient_modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-xl p-5 w-full max-w-sm shadow-2xl">
+        <h3 class="text-sm font-bold text-slate-200 mb-3">Nuevo ingrediente</h3>
         <form action="{{ route('ingredients.store') }}" method="POST" class="space-y-3">
             @csrf
             <input type="hidden" name="redirect_to" value="{{ route('recipes.edit', $product->id) }}">
 
             <div>
-                <label class="text-[10px] text-slate-500 uppercase font-bold">Nombre</label>
+                <label class="text-[10px] text-slate-400 uppercase font-bold">Nombre</label>
                 <input type="text" name="name" required
-                       class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-emerald-500">
+                       class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 placeholder-slate-500">
             </div>
 
             <div class="flex gap-2">
                 <div class="flex-1">
-                    <label class="text-[10px] text-slate-500 uppercase font-bold">Unidad de compra</label>
+                    <label class="text-[10px] text-slate-400 uppercase font-bold">Unidad de compra</label>
                     <select name="unit_measure" required
-                            class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-2 text-sm text-slate-800 focus:outline-none focus:border-emerald-500">
+                            class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-2 text-sm text-slate-300 focus:outline-none focus:border-emerald-500 cursor-pointer">
                         <option value="kg">Kilogramo (kg)</option>
                         <option value="g">Gramo (g)</option>
                         <option value="litro">Litro (litro)</option>
@@ -180,19 +180,19 @@
                     </select>
                 </div>
                 <div class="flex-1">
-                    <label class="text-[10px] text-slate-500 uppercase font-bold">Costo ($)</label>
+                    <label class="text-[10px] text-slate-400 uppercase font-bold">Costo ($)</label>
                     <input type="number" name="unit_cost" step="0.01" min="0" required
-                           class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-emerald-500">
+                           class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-emerald-400 font-mono font-semibold focus:outline-none focus:border-emerald-500">
                 </div>
             </div>
 
             <div class="flex gap-2 pt-2">
                 <button type="button" onclick="closeNewIngredientModal()"
-                        class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-lg border border-slate-300 transition-colors">
+                        class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2 rounded-lg border border-slate-700 transition-colors cursor-pointer">
                     Cancelar
                 </button>
                 <button type="submit"
-                        class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 rounded-lg transition-colors">
+                        class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 rounded-lg transition-colors cursor-pointer">
                     Guardar
                 </button>
             </div>
