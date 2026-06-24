@@ -1,33 +1,33 @@
 /* =============================================
-   reservations.css — Gestión de Pedidos (Vendedor)
-   BEM: bloque .reservations-manage
-   Mobile-First
+   reservations.css — Gesti n de Pedidos (Vendedor)
+   Design System: cream canvas + coral accent + dark navy
+   BEM: bloque .reservations-manage · Mobile-First
    ============================================= */
 
 :root {
-  --rm-bg-card: rgba(51, 65, 85, 0.2);
-  --rm-border-card: rgba(51, 65, 85, 0.6);
-  --rm-text: #f1f5f9;
-  --rm-text-muted: #94a3b8;
-  --rm-text-secondary: #64748b;
-  --rm-primary: #4ade80;
-  --rm-primary-bg: rgba(34, 197, 94, 0.1);
-  --rm-warning: #fbbf24;
-  --rm-warning-bg: rgba(251, 191, 36, 0.1);
-  --rm-warning-text: #fde68a;
-  --rm-info: #60a5fa;
-  --rm-info-bg: rgba(96, 165, 250, 0.1);
-  --rm-info-text: #93c5fd;
-  --rm-success: #4ade80;
-  --rm-success-bg: rgba(74, 222, 128, 0.1);
-  --rm-success-text: #86efac;
-  --rm-danger: #f87171;
-  --rm-danger-bg: rgba(248, 113, 113, 0.1);
-  --rm-danger-text: #fca5a5;
-  --rm-input-bg: rgba(30, 41, 59, 0.6);
-  --rm-input-border: #334155;
-  --rm-radius: 1rem;
-  --rm-radius-sm: 0.75rem;
+  --rm-bg-card: #252320;
+  --rm-border-card: #3a3834;
+  --rm-text: #faf9f5;
+  --rm-text-muted: #a09d96;
+  --rm-text-secondary: #a09d96;
+  --rm-primary: #cc785c;
+  --rm-primary-bg: rgba(204, 120, 92, 0.1);
+  --rm-warning: #d4a017;
+  --rm-warning-bg: rgba(212, 160, 23, 0.1);
+  --rm-warning-text: #d4a017;
+  --rm-info: #5db8a6;
+  --rm-info-bg: rgba(93, 184, 166, 0.1);
+  --rm-info-text: #5db8a6;
+  --rm-success: #5db872;
+  --rm-success-bg: rgba(93, 184, 114, 0.1);
+  --rm-success-text: #5db872;
+  --rm-danger: #c64545;
+  --rm-danger-bg: rgba(198, 69, 69, 0.08);
+  --rm-danger-text: #c64545;
+  --rm-input-bg: #1f1e1b;
+  --rm-input-border: #3a3834;
+  --rm-radius: 12px;
+  --rm-radius-sm: 8px;
 }
 
 .reservations-manage {
@@ -58,11 +58,11 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 0.75rem;
-  background: linear-gradient(to bottom right, #4f46e5, #818cf8);
+  background: rgba(204, 120, 92, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--rm-primary);
   flex-shrink: 0;
 }
 
@@ -72,10 +72,11 @@
 }
 
 .reservations-manage__title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 500;
   color: var(--rm-text);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
+  font-family: "Cormorant Garamond", "EB Garamond", "Times New Roman", serif;
 }
 
 .reservations-manage__subtitle {
@@ -91,7 +92,8 @@
   display: flex;
   gap: 0.375rem;
   margin-bottom: 1.5rem;
-  background-color: rgba(30, 41, 59, 0.4);
+  background-color: var(--rm-input-bg);
+  border: 1px solid var(--rm-border-card);
   border-radius: var(--rm-radius-sm);
   padding: 0.25rem;
   width: fit-content;
@@ -102,7 +104,7 @@
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--rm-text-muted);
   background: transparent;
   border: none;
@@ -118,7 +120,6 @@
 .reservations-manage__filter--active {
   background-color: var(--rm-primary-bg);
   color: var(--rm-primary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* =============================================
@@ -140,7 +141,7 @@
 .reservations-manage__spinner {
   width: 2rem;
   height: 2rem;
-  border: 3px solid rgba(51, 65, 85, 0.5);
+  border: 3px solid var(--rm-border-card);
   border-top-color: var(--rm-primary);
   border-radius: 50%;
   animation: rm-spin 0.8s linear infinite;
@@ -162,7 +163,7 @@
   padding: 1rem;
   border-radius: var(--rm-radius-sm);
   background-color: var(--rm-danger-bg);
-  border: 1px solid rgba(248, 113, 113, 0.2);
+  border: 1px solid rgba(198, 69, 69, 0.2);
   color: var(--rm-danger-text);
   font-size: 0.875rem;
   font-weight: 500;
@@ -190,7 +191,7 @@
 
 .reservations-manage__empty-title {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--rm-text);
   margin-bottom: 0.25rem;
 }
@@ -221,7 +222,8 @@
 }
 
 .reservations-manage__card:hover {
-  border-color: rgba(51, 65, 85, 0.8);
+  border-color: var(--rm-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .reservations-manage__card-header {
@@ -243,13 +245,13 @@
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background: linear-gradient(to bottom right, #4f46e5, #6366f1);
+  background: rgba(204, 120, 92, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--rm-primary);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   flex-shrink: 0;
 }
 
@@ -280,7 +282,7 @@
   padding: 0.25rem 0.625rem;
   border-radius: 9999px;
   font-size: 0.6875rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -290,25 +292,25 @@
 .reservations-manage__badge--pending {
   background-color: var(--rm-warning-bg);
   color: var(--rm-warning-text);
-  border: 1px solid rgba(251, 191, 36, 0.2);
+  border: 1px solid rgba(212, 160, 23, 0.2);
 }
 
 .reservations-manage__badge--confirmed {
   background-color: var(--rm-info-bg);
   color: var(--rm-info-text);
-  border: 1px solid rgba(96, 165, 250, 0.2);
+  border: 1px solid rgba(93, 184, 166, 0.2);
 }
 
 .reservations-manage__badge--completed {
   background-color: var(--rm-success-bg);
   color: var(--rm-success-text);
-  border: 1px solid rgba(74, 222, 128, 0.2);
+  border: 1px solid rgba(93, 184, 114, 0.2);
 }
 
 .reservations-manage__badge--cancelled {
   background-color: var(--rm-danger-bg);
   color: var(--rm-danger-text);
-  border: 1px solid rgba(248, 113, 113, 0.2);
+  border: 1px solid rgba(198, 69, 69, 0.2);
 }
 
 .reservations-manage__badge-dot {
@@ -366,7 +368,8 @@
 .reservations-manage__card-notes {
   font-size: 0.8125rem;
   color: var(--rm-text-secondary);
-  background-color: rgba(30, 41, 59, 0.4);
+  background-color: var(--rm-input-bg);
+  border: 1px solid var(--rm-border-card);
   border-radius: 0.5rem;
   padding: 0.625rem;
   margin-top: 0.25rem;
@@ -381,7 +384,7 @@
   align-items: center;
   gap: 0.5rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(51, 65, 85, 0.3);
+  border-top: 1px solid var(--rm-border-card);
 }
 
 .reservations-manage__select {
@@ -400,8 +403,8 @@
 
 .reservations-manage__select:focus {
   outline: none;
-  border-color: rgba(34, 197, 94, 0.5);
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+  border-color: var(--rm-primary);
+  box-shadow: 0 0 0 2px rgba(204, 120, 92, 0.15);
 }
 
 /* =============================================
@@ -430,11 +433,11 @@
 }
 
 .reservations-manage__toast--success {
-  background-color: #059669;
+  background-color: #2d6e47;
 }
 
 .reservations-manage__toast--error {
-  background-color: #dc2626;
+  background-color: #8a2e2e;
 }
 
 /* =============================================
