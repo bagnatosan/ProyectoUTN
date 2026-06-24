@@ -19,7 +19,7 @@
     </div>
 
     <!-- Buscador de negocios -->
-    <div class="relative max-w-md mx-auto">
+    <div class="relative max-w-md mx-auto input-icon-group">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
             <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />

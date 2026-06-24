@@ -36,7 +36,7 @@
                         <label for="name" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
                             Nombre Completo
                         </label>
-                        <div class="relative">
+                        <div class="relative input-icon-group">
                             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -61,7 +61,7 @@
                         <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
                             Correo Electrónico
                         </label>
-                        <div class="relative">
+                        <div class="relative input-icon-group">
                             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -88,7 +88,7 @@
                         <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
                             Contraseña
                         </label>
-                        <div class="relative">
+                        <div class="relative input-icon-group">
                             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -112,7 +112,7 @@
                         <label for="password_confirmation" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
                             Confirmar Contraseña
                         </label>
-                        <div class="relative">
+                        <div class="relative input-icon-group">
                             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -142,14 +142,14 @@
                     <label for="business_name" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
                         Nombre Comercial
                     </label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                        </span>
-                        <input type="text" 
-                               name="business_name" 
+                        <div class="relative input-icon-group">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </span>
+                            <input type="text" 
+                                   name="business_name" 
                                id="business_name" 
                                value="{{ old('business_name') }}" 
                                required 
@@ -167,7 +167,7 @@
                         <label for="phone" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
                             Teléfono de Contacto
                         </label>
-                        <div class="relative">
+                        <div class="relative input-icon-group">
                             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -232,15 +232,15 @@
                     <label for="address" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
                         Dirección (Opcional)
                     </label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </span>
-                        <input type="text" 
-                               name="address" 
+                        <div class="relative input-icon-group">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </span>
+                            <input type="text" 
+                                   name="address" 
                                id="address" 
                                value="{{ old('address') }}" 
                                placeholder="Ej. Av. Siempreviva 742"

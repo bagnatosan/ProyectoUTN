@@ -44,7 +44,7 @@
 
                 <div>
                     <label for="unit_cost" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Costo ($)</label>
-                    <div class="relative">
+                    <div class="relative input-icon-group">
                         <span class="absolute left-3 top-2.5 text-slate-500 text-sm font-mono">$</span>
                         <input type="number" name="unit_cost" id="unit_cost" step="0.01" min="0" required
                                value="{{ old('unit_cost', $ingredient->unit_cost) }}"
