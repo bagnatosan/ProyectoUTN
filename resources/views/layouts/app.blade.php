@@ -6,21 +6,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Plataforma de Reservas y Emprendimientos')</title>
     <meta name="description" content="Regístrate como cliente para realizar reservas o como emprendedor para potenciar tu negocio.">
-    <!-- Vite Assets (CSS only) -->
     @vite(['resources/css/app.css'])
     @stack('styles')
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col" style="min-height: 100%; display: flex; flex-direction: column; margin: 0;">
-    
-    <!-- Background Glow Effects -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/20 blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/20 blur-[120px]"></div>
-    </div>
 
     <header class="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/75 backdrop-blur-md">
         <div class="container mx-auto px-4 min-h-16 py-2 flex items-center justify-between gap-3">
-            
+
             <a href="{{ route('register.select') }}" class="flex items-center space-x-2 group">
                 <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5 text-emerald-450" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -48,7 +41,7 @@
                         </a>
                     @endif
                 @endauth
-                
+
                 @guest
                     <a href="{{ route('login') }}"
                     class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('login') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
@@ -62,8 +55,7 @@
 
                 @auth
                     @if(auth()->user()->role === 'admin')
-                        <!-- ADMIN autenticado -->
-                        <a href="{{ route('admin.dashboard') }}" 
+                        <a href="{{ route('admin.dashboard') }}"
                         class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('admin.*') ? 'bg-purple-600/20 text-purple-400 border border-purple-600/30' : '' }}">
                             Admin Panel
                         </a>
@@ -72,17 +64,17 @@
                     @if(auth()->user()->role === 'seller')
                         <span class="text-slate-600 px-1 shrink-0">|</span>
 
-                        <a href="{{ route('dashboard') }}" 
+                        <a href="{{ route('dashboard') }}"
                         class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                             Dashboard
                         </a>
 
-                        <a href="{{ route('reservations.create') }}" 
+                        <a href="{{ route('reservations.create') }}"
                         class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                             Reservas
                         </a>
 
-                        <a href="{{ route('availability.edit') }}" 
+                        <a href="{{ route('availability.edit') }}"
                         class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('availability.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                             Horarios
                         </a>
@@ -93,8 +85,6 @@
 
             @auth
                 @if(auth()->user()->role === 'seller')
-                    <!-- Dropdown Catálogo: agrupa Productos, Categorías e Ingredientes -->
-                    <!-- Movido FUERA del <nav> porque overflow-x-auto recortaba el menú desplegable -->
                     <div class="relative shrink-0" id="catalogo-menu-container">
                         <button type="button"
                                 class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1 {{ request()->routeIs('categories.*') || request()->routeIs('products.*') || request()->routeIs('ingredients.*') || request()->routeIs('recipes.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}"
@@ -125,7 +115,6 @@
             @endauth
 
             @auth
-                    <!-- Notification Bell -->
                     <div class="relative shrink-0" id="notif-bell-container">
                         <a href="{{ route('notifications.index') }}"
                            class="flex items-center justify-center w-9 h-9 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all relative"
@@ -144,11 +133,9 @@
                         </a>
                     </div>
 
-                    <!-- User Dropdown Menu -->
                     <div class="relative shrink-0" id="user-menu-container">
-                        <!-- User Profile Trigger Button -->
-                        <button type="button" 
-                                class="flex items-center space-x-2 text-sm text-slate-300 bg-slate-900/60 hover:bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 cursor-pointer transition-all duration-200 focus:outline-none" 
+                        <button type="button"
+                                class="flex items-center space-x-2 text-sm text-slate-300 bg-slate-900/60 hover:bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 cursor-pointer transition-all duration-200 focus:outline-none"
                                 id="nav-user-display-btn">
                             <svg class="w-4 h-4 text-indigo-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -165,7 +152,7 @@
                             </svg>
                         </button>
 
-                        <div class="absolute right-0 mt-2 w-52 origin-top-right rounded-xl border border-slate-800 bg-slate-950 p-2 shadow-2xl backdrop-blur-md transition-all duration-200 transform opacity-0 scale-95 pointer-events-none z-[60] user-dropdown-panel" 
+                        <div class="absolute right-0 mt-2 w-52 origin-top-right rounded-xl border border-slate-800 bg-slate-950 p-2 shadow-2xl backdrop-blur-md transition-all duration-200 transform opacity-0 scale-95 pointer-events-none z-[60] user-dropdown-panel"
                              id="user-dropdown-menu">
                             <div class="px-3 py-2 border-b border-slate-900 mb-1">
                                 <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Rol de acceso</p>
@@ -191,7 +178,7 @@
 
                             <form action="{{ route('logout') }}" method="POST" class="block pt-1">
                                 @csrf
-                                <button type="submit" 
+                                <button type="submit"
                                         id="btn-logout"
                                         class="nav-dropdown-logout w-full flex items-center space-x-2 text-left text-xs font-semibold p-2.5 rounded-lg transition-all duration-200 cursor-pointer">
                                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -208,7 +195,6 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
     <main class="flex-grow flex @yield('main_align', 'items-center justify-center') py-12 px-4 sm:px-6 lg:px-8 relative z-10" style="flex-grow: 1;">
         <div class="w-full @yield('content_width', 'max-w-4xl')">
             @if (session('success'))
@@ -262,10 +248,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-    // Lista de todos los dropdowns registrados, para poder cerrarlos entre sí
     const allDropdowns = [];
 
-    // Dropdown de USUARIO: usa la clase 'is-open' (CSS custom del tema claro)
     function setupDropdownIsOpen(triggerId, menuId, arrowId) {
         const trigger = document.getElementById(triggerId);
         const menu = document.getElementById(menuId);
@@ -297,7 +281,6 @@
         allDropdowns.push({ close });
     }
 
-    // Dropdown de CATÁLOGO: usa las clases de Tailwind (opacity-0/scale-95/pointer-events-none)
     function setupDropdownTailwind(triggerId, menuId, arrowId) {
             const trigger = document.getElementById(triggerId);
             const menu = document.getElementById(menuId);
@@ -332,7 +315,6 @@
         setupDropdownTailwind('catalogo-trigger-btn', 'catalogo-dropdown-menu', 'catalogo-arrow');
         setupDropdownIsOpen('nav-user-display-btn', 'user-dropdown-menu', 'nav-user-arrow');
 
-        // Click en cualquier otro lugar de la página cierra todos los dropdowns
         document.addEventListener('click', function () {
             allDropdowns.forEach(d => d.close());
         });
