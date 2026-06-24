@@ -4,20 +4,10 @@
 
 @section('content')
 @php
-    $businessProfile = auth()->user()->businessProfile;
-    
-    // TRUCO DE RESCATE: Si no encuentra el perfil o viene vacío, trae todos los productos de la BD para que no te dé 0 en local
-    $productsList = $businessProfile 
-        ? \App\Models\Product::where('business_profile_id', $businessProfile->id)->with('category')->get() 
-        : \App\Models\Product::with('category')->get();
-
-    if($productsList->isEmpty()) {
-        $productsList = \App\Models\Product::with('category')->get();
-    }
-    
-    $totalProducts = $productsList->count();
-    $activeProducts = $productsList->where('is_active', true)->count();
-    $inactiveProducts = $productsList->where('is_active', false)->count();
+    $productsList = $products;
+    $totalProducts = $totalProductos;
+    $activeProducts = $activos;
+    $inactiveProducts = $inactivos;
 @endphp
 
 <div class="py-6">

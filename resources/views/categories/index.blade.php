@@ -4,7 +4,7 @@
 
 @section('content')
 @php
-    $categoriesList = \App\Models\Category::withCount('products')->get();
+    $categoriesList = $categories->loadCount('products');
 @endphp
 
 <div class="py-6">

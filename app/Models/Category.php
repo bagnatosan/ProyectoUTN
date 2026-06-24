@@ -11,11 +11,17 @@ class Category extends Model
 
     protected $fillable = [
         'name',
+        'business_profile_id',
     ];
 
     // Relaciones
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function businessProfile()
+    {
+        return $this->belongsTo(BusinessProfile::class);
     }
 }
