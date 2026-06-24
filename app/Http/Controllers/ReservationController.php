@@ -14,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
 use Illuminate\View\View;
 
 class ReservationController extends Controller
@@ -196,6 +197,13 @@ class ReservationController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('date_from')) {
+            $query->where('reservation_date', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->where('reservation_date', '<=', $request->date_to);
+        }
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -204,8 +212,11 @@ class ReservationController extends Controller
             });
         }
 
+        $sortBy = in_array($request->sort_by, ['reservation_date', 'client_name', 'status', 'reservation_time']) ? $request->sort_by : 'reservation_date';
+        $sortDir = $request->sort_dir === 'asc' ? 'asc' : 'desc';
         $perPage = $request->integer('per_page', 12);
-        $reservations = $query->orderBy('reservation_date')->orderBy('reservation_time')
+        $reservations = $query->orderBy($sortBy, $sortDir)
+            ->orderBy('reservation_time')
             ->paginate($perPage);
 
         return response()->json([
@@ -293,6 +304,80 @@ class ReservationController extends Controller
             'success' => true,
             'message' => 'Nota interna guardada.',
         ]);
+    }
+
+    public function exportCsv(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $businessProfile = $request->user()->businessProfile;
+
+        if (!$businessProfile) {
+            abort(403, 'Perfil de negocio no encontrado.');
+        }
+
+        $query = Reservation::with('product')
+            ->whereHas('product', fn ($q) => $q->where('business_profile_id', $businessProfile->id));
+
+        if ($request->filled('date_from')) {
+            $query->where('reservation_date', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->where('reservation_date', '<=', $request->date_to);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $sortBy = in_array($request->sort_by, ['reservation_date', 'client_name', 'status', 'reservation_time']) ? $request->sort_by : 'reservation_date';
+        $sortDir = $request->sort_dir === 'asc' ? 'asc' : 'desc';
+        $reservations = $query->orderBy($sortBy, $sortDir)->get();
+
+        $filename = 'reservas_' . now()->format('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=utf-8',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () use ($reservations) {
+            $output = fopen('php://output', 'w');
+            fputs($output, "\xEF\xBB\xBF"); // BOM UTF-8
+            fputcsv($output, ['ID', 'Cliente', 'Email', 'Teléfono', 'Producto', 'Fecha', 'Hora', 'Estado', 'Notas', 'Nota Interna', 'Creada']);
+
+            foreach ($reservations as $r) {
+                fputcsv($output, [
+                    $r->id,
+                    $r->client_name,
+                    $r->client_email,
+                    $r->client_phone,
+                    $r->product?->name,
+                    $r->reservation_date,
+                    $r->reservation_time,
+                    $r->status,
+                    $r->notes,
+                    $r->seller_notes,
+                    $r->created_at->format('d/m/Y H:i'),
+                ]);
+            }
+
+            fclose($output);
+        };
+
+        return Response::stream($callback, 200, $headers);
+    }
+
+    public function pendingCount(Request $request): JsonResponse
+    {
+        $businessProfile = $request->user()->businessProfile;
+
+        if (!$businessProfile) {
+            return response()->json(['count' => 0]);
+        }
+
+        $count = Reservation::forBusiness($businessProfile->id)
+            ->pending()
+            ->count();
+
+        return response()->json(['count' => $count]);
     }
 
     private function sendCancellationNotifications(Reservation $reservation, string $cancelledBy, ?string $reason): void

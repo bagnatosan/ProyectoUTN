@@ -62,6 +62,12 @@
                     @endif
 
                     @if(auth()->user()->role === 'seller')
+                        @php
+                            $pendingReservationsCount = auth()->user()->businessProfile
+                                ? \App\Models\Reservation::forBusiness(auth()->user()->businessProfile->id)->pending()->count()
+                                : 0;
+                        @endphp
+
                         <span class="text-slate-600 px-1 shrink-0">|</span>
 
                         <a href="{{ route('dashboard') }}"
@@ -69,9 +75,14 @@
                             Dashboard
                         </a>
 
-                        <a href="{{ route('reservations.create') }}"
-                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Reservas
+                        <a href="{{ route('reservations.manage') }}"
+                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all relative {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                            Pedidos
+                            @if($pendingReservationsCount > 0)
+                                <span class="absolute -top-1 -right-1 w-4.5 h-4.5 flex items-center justify-center bg-rose-500 text-white text-[9px] font-bold rounded-full shadow-lg shadow-rose-500/30">
+                                    {{ $pendingReservationsCount > 9 ? '9+' : $pendingReservationsCount }}
+                                </span>
+                            @endif
                         </a>
 
                         <a href="{{ route('availability.index') }}"

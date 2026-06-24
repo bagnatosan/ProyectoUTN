@@ -19,11 +19,19 @@
         <p class="seller-reservations__subtitle">Administr\u00E1 las reservas de tus productos.</p>
       </div>
     </div>
-    <div class="seller-reservations__total-badge" id="sr-total" role="status" aria-live="polite">
-      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-      <span>0 reservas</span>
+    <div class="seller-reservations__header-right">
+      <div class="seller-reservations__total-badge" id="sr-total" role="status" aria-live="polite">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <span>0 reservas</span>
+      </div>
+      <a href="{{ route('reservations.export', request()->query()) }}" class="seller-reservations__export-btn" title="Exportar a CSV">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+        </svg>
+        <span>Exportar</span>
+      </a>
     </div>
   </div>
 
@@ -37,12 +45,24 @@
       <button class="seller-reservations__filter-btn" data-sr-filter="all" role="tab" aria-selected="false">Todas</button>
     </div>
 
+    <div class="seller-reservations__date-range">
+      <input type="date" id="sr-date-from" class="seller-reservations__date-input" aria-label="Desde fecha" title="Desde">
+      <span class="seller-reservations__date-sep">a</span>
+      <input type="date" id="sr-date-to" class="seller-reservations__date-input" aria-label="Hasta fecha" title="Hasta">
+    </div>
+
     <select id="sr-status-select" class="seller-reservations__status-select" aria-label="Filtrar por estado">
       <option value="">Todos los estados</option>
       <option value="pending">Pendiente</option>
       <option value="confirmed">Confirmada</option>
       <option value="completed">Completada</option>
       <option value="cancelled">Cancelada</option>
+    </select>
+
+    <select id="sr-sort-select" class="seller-reservations__sort-select" aria-label="Ordenar por">
+      <option value="reservation_date">Fecha</option>
+      <option value="client_name">Cliente</option>
+      <option value="status">Estado</option>
     </select>
 
     <div class="seller-reservations__search-wrapper">

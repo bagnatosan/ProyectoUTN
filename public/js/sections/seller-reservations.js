@@ -20,6 +20,10 @@ const SellerReservations = (() => {
     status: '',
     search: '',
     page: 1,
+    date_from: '',
+    date_to: '',
+    sort_by: 'reservation_date',
+    sort_dir: 'desc',
   };
 
   var debounceTimer = null;
@@ -27,6 +31,8 @@ const SellerReservations = (() => {
   function init() {
     initFilterButtons();
     initStatusSelect();
+    initDateRange();
+    initSortSelect();
     initSearchInput();
     initPagination();
     initModalClose();
@@ -46,6 +52,10 @@ const SellerReservations = (() => {
         setActiveFilter(btn);
         state.filter = filter;
         state.page = 1;
+        resetDateRange();
+        state.sort_by = 'reservation_date';
+        state.sort_dir = 'desc';
+        syncSortSelect();
         loadReservations();
       });
     });
@@ -69,6 +79,55 @@ const SellerReservations = (() => {
       state.page = 1;
       loadReservations();
     });
+  }
+
+  /* =============================
+     DATE RANGE
+     ============================= */
+  function initDateRange() {
+    var from = document.getElementById('sr-date-from');
+    var to = document.getElementById('sr-date-to');
+    if (from) {
+      from.addEventListener('change', function () {
+        state.date_from = from.value;
+        state.page = 1;
+        loadReservations();
+      });
+    }
+    if (to) {
+      to.addEventListener('change', function () {
+        state.date_to = to.value;
+        state.page = 1;
+        loadReservations();
+      });
+    }
+  }
+
+  function resetDateRange() {
+    state.date_from = '';
+    state.date_to = '';
+    var from = document.getElementById('sr-date-from');
+    var to = document.getElementById('sr-date-to');
+    if (from) from.value = '';
+    if (to) to.value = '';
+  }
+
+  /* =============================
+     SORT SELECT
+     ============================= */
+  function initSortSelect() {
+    var sel = document.getElementById('sr-sort-select');
+    if (!sel) return;
+    sel.addEventListener('change', function () {
+      state.sort_by = sel.value;
+      state.page = 1;
+      loadReservations();
+    });
+  }
+
+  function syncSortSelect() {
+    var sel = document.getElementById('sr-sort-select');
+    if (sel) sel.value = state.sort_by;
   }
 
   /* =============================
@@ -200,6 +259,10 @@ const SellerReservations = (() => {
     params.set('filter', state.filter);
     if (state.status) params.set('status', state.status);
     if (state.search) params.set('search', state.search);
+    if (state.date_from) params.set('date_from', state.date_from);
+    if (state.date_to) params.set('date_to', state.date_to);
+    params.set('sort_by', state.sort_by);
+    params.set('sort_dir', state.sort_dir);
     params.set('page', String(state.page));
     params.set('per_page', '12');
     return '/reservations/manage/data?' + params.toString();
@@ -226,6 +289,7 @@ const SellerReservations = (() => {
         hideLoader();
         if (response.success) {
           updateTotal(response.total);
+          updateExportLink();
           if (response.data && response.data.length > 0) {
             renderGrid(response.data);
             renderPagination(response.total, response.current_page, response.last_page);
@@ -303,7 +367,8 @@ const SellerReservations = (() => {
     var statusLabel = STATUS_LABELS[r.status] || r.status;
 
     var card = document.createElement('article');
-    card.className = 'seller-reservations__card';
+    var isOverdue = isReservationOverdue(r);
+    card.className = 'seller-reservations__card' + (isOverdue ? ' seller-reservations__card--overdue' : '');
     card.dataset.id = r.id;
 
     var productHtml = '';
@@ -584,6 +649,29 @@ const SellerReservations = (() => {
   /* =============================
      UTILITIES
      ============================= */
+  function isReservationOverdue(r) {
+    if (!r.reservation_date) return false;
+    if (r.status !== 'pending' && r.status !== 'confirmed') return false;
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var parts = r.reservation_date.split('-');
+    var resDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    return resDate < today;
+  }
+
+  function updateExportLink() {
+    var link = document.querySelector('.seller-reservations__export-btn');
+    if (!link) return;
+    var params = new URLSearchParams();
+    if (state.status) params.set('status', state.status);
+    if (state.search) params.set('search', state.search);
+    if (state.date_from) params.set('date_from', state.date_from);
+    if (state.date_to) params.set('date_to', state.date_to);
+    params.set('sort_by', state.sort_by);
+    params.set('sort_dir', state.sort_dir);
+    link.href = '/reservations/manage/export?' + params.toString();
+  }
+
   function formatDate(dateStr) {
     if (!dateStr) return '';
     var parts = dateStr.split('-');

@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\BusinessProfile;
+use App\Models\Reservation;
 use App\Services\GeocodingService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class RegistrationController extends Controller
 {
@@ -188,11 +190,45 @@ class RegistrationController extends Controller
             return redirect()->route('register.select');
         }
 
-        if (Auth::user()->role === 'client') {
+        $user = Auth::user();
+
+        if ($user->role === 'client') {
             $businesses = BusinessProfile::all();
             return view('dashboard', compact('businesses'));
         }
 
-        return view('dashboard');
+        $reservationsToday = collect();
+        $reservationsTomorrow = collect();
+        $stats = [];
+
+        if ($user->role === 'seller' && $user->businessProfile) {
+            $bpId = $user->businessProfile->id;
+            $today = Carbon::today()->format('Y-m-d');
+            $tomorrow = Carbon::tomorrow()->format('Y-m-d');
+
+            $reservationsToday = Reservation::with('product')
+                ->forBusiness($bpId)
+                ->where('reservation_date', $today)
+                ->orderBy('reservation_time')
+                ->get();
+
+            $reservationsTomorrow = Reservation::with('product')
+                ->forBusiness($bpId)
+                ->where('reservation_date', $tomorrow)
+                ->orderBy('reservation_time')
+                ->get();
+
+            $stats = [
+                'pending'    => Reservation::forBusiness($bpId)->pending()->count(),
+                'confirmed'  => Reservation::forBusiness($bpId)->confirmed()->count(),
+                'today'      => Reservation::forBusiness($bpId)->where('reservation_date', $today)->count(),
+                'overdue'    => Reservation::forBusiness($bpId)
+                    ->whereIn('status', ['pending', 'confirmed'])
+                    ->where('reservation_date', '<', $today)
+                    ->count(),
+            ];
+        }
+
+        return view('dashboard', compact('reservationsToday', 'reservationsTomorrow', 'stats'));
     }
 }

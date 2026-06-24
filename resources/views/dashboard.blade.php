@@ -175,14 +175,125 @@ document.addEventListener('DOMContentLoaded', function() {
     </p>
 
     @if(auth()->user()->role === 'seller')
-        <p class="text-xs text-slate-500 mt-3 max-w-md mx-auto">
-            ¿Querés explorar como cliente? Usá <strong>Salir</strong> en la navbar y registrate o ingresá con una cuenta cliente.
-        </p>
+        @php
+            $overdueCount = $stats['overdue'] ?? 0;
+            $todayCount = $stats['today'] ?? 0;
+            $pendingCount = $stats['pending'] ?? 0;
+            $confirmedCount = $stats['confirmed'] ?? 0;
+        @endphp
+
+        {{-- Stat cards --}}
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 max-w-2xl mx-auto">
+            <div class="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 text-left">
+                <p class="text-2xl font-bold text-amber-400">{{ $pendingCount }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">Pendientes</p>
+            </div>
+            <div class="p-4 rounded-xl border border-sky-500/20 bg-sky-500/5 text-left">
+                <p class="text-2xl font-bold text-sky-400">{{ $confirmedCount }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">Confirmadas</p>
+            </div>
+            <div class="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-left">
+                <p class="text-2xl font-bold text-emerald-400">{{ $todayCount }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">Hoy</p>
+            </div>
+            <div class="p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 text-left">
+                <p class="text-2xl font-bold text-rose-400">{{ $overdueCount }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">Vencidas</p>
+            </div>
+        </div>
     @endif
 
-    <!-- Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-12 max-w-lg mx-auto">
-        @if(auth()->user()->role === 'admin')
+    @if(auth()->user()->role === 'seller' && auth()->user()->businessProfile)
+        {{-- Upcoming reservations --}}
+        <div class="mt-10 max-w-3xl mx-auto text-left space-y-6">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Próximas Reservas
+                </h2>
+                <a href="{{ route('reservations.manage') }}" class="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">Ver todas →</a>
+            </div>
+
+            {{-- Today --}}
+            <div>
+                <h3 class="text-sm font-semibold text-slate-400 mb-3 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                    Hoy — {{ now()->format('d/m/Y') }}
+                    <span class="text-xs text-slate-500 font-normal">({{ $reservationsToday->count() }})</span>
+                </h3>
+                @if($reservationsToday->isEmpty())
+                    <p class="text-sm text-slate-600 py-4 text-center border border-dashed border-slate-800 rounded-xl">Sin reservas para hoy.</p>
+                @else
+                    <div class="space-y-2">
+                        @foreach($reservationsToday as $res)
+                            <a href="{{ route('reservations.detail', $res) }}" class="block p-3 rounded-xl border border-slate-800 bg-slate-900/20 hover:bg-slate-900/40 hover:border-slate-700 transition-all">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <span class="text-xs font-bold text-indigo-400 tabular-nums shrink-0">{{ \Carbon\Carbon::parse($res->reservation_time)->format('H:i') }}</span>
+                                        <span class="text-sm font-medium text-white truncate">{{ $res->client_name }}</span>
+                                        <span class="text-xs text-slate-500 truncate hidden sm:inline">{{ $res->product?->name }}</span>
+                                    </div>
+                                    <span class="shrink-0 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full
+                                        @if($res->status === 'pending') bg-amber-500/10 text-amber-400 border border-amber-500/20
+                                        @elseif($res->status === 'confirmed') bg-sky-500/10 text-sky-400 border border-sky-500/20
+                                        @elseif($res->status === 'completed') bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+                                        @else bg-rose-500/10 text-rose-400 border border-rose-500/20
+                                        @endif">
+                                        {{ $res->status === 'pending' ? 'Pendiente' : ($res->status === 'confirmed' ? 'Confirmada' : ($res->status === 'completed' ? 'Completada' : 'Cancelada')) }}
+                                    </span>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+
+            {{-- Tomorrow --}}
+            <div>
+                <h3 class="text-sm font-semibold text-slate-400 mb-3 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-sky-400 inline-block"></span>
+                    Mañana — {{ now()->addDay()->format('d/m/Y') }}
+                    <span class="text-xs text-slate-500 font-normal">({{ $reservationsTomorrow->count() }})</span>
+                </h3>
+                @if($reservationsTomorrow->isEmpty())
+                    <p class="text-sm text-slate-600 py-4 text-center border border-dashed border-slate-800 rounded-xl">Sin reservas para mañana.</p>
+                @else
+                    <div class="space-y-2">
+                        @foreach($reservationsTomorrow as $res)
+                            <a href="{{ route('reservations.detail', $res) }}" class="block p-3 rounded-xl border border-slate-800 bg-slate-900/20 hover:bg-slate-900/40 hover:border-slate-700 transition-all">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <span class="text-xs font-bold text-indigo-400 tabular-nums shrink-0">{{ \Carbon\Carbon::parse($res->reservation_time)->format('H:i') }}</span>
+                                        <span class="text-sm font-medium text-white truncate">{{ $res->client_name }}</span>
+                                        <span class="text-xs text-slate-500 truncate hidden sm:inline">{{ $res->product?->name }}</span>
+                                    </div>
+                                    <span class="shrink-0 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full
+                                        @if($res->status === 'pending') bg-amber-500/10 text-amber-400 border border-amber-500/20
+                                        @elseif($res->status === 'confirmed') bg-sky-500/10 text-sky-400 border border-sky-500/20
+                                        @elseif($res->status === 'completed') bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+                                        @else bg-rose-500/10 text-rose-400 border border-rose-500/20
+                                        @endif">
+                                        {{ $res->status === 'pending' ? 'Pendiente' : ($res->status === 'confirmed' ? 'Confirmada' : ($res->status === 'completed' ? 'Completada' : 'Cancelada')) }}
+                                    </span>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="{{ route('reservations.manage') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600/20 border border-indigo-500/30 hover:bg-indigo-600/30 transition-all">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                Gestionar Pedidos
+            </a>
+        </div>
+    @endif
+
+    @if(auth()->user()->role === 'admin')
+        {{-- Admin section --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-10 max-w-lg mx-auto">
             <a href="{{ route('admin.dashboard') }}" class="p-6 rounded-xl border border-purple-900 bg-purple-500/10 backdrop-blur text-left hover:bg-purple-500/20 transition-colors">
                 <h3 class="font-bold text-purple-300 text-sm">Panel de Administración</h3>
                 <p class="text-slate-500 text-xs mt-1">Gestión global de usuarios, productos y estadísticas.</p>
@@ -191,17 +302,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h3 class="font-bold text-slate-200 text-sm">Tu Perfil</h3>
                 <p class="text-slate-500 text-xs mt-1">Configura los datos de tu cuenta de administrador.</p>
             </div>
-        @else
-            <div class="p-6 rounded-xl border border-slate-900 bg-slate-900/20 backdrop-blur text-left">
-                <h3 class="font-bold text-slate-200 text-sm">Tu Perfil</h3>
-                <p class="text-slate-500 text-xs mt-1">Configura los datos personales de tu cuenta de acceso.</p>
-            </div>
-            <div class="p-6 rounded-xl border border-slate-900 bg-slate-900/20 backdrop-blur text-left">
-                <h3 class="font-bold text-slate-200 text-sm">Mi Negocio</h3>
-                <p class="text-slate-500 text-xs mt-1">Administra tu catálogo, productos y horarios.</p>
-            </div>
-        @endif
-    </div>
+        </div>
+    @endif
 
 </div>
 @endif

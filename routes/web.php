@@ -107,6 +107,8 @@ Route::middleware(['auth'])->group(function () {
     // --- Programador 5: Gestión de Pedidos (Vendedor) ---
     Route::get('/reservations/manage', [ReservationController::class, 'manage'])->name('reservations.manage');
     Route::get('/reservations/manage/data', [ReservationController::class, 'getReservations'])->name('reservations.manage.data');
+    Route::get('/reservations/manage/export', [ReservationController::class, 'exportCsv'])->name('reservations.export');
+    Route::get('/reservations/pending-count', [ReservationController::class, 'pendingCount'])->name('reservations.pending-count');
     Route::get('/reservations/{reservation}/detail', [ReservationController::class, 'show'])->name('reservations.detail');
     Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.update-status');
     Route::patch('/reservations/{reservation}/seller-notes', [ReservationController::class, 'updateSellerNotes'])->name('reservations.seller-notes');
