@@ -194,7 +194,15 @@ class RegistrationController extends Controller
 
         if ($user->role === 'client') {
             $businesses = BusinessProfile::all();
-            return view('dashboard', compact('businesses'));
+            $upcomingReservations = Reservation::where('user_id', $user->id)
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->where('reservation_date', '>=', now()->format('Y-m-d'))
+                ->with('product.businessProfile')
+                ->orderBy('reservation_date')
+                ->orderBy('reservation_time')
+                ->take(5)
+                ->get();
+            return view('dashboard', compact('businesses', 'upcomingReservations'));
         }
 
         $reservationsToday = collect();

@@ -7,7 +7,9 @@ use App\Models\Product;
 use App\Models\Reservation;
 use App\Services\AvailabilityService;
 use App\Http\Requests\StoreReservationRequest;
+use App\Http\Requests\UpdateReservationRequest;
 use App\Http\Requests\UpdateReservationStatusRequest;
+use App\Notifications\ReservationUpdated;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -88,13 +90,113 @@ class ReservationController extends Controller
     {
         $this->authorize('viewAnyClient', Reservation::class);
 
-        $reservations = Reservation::where('user_id', Auth::id())
-            ->with('product')
+        $reservations = Reservation::forClient()
+            ->with(['product.businessProfile.user', 'product'])
             ->orderBy('reservation_date', 'desc')
             ->orderBy('reservation_time', 'desc')
             ->get();
 
-        return view('reservations.client_history', compact('reservations'));
+        return view('reservations.index', compact('reservations'));
+    }
+
+    public function edit(Reservation $reservation): View|RedirectResponse
+    {
+        $this->authorize('modify', $reservation);
+
+        $minDate = now()->addDays(2)->format('Y-m-d');
+        if ($reservation->reservation_date->format('Y-m-d') < $minDate) {
+            return redirect()->route('reservations.index')
+                ->with('error', 'No podés modificar una reserva con menos de 2 días de anticipación.');
+        }
+
+        $sellerId = $reservation->product->businessProfile->user_id;
+        $sellerProfile = $reservation->product->businessProfile;
+
+        $products = Product::where('is_active', true)
+            ->where('business_profile_id', $sellerProfile->id)
+            ->get();
+
+        $reservation->load('product.businessProfile');
+
+        return view('reservations.edit', compact('reservation', 'products', 'sellerId'));
+    }
+
+    public function update(UpdateReservationRequest $request, Reservation $reservation): RedirectResponse
+    {
+        $this->authorize('modify', $reservation);
+
+        $oldData = [
+            'product_id' => $reservation->product_id,
+            'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
+            'reservation_time' => $reservation->reservation_time,
+            'notes' => $reservation->notes,
+        ];
+
+        $updated = DB::transaction(function () use ($request, $reservation) {
+            $sellerId = $reservation->product->businessProfile->user_id;
+
+            $isAvailable = $this->availabilityService->isSlotAvailable(
+                $sellerId,
+                $request->reservation_date,
+                $request->reservation_time,
+                $reservation->id,
+            );
+
+            if (!$isAvailable) {
+                return false;
+            }
+
+            $reservation->update([
+                'product_id'       => $request->product_id,
+                'reservation_date' => $request->reservation_date,
+                'reservation_time' => $request->reservation_time,
+                'notes'            => $request->notes,
+            ]);
+
+            return true;
+        });
+
+        if (!$updated) {
+            return back()->withInput()
+                ->withErrors(['reservation_time' => 'El horario seleccionado ya no está disponible. Por favor elegí otro.']);
+        }
+
+        $changes = [];
+        $labels = [
+            'product_id' => 'Producto',
+            'reservation_date' => 'Fecha',
+            'reservation_time' => 'Horario',
+            'notes' => 'Notas',
+        ];
+
+        $newData = [
+            'product_id' => $reservation->product_id,
+            'reservation_date' => $reservation->reservation_date->format('Y-m-d'),
+            'reservation_time' => $reservation->reservation_time,
+            'notes' => $reservation->notes,
+        ];
+
+        foreach ($newData as $field => $newValue) {
+            if ($oldData[$field] != $newValue) {
+                $oldDisplay = $field === 'product_id'
+                    ? ($reservation->product?->name ?? 'Anterior')
+                    : $oldData[$field];
+                $newDisplay = $field === 'product_id'
+                    ? (\App\Models\Product::find($newValue)?->name ?? $newValue)
+                    : $newValue;
+                $changes[$field] = ['old' => $oldDisplay, 'new' => $newDisplay];
+            }
+        }
+
+        if (!empty($changes)) {
+            $seller = $reservation->product?->businessProfile?->user;
+            if ($seller) {
+                $seller->notify(new ReservationUpdated($reservation->fresh(), $changes));
+            }
+        }
+
+        return redirect()->route('reservations.index')
+            ->with('success', 'Reserva modificada con éxito.');
     }
 
     public function cancel(Request $request, Reservation $reservation): RedirectResponse|JsonResponse

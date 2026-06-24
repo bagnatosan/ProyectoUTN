@@ -90,6 +90,11 @@ class Reservation extends Model
         return $query->where('user_id', $userId);
     }
 
+    public function scopeForClient($query)
+    {
+        return $query->where('user_id', auth()->id());
+    }
+
     public function scopeForBusiness($query, int $businessProfileId)
     {
         return $query->whereHas('product', fn ($q) => $q->where('business_profile_id', $businessProfileId));

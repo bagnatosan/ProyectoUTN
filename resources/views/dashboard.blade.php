@@ -18,6 +18,39 @@
         </p>
     </div>
 
+    @if($upcomingReservations->isNotEmpty())
+    <div class="max-w-2xl mx-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Próximas Reservas
+        </h2>
+        <a href="{{ route('reservations.index') }}" class="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">Ver todas →</a>
+      </div>
+      <div class="space-y-2 mb-8">
+        @foreach($upcomingReservations as $res)
+          <div class="flex items-center justify-between gap-3 p-3 rounded-xl border border-slate-800 bg-slate-900/20">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="text-xs font-bold text-indigo-400 tabular-nums shrink-0">{{ \Carbon\Carbon::parse($res->reservation_time)->format('H:i') }}</span>
+              <div class="min-w-0">
+                <p class="text-sm font-medium text-white truncate">{{ $res->product?->name ?? 'Producto' }}</p>
+                <p class="text-xs text-slate-500">{{ $res->reservation_date->format('d/m/Y') }} · {{ $res->product?->businessProfile?->business_name ?? 'Emprendedor' }}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full
+                @if($res->status === 'pending') bg-amber-500/10 text-amber-400 border border-amber-500/20
+                @else bg-sky-500/10 text-sky-400 border border-sky-500/20
+                @endif">
+                {{ $res->status === 'pending' ? 'Pendiente' : 'Confirmada' }}
+              </span>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    </div>
+    @endif
+
     <!-- Buscador de negocios -->
     <div class="relative max-w-md mx-auto input-icon-group">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">

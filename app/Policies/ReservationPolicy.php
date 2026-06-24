@@ -56,6 +56,20 @@ class ReservationPolicy
         return false;
     }
 
+    public function modify(User $user, Reservation $reservation): bool
+    {
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        if ($user->role === 'client') {
+            return $reservation->user_id === $user->id
+                && $reservation->status === 'pending';
+        }
+
+        return false;
+    }
+
     public function cancel(User $user, Reservation $reservation): bool
     {
         if ($user->role === 'admin') {

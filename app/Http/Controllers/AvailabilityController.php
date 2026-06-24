@@ -56,7 +56,7 @@ class AvailabilityController extends Controller
         return $this->store($request);
     }
 
-    public function availableSlots(int $sellerId, string $date): JsonResponse
+    public function availableSlots(int $sellerId, string $date, Request $request): JsonResponse
     {
         $seller = User::find($sellerId);
 
@@ -67,7 +67,9 @@ class AvailabilityController extends Controller
             ], 404);
         }
 
-        $slots = $this->availabilityService->getAvailableSlots($sellerId, $date);
+        $excludeReservation = $request->integer('exclude_reservation', 0) ?: null;
+
+        $slots = $this->availabilityService->getAvailableSlots($sellerId, $date, $excludeReservation);
 
         return response()->json([
             'success' => true,

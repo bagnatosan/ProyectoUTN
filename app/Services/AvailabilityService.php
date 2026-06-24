@@ -25,7 +25,7 @@ class AvailabilityService
      * @param string $date     Fecha en formato Y-m-d.
      * @return array Lista de horarios disponibles en formato H:i (ej: ["09:00", "09:30"]).
      */
-    public function getAvailableSlots(int $sellerId, string $date): array
+    public function getAvailableSlots(int $sellerId, string $date, ?int $excludeReservationId = null): array
     {
         $dateCarbon = Carbon::parse($date);
 
@@ -64,6 +64,7 @@ class AvailabilityService
             ->whereHas('product', function ($q) use ($sellerId) {
                 $q->whereHas('businessProfile', fn ($q2) => $q2->where('user_id', $sellerId));
             })
+            ->when($excludeReservationId, fn ($q) => $q->where('id', '!=', $excludeReservationId))
             ->pluck('reservation_time')
             ->map(fn ($time) => Carbon::parse($time)->format('H:i'));
 
@@ -91,7 +92,7 @@ class AvailabilityService
      * @param string $time     Hora en formato H:i.
      * @return bool True si el horario está libre.
      */
-    public function isSlotAvailable(int $sellerId, string $date, string $time): bool
+    public function isSlotAvailable(int $sellerId, string $date, string $time, ?int $excludeReservationId = null): bool
     {
         $dayOfWeek = (int) Carbon::parse($date)->format('w');
 
@@ -113,6 +114,7 @@ class AvailabilityService
             ->whereHas('product', function ($q) use ($sellerId) {
                 $q->whereHas('businessProfile', fn ($q2) => $q2->where('user_id', $sellerId));
             })
+            ->when($excludeReservationId, fn ($q) => $q->where('id', '!=', $excludeReservationId))
             ->lockForUpdate()
             ->exists();
 

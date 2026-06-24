@@ -14,7 +14,7 @@
         </svg>
       </div>
       <div>
-        <h1 class="reservations-manage__title">Gestión de Pedidos</h1>
+        <h1 class="reservations-manage__title">Gestion de Pedidos</h1>
         <p class="reservations-manage__subtitle">Visualizá y administrá las reservas de tus productos.</p>
       </div>
     </div>
@@ -22,7 +22,7 @@
 
   <div class="reservations-manage__filters" role="tablist" aria-label="Filtros temporales">
     <button class="reservations-manage__filter reservations-manage__filter--active" data-filter="today" role="tab" aria-selected="true">Hoy</button>
-    <button class="reservations-manage__filter" data-filter="tomorrow" role="tab" aria-selected="false">Mañana</button>
+    <button class="reservations-manage__filter" data-filter="tomorrow" role="tab" aria-selected="false">Manana</button>
     <button class="reservations-manage__filter" data-filter="week" role="tab" aria-selected="false">Semana</button>
     <button class="reservations-manage__filter" data-filter="month" role="tab" aria-selected="false">Mes</button>
   </div>

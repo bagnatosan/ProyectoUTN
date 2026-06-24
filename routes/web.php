@@ -87,6 +87,8 @@ Route::middleware(['auth'])->group(function () {
     // --- Programador 4: Reservas (Cliente logueado) ---
     Route::middleware(['client'])->group(function () {
         Route::get('/my-reservations', [ReservationController::class, 'index'])->name('reservations.index');
+        Route::get('/reservations/{reservation}/edit', [ReservationController::class, 'edit'])->name('reservations.edit');
+        Route::put('/reservations/{reservation}', [ReservationController::class, 'update'])->name('reservations.update');
         Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
     });
 
