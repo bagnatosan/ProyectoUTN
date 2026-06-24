@@ -34,18 +34,18 @@ class StoreReservationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'product_id.required'            => 'Debes seleccionar un producto.',
-            'product_id.exists'              => 'El producto seleccionado no existe.',
-            'client_name.required'           => 'El nombre es obligatorio.',
-            'client_email.required'          => 'El correo electrónico es obligatorio.',
-            'client_email.email'             => 'El correo electrónico no es válido.',
-            'reservation_date.required'      => 'La fecha es obligatoria.',
-            'reservation_date.date_format'   => 'Formato de fecha inválido.',
-            'reservation_date.after_or_equal' => 'La fecha no puede ser anterior a hoy.',
-            'reservation_time.required'      => 'La hora es obligatoria.',
-            'reservation_time.date_format'   => 'Formato de hora inválido (HH:MM).',
-            'reservation_time.after'         => 'La hora debe ser posterior a la actual.',
-            'notes.max'                      => 'Las notas no pueden exceder 1000 caracteres.',
+            'product_id.required'              => 'Debes seleccionar un producto.',
+            'product_id.exists'                => 'El producto seleccionado no existe.',
+            'client_name.required'             => 'El nombre es obligatorio.',
+            'client_email.required'            => 'El correo electrónico es obligatorio.',
+            'client_email.email'               => 'El correo electrónico no es válido.',
+            'reservation_date.required'        => 'La fecha es obligatoria.',
+            'reservation_date.date_format'     => 'Formato de fecha inválido.',
+            'reservation_date.after_or_equal'  => 'La fecha no puede ser anterior a hoy.',
+            'reservation_time.required'        => 'La hora es obligatoria.',
+            'reservation_time.date_format'     => 'Formato de hora inválido (HH:MM).',
+            'reservation_time.after'           => 'La hora debe ser posterior a la actual.',
+            'notes.max'                        => 'Las notas no pueden exceder 1000 caracteres.',
         ];
     }
 }

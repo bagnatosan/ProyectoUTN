@@ -37,6 +37,11 @@ class User extends Authenticatable
         return $this->hasOne(BusinessProfile::class);
     }
 
+    public function availabilitySlots()
+    {
+        return $this->hasMany(AvailabilitySlot::class);
+    }
+
     public function reservations()
     {
         return $this->hasMany(Reservation::class, 'user_id');

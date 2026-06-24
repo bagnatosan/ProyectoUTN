@@ -469,7 +469,7 @@
                   <option value="">Seleccioná un producto</option>
                   @foreach($products as $product)
                     <option value="{{ $product->id }}"
-                            data-business-profile-id="{{ $product->business_profile_id }}"
+                            data-user-id="{{ $product->businessProfile->user_id }}"
                             {{ (old('product_id', $selectedProduct->id ?? '') == $product->id) ? 'selected' : '' }}>
                       {{ $product->name }} - ${{ number_format($product->price, 2) }}
                     </option>

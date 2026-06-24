@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Reservation extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'product_id',
@@ -21,10 +22,12 @@ class Reservation extends Model
         'status',
         'cancellation_reason',
         'cancelled_by',
+        'seller_notes',
     ];
 
     protected $casts = [
-        'reservation_date' => 'date',
+        'reservation_date' => 'date:Y-m-d',
+        'completed_at' => 'datetime',
     ];
 
     public function product()
@@ -34,7 +37,12 @@ class Reservation extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class)->withDefault();
+        return $this->belongsTo(User::class, 'user_id')->withDefault();
+    }
+
+    public function canceller()
+    {
+        return $this->belongsTo(User::class, 'cancelled_by')->withDefault();
     }
 
     public function scopePending($query)
@@ -59,7 +67,12 @@ class Reservation extends Model
 
     public function scopeNotCancelled($query)
     {
-        return $query->whereNotIn('status', ['cancelled']);
+        return $query->whereNot('status', 'cancelled');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->whereIn('status', ['pending', 'confirmed']);
     }
 
     public function scopeForDate($query, string $date)
@@ -72,17 +85,40 @@ class Reservation extends Model
         return $query->where('product_id', $productId);
     }
 
+    public function scopeForUser($query, int $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
     public function scopeForBusiness($query, int $businessProfileId)
     {
         return $query->whereHas('product', fn ($q) => $q->where('business_profile_id', $businessProfileId));
     }
 
-    public function scopeForUserReservations($query, int $userId)
+    public function scopeToday($query)
     {
-        return $query->where('user_id', $userId);
+        return $query->where('reservation_date', now()->format('Y-m-d'));
+    }
+
+    public function scopeForWeek($query, ?string $startDate = null)
+    {
+        $start = $startDate ?: now()->startOfWeek()->format('Y-m-d');
+        $end = now()->parse($start)->endOfWeek()->format('Y-m-d');
+
+        return $query->whereBetween('reservation_date', [$start, $end]);
+    }
+
+    public function scopeByStatus($query, string $status)
+    {
+        return $query->where('status', $status);
     }
 
     public function isCancellable(): bool
+    {
+        return in_array($this->status, ['pending', 'confirmed']);
+    }
+
+    public function isActive(): bool
     {
         return in_array($this->status, ['pending', 'confirmed']);
     }

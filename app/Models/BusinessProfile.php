@@ -33,11 +33,6 @@ class BusinessProfile extends Model
         return $this->hasMany(Product::class);
     }
 
-    public function availabilitySlots()
-    {
-        return $this->hasMany(AvailabilitySlot::class);
-    }
-
     public function ingredients()
     {
         return $this->hasMany(Ingredient::class);

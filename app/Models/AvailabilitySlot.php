@@ -10,34 +10,33 @@ class AvailabilitySlot extends Model
     use HasFactory;
 
     protected $fillable = [
-        'business_profile_id',
-        'weekday',
+        'user_id',
+        'day_of_week',
         'start_time',
         'end_time',
-        'is_active',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'day_of_week' => 'integer',
     ];
 
-    public function businessProfile()
+    public function user()
     {
-        return $this->belongsTo(BusinessProfile::class);
+        return $this->belongsTo(User::class);
     }
 
-    public function scopeForDay($query, string $day)
+    public function scopeForDay($query, int $day)
     {
-        return $query->where('weekday', $day);
+        return $query->where('day_of_week', $day);
     }
 
     public function scopeForUser($query, int $userId)
     {
-        return $query->whereHas('businessProfile', fn ($q) => $q->where('user_id', $userId));
+        return $query->where('user_id', $userId);
     }
 
-    public function scopeActive($query)
+    public function scopeOrderByDayAndTime($query)
     {
-        return $query->where('is_active', true);
+        return $query->orderBy('day_of_week')->orderBy('start_time');
     }
 }

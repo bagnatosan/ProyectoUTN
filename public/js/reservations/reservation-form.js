@@ -19,18 +19,18 @@ const ReservationForm = (() => {
     var calendar = null;
     var timeSlots = null;
 
-    function getBusinessProfileId() {
+    function getUserId() {
       if (!productSelect) return null;
       var option = productSelect.options[productSelect.selectedIndex];
-      if (option && option.dataset.businessProfileId) {
-        return option.dataset.businessProfileId;
+      if (option && option.dataset.userId) {
+        return option.dataset.userId;
       }
       var selectedValue = productSelect.value;
       if (!selectedValue) return null;
       var allOptions = productSelect.querySelectorAll('option');
       for (var i = 0; i < allOptions.length; i++) {
         if (allOptions[i].value === selectedValue) {
-          return allOptions[i].dataset.businessProfileId || null;
+          return allOptions[i].dataset.userId || null;
         }
       }
       return null;
@@ -61,15 +61,15 @@ const ReservationForm = (() => {
     }
 
     async function fetchAvailability(dateStr) {
-      var bpId = getBusinessProfileId();
-      if (!bpId) {
+      var userId = getUserId();
+      if (!userId) {
         if (timeSlots) timeSlots.render('empty');
         return;
       }
       if (timeSlots) timeSlots.render('loading');
       if (calendar) calendar.setDateState(dateStr, null);
       try {
-        var result = await AvailabilityService.fetchSlots(bpId, dateStr);
+        var result = await AvailabilityService.fetchSlots(userId, dateStr);
         var slots = result.slots || [];
         if (slots.length > 0) {
           if (timeSlots) timeSlots.render('success', slots);

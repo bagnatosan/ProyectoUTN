@@ -12,6 +12,11 @@ class ReservationPolicy
         return in_array($user->role, ['admin', 'seller', 'client']);
     }
 
+    public function viewAnyClient(User $user): bool
+    {
+        return $user->role === 'client';
+    }
+
     public function view(User $user, Reservation $reservation): bool
     {
         if ($user->role === 'admin') {

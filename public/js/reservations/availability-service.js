@@ -1,12 +1,6 @@
 const AvailabilityService = (() => {
-  const ENDPOINT = '/availability/slots';
-
-  async function fetchSlots(businessProfileId, date) {
-    const params = new URLSearchParams({
-      business_profile_id: String(businessProfileId),
-      date: date,
-    });
-    const url = ENDPOINT + '?' + params.toString();
+  async function fetchSlots(userId, date) {
+    const url = '/available-slots/' + encodeURIComponent(userId) + '/' + encodeURIComponent(date);
 
     const response = await fetch(url, {
       headers: {

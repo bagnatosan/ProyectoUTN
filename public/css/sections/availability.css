@@ -28,6 +28,66 @@
 }
 
 /* =============================================
+   CARD
+   ============================================= */
+.availability__card {
+  border: 1px solid var(--av-border-card);
+  background-color: var(--av-bg-card);
+  border-radius: var(--av-radius);
+  overflow: hidden;
+}
+
+.availability__card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.25rem 0;
+  margin-bottom: 1rem;
+}
+
+.availability__card-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, var(--av-primary), #a9583e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.availability__card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--av-text);
+  line-height: 1.3;
+}
+
+.availability__card-subtitle {
+  font-size: 0.8125rem;
+  color: var(--av-text-muted);
+  margin-top: 0.125rem;
+}
+
+.availability__day-list {
+  padding: 0 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.availability__slot-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.availability__template {
+  display: none !important;
+}
+
+/* =============================================
    DAY SECTION
    ============================================= */
 .availability__day-section {

@@ -11,7 +11,7 @@ use App\Http\Controllers\IngredientController;
 use App\Models\Ingredient;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\RecipeController;
-use App\Http\Controllers\AvailabilitySlotController;
+use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MapController;
@@ -77,12 +77,18 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('ingredients', IngredientController::class);
 
-    // --- Programador 4: Disponibilidad y Reservas (Vendedor/Cliente logueado) ---
-    Route::get('/availability/edit', [AvailabilitySlotController::class, 'edit'])->name('availability.edit');
-    Route::put('/availability/update', [AvailabilitySlotController::class, 'update'])->name('availability.update');
-    Route::get('/my-reservations', [ReservationController::class, 'clientHistory'])->name('reservations.client_history');
-    Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.update-status');
-    Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
+    // --- Programador 4: Disponibilidad (Vendedor) ---
+    Route::middleware(['seller'])->group(function () {
+        Route::get('/availability', [AvailabilityController::class, 'index'])->name('availability.index');
+        Route::post('/availability', [AvailabilityController::class, 'store'])->name('availability.store');
+        Route::put('/availability', [AvailabilityController::class, 'update'])->name('availability.update');
+    });
+
+    // --- Programador 4: Reservas (Cliente logueado) ---
+    Route::middleware(['client'])->group(function () {
+        Route::get('/my-reservations', [ReservationController::class, 'index'])->name('reservations.index');
+        Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
+    });
 
     // --- Notificaciones ---
     Route::get('/notifications', function () {
@@ -101,6 +107,9 @@ Route::middleware(['auth'])->group(function () {
     // --- Programador 5: Gestión de Pedidos (Vendedor) ---
     Route::get('/reservations/manage', [ReservationController::class, 'manage'])->name('reservations.manage');
     Route::get('/reservations/manage/data', [ReservationController::class, 'getReservations'])->name('reservations.manage.data');
+    Route::get('/reservations/{reservation}/detail', [ReservationController::class, 'show'])->name('reservations.detail');
+    Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.update-status');
+    Route::patch('/reservations/{reservation}/seller-notes', [ReservationController::class, 'updateSellerNotes'])->name('reservations.seller-notes');
 
 });
 
@@ -111,7 +120,7 @@ Route::post('/mapa/geocodificar', [MapController::class, 'geocode'])->name('map.
 Route::get('/catalog/{id}', [PublicCatalogController::class, 'show'])->name('catalog.show');
 Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
 Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
-Route::get('/availability/slots', [AvailabilitySlotController::class, 'getAvailableSlots'])->name('availability.slots');
+Route::get('/available-slots/{seller}/{date}', [AvailabilityController::class, 'availableSlots'])->name('availability.slots');
 
 // --- Administrador ---
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {

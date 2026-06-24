@@ -74,7 +74,7 @@
                             Reservas
                         </a>
 
-                        <a href="{{ route('availability.edit') }}"
+                        <a href="{{ route('availability.index') }}"
                         class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('availability.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
                             Horarios
                         </a>
@@ -172,7 +172,7 @@
 
                             @if(auth()->user()->role === 'client')
                                 <div class="py-1 mb-1 border-b border-slate-900">
-                                    <a href="{{ route('reservations.client_history') }}" class="nav-dropdown-link {{ request()->routeIs('reservations.client_history') ? 'nav-dropdown-link-active' : '' }}">Mis reservas</a>
+                                    <a href="{{ route('reservations.index') }}" class="nav-dropdown-link {{ request()->routeIs('reservations.index') ? 'nav-dropdown-link-active' : '' }}">Mis reservas</a>
                                 </div>
                             @endif
 

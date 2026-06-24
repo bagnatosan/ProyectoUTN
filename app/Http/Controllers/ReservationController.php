@@ -2,28 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Reservation;
-use App\Models\User;
-use App\Models\Product;
 use App\Models\BusinessProfile;
+use App\Models\Product;
+use App\Models\Reservation;
 use App\Services\AvailabilityService;
 use App\Http\Requests\StoreReservationRequest;
+use App\Http\Requests\UpdateReservationStatusRequest;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\View\View;
 
 class ReservationController extends Controller
 {
-    private const VALID_STATUSES = ['pending', 'confirmed', 'completed', 'cancelled'];
-
     public function __construct(
         private AvailabilityService $availabilityService,
     ) {}
 
-    public function create(Request $request)
+    public function create(Request $request): View
     {
-        $products = Product::where('is_active', true)->get();
+        $products = Product::where('is_active', true)
+            ->with('businessProfile')
+            ->get();
 
         $selectedProduct = null;
         if ($request->has('product_id')) {
@@ -34,7 +37,7 @@ class ReservationController extends Controller
         return view('reservations.create', compact('products', 'selectedProduct'));
     }
 
-    public function store(StoreReservationRequest $request)
+    public function store(StoreReservationRequest $request): RedirectResponse|JsonResponse
     {
         $product = Product::where('is_active', true)->find($request->product_id);
 
@@ -43,19 +46,18 @@ class ReservationController extends Controller
                 ->withErrors(['product_id' => 'El producto seleccionado no está disponible.']);
         }
 
-        $businessProfileId = $product->business_profile_id;
+        $sellerId = $product->businessProfile->user_id;
 
-        $reservation = DB::transaction(function () use ($request, $product, $businessProfileId) {
+        $reservation = DB::transaction(function () use ($request, $product, $sellerId) {
             $isAvailable = $this->availabilityService->isSlotAvailable(
-                $businessProfileId,
+                $sellerId,
                 $request->reservation_date,
                 $request->reservation_time,
             );
 
             if (!$isAvailable) {
                 DB::rollBack();
-                return back()->withInput()
-                    ->withErrors(['reservation_time' => 'Este horario ya no está disponible. Por favor elegí otro.']);
+                return null;
             }
 
             return Reservation::create([
@@ -72,7 +74,8 @@ class ReservationController extends Controller
         });
 
         if (!$reservation) {
-            return $reservation;
+            return back()->withInput()
+                ->withErrors(['reservation_time' => 'Este horario ya no está disponible. Por favor elegí otro.']);
         }
 
         return redirect()->route('reservations.create')
@@ -80,11 +83,9 @@ class ReservationController extends Controller
                 . $request->reservation_date . ' a las ' . $request->reservation_time . '.');
     }
 
-    public function clientHistory()
+    public function index(): View
     {
-        if (Auth::user()->role !== 'client') {
-            abort(403, 'Esta sección es solo para clientes.');
-        }
+        $this->authorize('viewAnyClient', Reservation::class);
 
         $reservations = Reservation::where('user_id', Auth::id())
             ->with('product')
@@ -95,12 +96,68 @@ class ReservationController extends Controller
         return view('reservations.client_history', compact('reservations'));
     }
 
-    public function manage()
+    public function cancel(Request $request, Reservation $reservation): RedirectResponse|JsonResponse
     {
-        return view('reservations.manage');
+        $this->authorize('cancel', $reservation);
+
+        if (!$reservation->isCancellable()) {
+            return $this->cancelErrorResponse($request,
+                'Esta reserva no se puede cancelar porque su estado es "' . $reservation->status . '".'
+            );
+        }
+
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        DB::transaction(function () use ($reservation, $request) {
+            $reservation->update([
+                'status'              => 'cancelled',
+                'cancellation_reason' => $request->reason,
+                'cancelled_by'        => Auth::id(),
+            ]);
+        });
+
+        $this->sendCancellationNotifications(
+            $reservation,
+            Auth::user()->role === 'client' ? 'client' : 'seller',
+            $request->reason
+        );
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Reserva cancelada exitosamente.',
+            ]);
+        }
+
+        return back()->with('success', 'Reserva cancelada exitosamente.');
     }
 
-    public function getReservations(Request $request)
+    public function show(Request $request, Reservation $reservation): View
+    {
+        $businessProfile = $request->user()->businessProfile;
+
+        if (!$businessProfile) {
+            abort(403, 'Perfil de negocio no encontrado.');
+        }
+
+        $belongsToSeller = $reservation->product->business_profile_id === $businessProfile->id;
+        if (!$belongsToSeller) {
+            abort(403, 'No autorizado.');
+        }
+
+        $reservation->load(['product', 'user', 'canceller']);
+
+        return view('reservations.seller.show', compact('reservation'));
+    }
+
+    public function manage(): View
+    {
+        return view('reservations.seller.index');
+    }
+
+    public function getReservations(Request $request): JsonResponse
     {
         $businessProfile = $request->user()->businessProfile;
 
@@ -111,69 +168,91 @@ class ReservationController extends Controller
             ], 403);
         }
 
-        $query = Reservation::whereHas('product', function ($q) use ($businessProfile) {
-            $q->where('business_profile_id', $businessProfile->id);
-        })->with(['product', 'user']);
+        $query = Reservation::whereHas('product', fn ($q) => $q->where('business_profile_id', $businessProfile->id))
+            ->with(['product', 'user']);
 
         $filter = $request->input('filter', 'today');
         $today = Carbon::today();
 
         switch ($filter) {
-            case 'today':
-                $query->whereDate('reservation_date', $today);
+            case 'all':
                 break;
             case 'tomorrow':
                 $query->whereDate('reservation_date', $today->copy()->addDay());
                 break;
             case 'week':
-                $query->whereBetween('reservation_date', [
-                    $today->copy()->startOfWeek(),
-                    $today->copy()->endOfWeek(),
-                ]);
+                $query->whereBetween('reservation_date', [$today->copy()->startOfWeek(), $today->copy()->endOfWeek()]);
                 break;
             case 'month':
-                $query->whereBetween('reservation_date', [
-                    $today->copy()->startOfMonth(),
-                    $today->copy()->endOfMonth(),
-                ]);
+                $query->whereBetween('reservation_date', [$today->copy()->startOfMonth(), $today->copy()->endOfMonth()]);
+                break;
+            case 'today':
+            default:
+                $query->whereDate('reservation_date', $today);
                 break;
         }
 
-        $reservations = $query->orderBy('reservation_date')
-            ->orderBy('reservation_time')
-            ->get();
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('client_name', 'like', "%{$search}%")
+                  ->orWhereHas('product', fn ($pq) => $pq->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        $perPage = $request->integer('per_page', 12);
+        $reservations = $query->orderBy('reservation_date')->orderBy('reservation_time')
+            ->paginate($perPage);
 
         return response()->json([
-            'success' => true,
-            'data'    => $reservations,
+            'success'       => true,
+            'data'          => $reservations->items(),
+            'total'         => $reservations->total(),
+            'current_page'  => $reservations->currentPage(),
+            'last_page'     => $reservations->lastPage(),
+            'per_page'      => $reservations->perPage(),
         ]);
     }
 
-    public function updateStatus(Request $request, Reservation $reservation)
+    public function updateStatus(UpdateReservationStatusRequest $request, Reservation $reservation): JsonResponse
     {
         $businessProfile = $request->user()->businessProfile;
-        $product = $reservation->product()->first();
 
-        if (!$businessProfile || !$product || $product->business_profile_id !== $businessProfile->id) {
-            if ($request->expectsJson() || $request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No tenés permiso para modificar esta reserva.',
-                ], 403);
-            }
-            return back()->with('error', 'No tenés permiso para modificar esta reserva.');
+        if (!$businessProfile) {
+            return response()->json(['success' => false, 'message' => 'Perfil de negocio no encontrado.'], 403);
         }
 
-        $request->validate([
-            'status' => ['required', 'string', 'in:' . implode(',', self::VALID_STATUSES)],
-        ], [
-            'status.required' => 'El estado es obligatorio.',
-            'status.in'       => 'El estado no es válido.',
-        ]);
+        $belongsToSeller = $reservation->product->business_profile_id === $businessProfile->id;
+        if (!$belongsToSeller) {
+            return response()->json(['success' => false, 'message' => 'No autorizado.'], 403);
+        }
 
-        $reservation->update([
-            'status' => $request->status,
-        ]);
+        $newStatus = $request->status;
+        $updateData = ['status' => $newStatus];
+
+        if ($newStatus === 'completed') {
+            $updateData['completed_at'] = now();
+        }
+
+        if ($newStatus === 'cancelled') {
+            $updateData['cancellation_reason'] = $request->cancellation_reason;
+            $updateData['cancelled_by'] = $request->user()->id;
+        }
+
+        DB::transaction(function () use ($reservation, $updateData, $newStatus, $request) {
+            $reservation->update($updateData);
+
+            if (in_array($newStatus, ['confirmed', 'cancelled'])) {
+                $notification = new \App\Notifications\ReservationCancelled($reservation, 'seller', $request->cancellation_reason ?? null);
+                if ($reservation->user) {
+                    $reservation->user->notify($notification);
+                }
+            }
+        });
 
         $statusLabels = [
             'pending'   => 'Pendiente',
@@ -182,52 +261,38 @@ class ReservationController extends Controller
             'cancelled' => 'Cancelada',
         ];
 
-        $message = 'Reserva #' . $reservation->id . ' actualizada a "' . ($statusLabels[$request->status] ?? $request->status) . '".';
-
-        if ($request->expectsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => $message,
-            ]);
-        }
-
-        return back()->with('success', $message);
+        return response()->json([
+            'success'     => true,
+            'message'     => 'Estado actualizado a "' . ($statusLabels[$newStatus] ?? $newStatus) . '".',
+            'reservation' => $reservation->fresh()->load(['product', 'user']),
+        ]);
     }
 
-    public function cancel(Request $request, Reservation $reservation)
+    public function updateSellerNotes(Request $request, Reservation $reservation): JsonResponse
     {
-        $this->authorize('cancel', $reservation);
+        $businessProfile = $request->user()->businessProfile;
 
-        if (!$reservation->isCancellable()) {
-            return $this->cancelErrorResponse($request, 'Esta reserva no se puede cancelar porque su estado es "' . $reservation->status . '".');
+        if (!$businessProfile) {
+            return response()->json(['success' => false, 'message' => 'Perfil de negocio no encontrado.'], 403);
+        }
+
+        $belongsToSeller = $reservation->product->business_profile_id === $businessProfile->id;
+        if (!$belongsToSeller) {
+            return response()->json(['success' => false, 'message' => 'No autorizado.'], 403);
         }
 
         $request->validate([
-            'reason' => 'nullable|string|max:500',
+            'seller_notes' => 'nullable|string|max:5000',
         ]);
 
-        $cancelledBy = Auth::user()->role === 'client' ? 'client' : 'seller';
+        $reservation->update([
+            'seller_notes' => $request->seller_notes,
+        ]);
 
-        DB::transaction(function () use ($reservation, $request, $cancelledBy) {
-            $reservation->update([
-                'status'             => 'cancelled',
-                'cancellation_reason' => $request->reason,
-                'cancelled_by'       => $cancelledBy,
-            ]);
-        });
-
-        $this->sendCancellationNotifications($reservation, $cancelledBy, $request->reason);
-
-        $message = 'Reserva cancelada exitosamente.';
-
-        if ($request->expectsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => $message,
-            ]);
-        }
-
-        return back()->with('success', $message);
+        return response()->json([
+            'success' => true,
+            'message' => 'Nota interna guardada.',
+        ]);
     }
 
     private function sendCancellationNotifications(Reservation $reservation, string $cancelledBy, ?string $reason): void
@@ -244,9 +309,9 @@ class ReservationController extends Controller
         }
     }
 
-    private function cancelErrorResponse(Request $request, string $message)
+    private function cancelErrorResponse(Request $request, string $message): RedirectResponse|JsonResponse
     {
-        if ($request->expectsJson() || $request->ajax()) {
+        if ($request->expectsJson()) {
             return response()->json(['success' => false, 'message' => $message], 422);
         }
         return back()->with('error', $message);
