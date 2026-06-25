@@ -80,11 +80,11 @@
                         </a>
 
                         <a href="{{ route('reservations.manage') }}"
-                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all relative {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Pedidos
+                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5 {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                            <span>Pedidos</span>
                             @if($pendingReservationsCount > 0)
-                                <span class="absolute -top-1 -right-1 w-4.5 h-4.5 flex items-center justify-center bg-rose-500 text-white text-[9px] font-bold rounded-full shadow-lg shadow-rose-500/30">
-                                    {{ $pendingReservationsCount > 9 ? '9+' : $pendingReservationsCount }}
+                                <span class="px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold shadow-sm shadow-rose-600/20">
+                                    {{ $pendingReservationsCount }}
                                 </span>
                             @endif
                         </a>

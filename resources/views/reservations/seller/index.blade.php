@@ -15,8 +15,8 @@
         </svg>
       </div>
       <div>
-        <h1 class="seller-reservations__title">Gesti\u00F3n de Pedidos</h1>
-        <p class="seller-reservations__subtitle">Administr\u00E1 las reservas de tus productos.</p>
+        <h1 class="seller-reservations__title">Gestion de Pedidos</h1>
+        <p class="seller-reservations__subtitle">Administrar las reservas de tus productos.</p>
       </div>
     </div>
     <div class="seller-reservations__header-right">
@@ -39,7 +39,7 @@
   <div class="seller-reservations__filters">
     <div class="seller-reservations__filter-group" role="tablist" aria-label="Filtros temporales">
       <button class="seller-reservations__filter-btn seller-reservations__filter-btn--active" data-sr-filter="today" role="tab" aria-selected="true">Hoy</button>
-      <button class="seller-reservations__filter-btn" data-sr-filter="tomorrow" role="tab" aria-selected="false">Ma\u00F1ana</button>
+      <button class="seller-reservations__filter-btn" data-sr-filter="tomorrow" role="tab" aria-selected="false">Mañana</button>
       <button class="seller-reservations__filter-btn" data-sr-filter="week" role="tab" aria-selected="false">Esta Semana</button>
       <button class="seller-reservations__filter-btn" data-sr-filter="month" role="tab" aria-selected="false">Este Mes</button>
       <button class="seller-reservations__filter-btn" data-sr-filter="all" role="tab" aria-selected="false">Todas</button>
