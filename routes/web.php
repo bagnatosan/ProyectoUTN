@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\BusinessProfileController;
+use App\Http\Controllers\ClientProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PublicCatalogController;
@@ -92,6 +93,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
         Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
         Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
+
+        // --- Perfil del Cliente (ClientProfile) ---
+        Route::get('/mi-perfil', [ClientProfileController::class, 'edit'])->name('client_profile.edit');
+        Route::put('/mi-perfil', [ClientProfileController::class, 'update'])->name('client_profile.update');
+        Route::put('/mi-perfil/password', [ClientProfileController::class, 'updatePassword'])->name('client_profile.password');
     });
 
     // --- Notificaciones ---

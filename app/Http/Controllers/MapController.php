@@ -15,7 +15,19 @@ class MapController extends Controller
             ->whereNotNull('longitude')
             ->count();
 
-        return view('map.index', compact('businessCount'));
+        // Si el usuario logueado es cliente y tiene su ubicación guardada,
+        // centramos el mapa ahí en vez del punto fijo por defecto.
+        $userLocation = null;
+        $clientProfile = auth()->check() ? auth()->user()->clientProfile : null;
+
+        if ($clientProfile && $clientProfile->latitude !== null && $clientProfile->longitude !== null) {
+            $userLocation = [
+                'lat' => (float) $clientProfile->latitude,
+                'lng' => (float) $clientProfile->longitude,
+            ];
+        }
+
+        return view('map.index', compact('businessCount', 'userLocation'));
     }
 
     public function markers()

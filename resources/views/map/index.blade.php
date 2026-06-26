@@ -67,7 +67,8 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    var defaultCenter = [-34.6037, -58.3816];
+    var userLocation = @json($userLocation);
+    var defaultCenter = userLocation ? [userLocation.lat, userLocation.lng] : [-34.6037, -58.3816];
     var mapShell = document.getElementById('map-shell');
     var emptyState = document.getElementById('map-empty-state');
     var businessList = document.getElementById('map-business-list');
@@ -121,6 +122,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }).addTo(map);
 
         markerLayer = L.layerGroup().addTo(map);
+
+        if (userLocation) {
+            var userIcon = L.divIcon({
+                className: 'map-user-marker-wrap',
+                html: '<div class="map-user-marker-pin" aria-hidden="true"></div>',
+                iconSize: [18, 18],
+                iconAnchor: [9, 9]
+            });
+
+            L.marker([userLocation.lat, userLocation.lng], { icon: userIcon, zIndexOffset: 1000 })
+                .bindPopup('<div class="map-popup"><p class="map-popup-name">Tu ubicación</p></div>')
+                .addTo(map);
+        }
     }
 
     function renderBusinessList(filter) {
@@ -220,10 +234,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             renderBusinessList('');
 
-            if (bounds.length === 1) {
-                map.setView(bounds[0], 14);
-            } else if (bounds.length > 1) {
-                map.fitBounds(bounds, { padding: [48, 48] });
+            if (!userLocation) {
+                if (bounds.length === 1) {
+                    map.setView(bounds[0], 14);
+                } else if (bounds.length > 1) {
+                    map.fitBounds(bounds, { padding: [48, 48] });
+                }
             }
 
             searchInput.addEventListener('input', function () {

@@ -7,9 +7,9 @@
 <div class="space-y-8 animate-fade-in">
     <!-- Header -->
     <div class="text-center max-w-2xl mx-auto space-y-4">
-        <span class="px-3.5 py-1 text-xs font-bold tracking-wider rounded-full uppercase border shadow-sm text-indigo-400 bg-indigo-500/10 border-indigo-500/20">
+        <!--<span class="px-3.5 py-1 text-xs font-bold tracking-wider rounded-full uppercase border shadow-sm text-indigo-400 bg-indigo-500/10 border-indigo-500/20">
             Catálogos Disponibles
-        </span>
+        </span>-->
         <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white mt-4">
             Emprendimientos Locales
         </h1>
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="max-w-2xl mx-auto text-center animate-fade-in py-12">
 
     <!-- User/Role Badge -->
-    @if(auth()->user()->role === 'admin')
+    <!-- @if(auth()->user()->role === 'admin')
         <span class="px-3.5 py-1 text-xs font-bold tracking-wider rounded-full uppercase border shadow-sm text-purple-400 bg-purple-500/10 border-purple-500/20">
             Sesión Iniciada: Administrador
         </span>
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <span class="px-3.5 py-1 text-xs font-bold tracking-wider rounded-full uppercase border shadow-sm text-purple-400 bg-purple-500/10 border-purple-500/20">
             Sesión Iniciada: Emprendedor
         </span>
-    @endif
+    @endif -->
 
     <!-- Heading -->
     <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mt-6 text-white">
