@@ -45,7 +45,7 @@ class RegistrationController extends Controller
     /**
      * Store a new client user.
      */
-    public function storeClient(Request $request)
+    public function storeClient(Request $request, GeocodingService $geocodingService)
     {
         if (Auth::check()) {
             return redirect()->route('dashboard');
@@ -55,14 +55,27 @@ class RegistrationController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'address' => 'required|string|max:255',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => $validated['password'],
-            'role' => 'client',
-        ]);
+        $user = DB::transaction(function () use ($validated, $geocodingService) {
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => $validated['password'],
+                'role' => 'client',
+            ]);
+
+            $profile = \App\Models\ClientProfile::create([
+                'user_id' => $user->id,
+                'address' => $validated['address'],
+            ]);
+
+            $geocodingService->syncProfileCoordinates($profile, $profile->address, null, null, true);
+            $profile->save();
+
+            return $user;
+        });
 
         // Auto-login the registered user
         Auth::login($user);

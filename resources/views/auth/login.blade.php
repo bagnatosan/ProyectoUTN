@@ -15,7 +15,7 @@
         <div class="absolute inset-x-0 top-0 h-1 auth-accent-bar-client rounded-t-2xl"></div>
 
         <div class="mb-8">
-            <span class="auth-role-badge auth-role-badge-client">Acceso</span>
+            <!-- <span class="auth-role-badge auth-role-badge-client">Acceso</span> -->
             <h1 class="text-2xl font-extrabold mt-2">Iniciar sesión</h1>
             <p class="text-xs text-slate-400 mt-1">
                 Ingresá con tu cuenta. Te llevamos al panel según tu rol: cliente, emprendedor o administrador.

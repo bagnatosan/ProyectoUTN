@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\BusinessProfile;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
@@ -56,8 +56,13 @@ class GeocodingService
         });
     }
 
+    /**
+     * Geocodifica una dirección y asigna latitude/longitude al modelo recibido.
+     * Funciona con cualquier modelo Eloquent que tenga los campos
+     * 'address', 'latitude' y 'longitude' (BusinessProfile, ClientProfile, etc.).
+     */
     public function syncProfileCoordinates(
-        BusinessProfile $profile,
+        Model $profile,
         ?string $address,
         ?float $latitude = null,
         ?float $longitude = null,

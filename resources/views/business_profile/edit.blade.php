@@ -24,7 +24,7 @@
     </a>
 
     <div class="mb-8">
-        <span class="auth-role-badge auth-role-badge-seller">Mi negocio</span>
+        <!-- <span class="auth-role-badge auth-role-badge-seller">Mi negocio</span> -->
         <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Perfil del emprendimiento</h1>
         <p class="text-sm text-slate-400 mt-1">Editá la información pública que ven tus clientes en el catálogo y el mapa.</p>
     </div>

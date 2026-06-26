@@ -187,6 +187,7 @@
 
                             @if(auth()->user()->role === 'client')
                                 <div class="py-1 mb-1 border-b border-slate-900">
+                                    <a href="{{ route('client_profile.edit') }}" class="nav-dropdown-link {{ request()->routeIs('client_profile.*') ? 'nav-dropdown-link-active' : '' }}">Mi Perfil</a>
                                     <a href="{{ route('reservations.index') }}" class="nav-dropdown-link {{ request()->routeIs('reservations.index') ? 'nav-dropdown-link-active' : '' }}">Mis reservas</a>
                                 </div>
                             @endif

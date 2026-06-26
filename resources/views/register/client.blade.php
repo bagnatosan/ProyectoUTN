@@ -74,6 +74,32 @@
                 @enderror
             </div>
 
+            <!-- Address -->
+            <div class="space-y-1.5">
+                <label for="address" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+                    Dirección
+                </label>
+                <div class="relative input-icon-group">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </span>
+                    <input type="text" 
+                        name="address" 
+                        id="address" 
+                        value="{{ old('address') }}" 
+                        required 
+                        placeholder="Ej. Av. Siempreviva 742"
+                        class="block w-full pl-10 pr-4 py-3 bg-slate-950/60 border @error('address') border-rose-500 focus:ring-rose-500 @else border-slate-800 focus:ring-indigo-500 @enderror rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200">
+                </div>
+                <p class="text-[11px] text-slate-500">La usamos para mostrarte emprendimientos cercanos y calcular envíos.</p>
+                @error('address')
+                    <p class="text-rose-500 text-xs mt-1 font-medium">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Password -->
             <div class="space-y-1.5">
                     <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
