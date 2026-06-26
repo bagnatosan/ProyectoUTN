@@ -90,6 +90,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reservations/{reservation}/edit', [ReservationController::class, 'edit'])->name('reservations.edit');
         Route::put('/reservations/{reservation}', [ReservationController::class, 'update'])->name('reservations.update');
         Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
+        Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
+        Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
     });
 
     // --- Notificaciones ---
@@ -122,8 +124,7 @@ Route::get('/mapa', [MapController::class, 'index'])->name('map.index');
 Route::get('/mapa/emprendimientos', [MapController::class, 'markers'])->name('map.markers');
 Route::post('/mapa/geocodificar', [MapController::class, 'geocode'])->name('map.geocode');
 Route::get('/catalog/{id}', [PublicCatalogController::class, 'show'])->name('catalog.show');
-Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
-Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
+
 Route::get('/available-slots/{seller}/{date}', [AvailabilityController::class, 'availableSlots'])->name('availability.slots');
 
 // --- Administrador ---
