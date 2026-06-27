@@ -754,7 +754,88 @@
       </div>
     @endif
   </div>
+
+  {{-- Sección comprobante de pago --}}
+  @if($reservation->payment_status === 'uploaded' || $reservation->payment_status === 'confirmed')
+  <div style="margin-top:1.5rem;background:#1e293b;border:1px solid #334155;border-radius:1rem;padding:1.5rem;">
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+      <div style="width:2.25rem;height:2.25rem;border-radius:0.625rem;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg style="width:1.1rem;height:1.1rem;color:#818cf8;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+        </svg>
+      </div>
+      <div>
+        <p style="font-size:0.875rem;font-weight:700;color:#f1f5f9;">Comprobante de transferencia</p>
+        <p style="font-size:0.75rem;color:#94a3b8;">
+          @if($reservation->payment_status === 'confirmed')
+            Pago verificado y confirmado
+          @else
+            El cliente subió el comprobante — revisalo y confirmá el pago
+          @endif
+        </p>
+      </div>
+      @if($reservation->payment_status === 'confirmed')
+        <span style="margin-left:auto;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;padding:0.25rem 0.625rem;border-radius:9999px;background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.2);">Confirmado</span>
+      @else
+        <span style="margin-left:auto;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;padding:0.25rem 0.625rem;border-radius:9999px;background:rgba(234,179,8,0.1);color:#fbbf24;border:1px solid rgba(234,179,8,0.2);">Pendiente revisión</span>
+      @endif
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem;">
+      @if($reservation->transfer_amount)
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:0.75rem;padding:0.75rem;">
+        <p style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin-bottom:0.25rem;">Monto</p>
+        <p style="font-size:1rem;font-weight:700;color:#4ade80;">${{ number_format($reservation->transfer_amount, 2) }}</p>
+      </div>
+      @endif
+      @if($reservation->transfer_date)
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:0.75rem;padding:0.75rem;">
+        <p style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin-bottom:0.25rem;">Fecha</p>
+        <p style="font-size:0.875rem;font-weight:600;color:#f1f5f9;">{{ $reservation->transfer_date->format('d/m/Y') }}</p>
+      </div>
+      @endif
+      @if($reservation->transfer_reference)
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:0.75rem;padding:0.75rem;grid-column:span 2;">
+        <p style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin-bottom:0.25rem;">Nº Operación / Referencia</p>
+        <p style="font-size:0.875rem;font-weight:600;color:#f1f5f9;font-family:monospace;">{{ $reservation->transfer_reference }}</p>
+      </div>
+      @endif
+    </div>
+
+    @if($reservation->receipt_path)
+    <a href="{{ Storage::url($reservation->receipt_path) }}" target="_blank"
+       style="display:inline-flex;align-items:center;gap:0.5rem;font-size:0.8125rem;font-weight:600;color:#818cf8;text-decoration:none;margin-bottom:1.25rem;">
+      <svg style="width:1rem;height:1rem;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+      </svg>
+      Ver comprobante adjunto
+    </a>
+    @endif
+
+    @if($reservation->payment_status === 'uploaded')
+    <form action="{{ route('reservations.confirm-payment', $reservation) }}" method="POST">
+      @csrf
+      <button type="submit"
+        style="width:100%;display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem 1rem;border-radius:0.75rem;background:#16a34a;border:none;color:#fff;font-size:0.875rem;font-weight:600;cursor:pointer;transition:background 0.2s;"
+        onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+        <svg style="width:1rem;height:1rem;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Confirmar pago y reserva
+      </button>
+    </form>
+    @endif
+
+    @if($reservation->payment_confirmed_at)
+    <p style="font-size:0.75rem;color:#64748b;margin-top:0.75rem;text-align:center;">
+      Pago confirmado el {{ $reservation->payment_confirmed_at->format('d/m/Y \a \l\a\s H:i') }} hs
+    </p>
+    @endif
+  </div>
+  @endif
+
 </div>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

@@ -93,6 +93,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
         Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
         Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
+        Route::get('/reservations/{reservation}/payment', [ReservationController::class, 'showPayment'])->name('reservations.payment');
+        Route::post('/reservations/{reservation}/payment', [ReservationController::class, 'uploadReceipt'])->name('reservations.payment.upload');
 
         // --- Perfil del Cliente (ClientProfile) ---
         Route::get('/mi-perfil', [ClientProfileController::class, 'edit'])->name('client_profile.edit');
@@ -122,6 +124,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservations/{reservation}/detail', [ReservationController::class, 'show'])->name('reservations.detail');
     Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.update-status');
     Route::patch('/reservations/{reservation}/seller-notes', [ReservationController::class, 'updateSellerNotes'])->name('reservations.seller-notes');
+    Route::post('/reservations/{reservation}/confirm-payment', [ReservationController::class, 'confirmPayment'])->name('reservations.confirm-payment');
 
 });
 

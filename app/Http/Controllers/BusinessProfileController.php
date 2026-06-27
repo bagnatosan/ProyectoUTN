@@ -47,14 +47,18 @@ class BusinessProfileController extends Controller
     public function update(Request $request, GeocodingService $geocodingService)
     {
         $validated = $request->validate([
-            'business_name' => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'phone'         => 'nullable|string|max:20',
-            'address'       => 'nullable|string|max:255',
-            'latitude'      => 'nullable|numeric|between:-90,90',
-            'longitude'     => 'nullable|numeric|between:-180,180',
-            'logo'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'profit_margin' => 'nullable|numeric|min:1|max:50',
+            'business_name'        => 'required|string|max:255',
+            'description'          => 'nullable|string',
+            'phone'                => 'nullable|string|max:20',
+            'address'              => 'nullable|string|max:255',
+            'latitude'             => 'nullable|numeric|between:-90,90',
+            'longitude'            => 'nullable|numeric|between:-180,180',
+            'logo'                 => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'profit_margin'        => 'nullable|numeric|min:1|max:50',
+            'bank_cbu'             => 'nullable|string|max:22',
+            'bank_alias'           => 'nullable|string|max:100',
+            'bank_name'            => 'nullable|string|max:100',
+            'bank_account_holder'  => 'nullable|string|max:255',
         ]);
 
         $user    = Auth::user();
@@ -71,11 +75,15 @@ class BusinessProfileController extends Controller
 
         $previousAddress = $profile->address;
 
-        $profile->business_name = $validated['business_name'];
-        $profile->description   = $validated['description'] ?? $profile->description;
-        $profile->phone         = $validated['phone'] ?? $profile->phone;
-        $profile->address       = $validated['address'] ?? null;
-        $profile->profit_margin = $validated['profit_margin'] ?? $profile->profit_margin ?? 3;
+        $profile->business_name       = $validated['business_name'];
+        $profile->description         = $validated['description'] ?? $profile->description;
+        $profile->phone               = $validated['phone'] ?? $profile->phone;
+        $profile->address             = $validated['address'] ?? null;
+        $profile->profit_margin       = $validated['profit_margin'] ?? $profile->profit_margin ?? 3;
+        $profile->bank_cbu            = $validated['bank_cbu'] ?? null;
+        $profile->bank_alias          = $validated['bank_alias'] ?? null;
+        $profile->bank_name           = $validated['bank_name'] ?? null;
+        $profile->bank_account_holder = $validated['bank_account_holder'] ?? null;
 
         $latitude = isset($validated['latitude']) ? (float) $validated['latitude'] : null;
         $longitude = isset($validated['longitude']) ? (float) $validated['longitude'] : null;

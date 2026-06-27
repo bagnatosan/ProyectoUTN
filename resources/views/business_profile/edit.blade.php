@@ -115,6 +115,58 @@
                     </div>
 
                     <div class="profile-section-divider">
+                        <span class="profile-section-label">Datos de cobro</span>
+                    </div>
+
+                    <p class="profile-field-hint -mt-2">Estos datos se muestran al cliente cuando hace una reserva para que pueda realizar la transferencia.</p>
+
+                    <div class="profile-field">
+                        <label for="bank_account_holder" class="profile-label">Titular de la cuenta</label>
+                        <input type="text" name="bank_account_holder" id="bank_account_holder"
+                            value="{{ old('bank_account_holder', $profile->bank_account_holder ?? '') }}"
+                            class="profile-input @error('bank_account_holder') profile-input-error @enderror"
+                            placeholder="Ej. María González">
+                        @error('bank_account_holder')
+                            <p class="profile-field-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="profile-field">
+                            <label for="bank_cbu" class="profile-label">CBU</label>
+                            <input type="text" name="bank_cbu" id="bank_cbu"
+                                value="{{ old('bank_cbu', $profile->bank_cbu ?? '') }}"
+                                class="profile-input @error('bank_cbu') profile-input-error @enderror"
+                                placeholder="22 dígitos">
+                            @error('bank_cbu')
+                                <p class="profile-field-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="bank_alias" class="profile-label">Alias</label>
+                            <input type="text" name="bank_alias" id="bank_alias"
+                                value="{{ old('bank_alias', $profile->bank_alias ?? '') }}"
+                                class="profile-input @error('bank_alias') profile-input-error @enderror"
+                                placeholder="Ej. MI.ALIAS.MP">
+                            @error('bank_alias')
+                                <p class="profile-field-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="profile-field">
+                        <label for="bank_name" class="profile-label">Banco / Billetera</label>
+                        <input type="text" name="bank_name" id="bank_name"
+                            value="{{ old('bank_name', $profile->bank_name ?? '') }}"
+                            class="profile-input @error('bank_name') profile-input-error @enderror"
+                            placeholder="Ej. Mercado Pago, Banco Galicia">
+                        @error('bank_name')
+                            <p class="profile-field-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="profile-section-divider">
                         <span class="profile-section-label">Costos</span>
                     </div>
 
