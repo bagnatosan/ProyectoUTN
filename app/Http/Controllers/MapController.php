@@ -15,16 +15,31 @@ class MapController extends Controller
             ->whereNotNull('longitude')
             ->count();
 
-        // Si el usuario logueado es cliente y tiene su ubicación guardada,
-        // centramos el mapa ahí en vez del punto fijo por defecto.
+        // Centramos el mapa en la ubicación del usuario logueado.
+        // Si es vendedor, usamos la ubicación de su negocio.
+        // Si es cliente, usamos su propia ubicación.
         $userLocation = null;
-        $clientProfile = auth()->check() ? auth()->user()->clientProfile : null;
 
-        if ($clientProfile && $clientProfile->latitude !== null && $clientProfile->longitude !== null) {
-            $userLocation = [
-                'lat' => (float) $clientProfile->latitude,
-                'lng' => (float) $clientProfile->longitude,
-            ];
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            if ($user->role === 'seller' && $user->businessProfile) {
+                $bp = $user->businessProfile;
+                if ($bp->latitude !== null && $bp->longitude !== null) {
+                    $userLocation = [
+                        'lat' => (float) $bp->latitude,
+                        'lng' => (float) $bp->longitude,
+                    ];
+                }
+            } else {
+                $clientProfile = $user->clientProfile ?? null;
+                if ($clientProfile && $clientProfile->latitude !== null && $clientProfile->longitude !== null) {
+                    $userLocation = [
+                        'lat' => (float) $clientProfile->latitude,
+                        'lng' => (float) $clientProfile->longitude,
+                    ];
+                }
+            }
         }
 
         return view('map.index', compact('businessCount', 'userLocation'));

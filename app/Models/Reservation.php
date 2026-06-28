@@ -23,11 +23,19 @@ class Reservation extends Model
         'cancellation_reason',
         'cancelled_by',
         'seller_notes',
+        'payment_status',
+        'transfer_amount',
+        'transfer_date',
+        'transfer_reference',
+        'receipt_path',
+        'payment_confirmed_at',
     ];
 
     protected $casts = [
         'reservation_date' => 'date:Y-m-d',
         'completed_at' => 'datetime',
+        'transfer_date' => 'date:Y-m-d',
+        'payment_confirmed_at' => 'datetime',
     ];
 
     public function product()
@@ -126,5 +134,20 @@ class Reservation extends Model
     public function isActive(): bool
     {
         return in_array($this->status, ['pending', 'confirmed']);
+    }
+
+    public function isAwaitingPayment(): bool
+    {
+        return $this->payment_status === 'pending_upload';
+    }
+
+    public function hasReceiptUploaded(): bool
+    {
+        return $this->payment_status === 'uploaded';
+    }
+
+    public function isPaymentConfirmed(): bool
+    {
+        return $this->payment_status === 'confirmed';
     }
 }

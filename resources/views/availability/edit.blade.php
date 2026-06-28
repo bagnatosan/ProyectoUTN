@@ -9,16 +9,9 @@
 @section('content')
 <div class="max-w-3xl mx-auto py-6 sm:py-8 px-4">
   <div class="availability__card">
-    <div class="availability__card-header">
-      <div class="availability__card-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-        </svg>
-      </div>
-      <div>
-        <h1 class="availability__card-title">Configurar Disponibilidad</h1>
-        <p class="availability__card-subtitle">Definí tus días y horarios de atención.</p>
-      </div>
+    <div style="text-align:center;margin-bottom:1.5rem;">
+      <h1 style="font-size:1.75rem;font-weight:800;color:#1a1918;letter-spacing:-0.02em;">Configurar Disponibilidad</h1>
+      <p style="font-size:0.9rem;color:#6a6966;margin-top:0.375rem;">Definí tus días y horarios de atención.</p>
     </div>
 
     <div id="form-feedback" class="availability__feedback availability__feedback--hidden" role="alert"></div>

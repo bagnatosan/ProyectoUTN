@@ -20,6 +20,10 @@ class BusinessProfile extends Model
         'latitude',
         'longitude',
         'profit_margin',
+        'bank_cbu',
+        'bank_alias',
+        'bank_name',
+        'bank_account_holder',
     ];
 
     // Relaciones

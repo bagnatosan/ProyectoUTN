@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'ProyectoUTN | Reservas y Emprendimientos Locales')
+@section('title', 'Cocinet | Reservas y Emprendimientos Locales')
 
 @section('main_align', 'items-start')
 @section('content_width', 'max-w-6xl mx-auto')
 
 @section('content')
-<div class="relative space-y-24 md:space-y-32">
+<div class="relative space-y-24 md:space-y-32" style="padding-bottom:4rem;">
     <div class="home-blob-green" aria-hidden="true"></div>
     <div class="home-blob-peach" aria-hidden="true"></div>
 
@@ -16,12 +16,18 @@
             Plataforma de reservas locales
         </span>
 
-        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mt-5 max-w-3xl mx-auto leading-tight animate-fade-in-up animate-delay-1">
-            Conectamos emprendimientos locales con quienes quieren reservar
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mt-5 max-w-3xl mx-auto leading-tight animate-fade-in-up animate-delay-1"
+            style="background: linear-gradient(135deg, #0f2e1e 0%, #2d6a4f 40%, #52b788 70%, #f5a623 100%);
+                   -webkit-background-clip: text;
+                   -webkit-text-fill-color: transparent;
+                   background-clip: text;
+                   letter-spacing:-0.04em;
+                   filter: drop-shadow(0 4px 16px rgba(45,106,79,0.25));">
+            Cocinet
         </h1>
 
         <p class="text-slate-400 mt-4 max-w-2xl mx-auto text-sm md:text-lg animate-fade-in-up animate-delay-2">
-            Explorá catálogos, elegí horarios y recibí confirmación al instante. Si tenés un negocio, publicá tu perfil y empezá a recibir reservas directas.
+            Conectamos emprendimientos gastronómicos locales con quienes quieren reservar. Explorá catálogos, elegí horarios y reservá al instante.
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8 animate-fade-in-up animate-delay-3">
@@ -65,11 +71,11 @@
                 ['Confirmación inmediata', 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
                 ['Panel para vendedores', 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
             ] as $item)
-                <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-4 flex items-start gap-3">
-                    <svg class="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <div style="border-radius:0.875rem;background:linear-gradient(135deg,#1a4a33 0%,#0f2e1e 100%);border:1px solid rgba(255,255,255,0.1);padding:1rem;display:flex;align-items:flex-start;gap:0.75rem;box-shadow:0 0 20px rgba(45,106,79,0.25),0 4px 12px rgba(0,0,0,0.15);">
+                    <svg style="width:1.25rem;height:1.25rem;color:#f5a623;flex-shrink:0;margin-top:0.125rem;filter:drop-shadow(0 0 6px rgba(245,166,35,0.6));" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item[1] }}" />
                     </svg>
-                    <span class="text-sm font-medium text-slate-300">{{ $item[0] }}</span>
+                    <span style="font-size:0.875rem;font-weight:600;color:#ffffff;text-shadow:0 0 8px rgba(255,255,255,0.15);">{{ $item[0] }}</span>
                 </div>
             @endforeach
         </div>
@@ -77,15 +83,15 @@
 
     {{-- Para clientes --}}
     <section id="clientes" class="relative z-10 scroll-mt-24">
-        <div class="rounded-3xl border border-slate-800 bg-slate-900/40 p-8 md:p-12 overflow-hidden relative">
-            <div class="absolute top-0 left-0 w-64 h-64 rounded-full opacity-30 pointer-events-none" style="background: radial-gradient(circle, rgba(45,106,79,0.2) 0%, transparent 70%);"></div>
+        <div class="rounded-3xl p-8 md:p-12 overflow-hidden relative" style="background:radial-gradient(ellipse at 50% 0%, #2d6a4f 0%, #1a4a33 45%, #0f2e1e 100%);border:1px solid rgba(255,255,255,0.08);">
+            <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image:radial-gradient(#ffffff 1px,transparent 1px);background-size:16px 16px;"></div>
 
             <div class="relative z-10 text-center mb-10 home-scroll-reveal">
-                <span class="px-3 py-1 text-xs font-semibold tracking-wider text-indigo-400 bg-indigo-500/10 rounded-full border border-indigo-500/20 uppercase">
+                <span style="display:inline-block;padding:0.2rem 0.75rem;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:9999px;">
                     Para clientes
                 </span>
-                <h2 class="text-2xl md:text-3xl font-extrabold mt-4">Tu próxima reserva, a un clic</h2>
-                <p class="text-slate-400 mt-2 max-w-xl mx-auto text-sm md:text-base">
+                <h2 class="text-2xl md:text-3xl font-extrabold mt-4" style="color:#ffffff !important;">Tu próxima reserva, a un clic</h2>
+                <p style="color:rgba(255,255,255,0.65);margin-top:0.5rem;max-width:36rem;margin-left:auto;margin-right:auto;font-size:0.95rem;">
                     Descubrí emprendimientos de tu zona, mirá disponibilidad y reservá sin llamadas ni mensajes.
                 </p>
             </div>
@@ -96,23 +102,29 @@
                     ['2', 'Elegí', 'Seleccioná producto o turno según la disponibilidad publicada.', 'home-scroll-reveal-delay-2'],
                     ['3', 'Reservá', 'Confirmá tu reserva y recibí la confirmación al instante.', 'home-scroll-reveal-delay-3'],
                 ] as $step)
-                    <div class="home-step-card home-scroll-reveal {{ $step[3] }} rounded-2xl border border-slate-800 bg-slate-950/60 p-6 transition-all duration-300">
-                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-sm font-bold text-indigo-400">
+                    <div class="home-step-card home-scroll-reveal {{ $step[3] }} rounded-2xl p-6 transition-all duration-300" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);">
+                        <span style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:9999px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);font-size:0.875rem;font-weight:700;color:#f5a623;">
                             {{ $step[0] }}
                         </span>
-                        <h3 class="text-lg font-bold mt-4">{{ $step[1] }}</h3>
-                        <p class="text-sm text-slate-400 mt-2">{{ $step[2] }}</p>
+                        <h3 class="text-lg font-bold mt-4" style="color:#ffffff !important;">{{ $step[1] }}</h3>
+                        <p style="font-size:0.875rem;color:rgba(255,255,255,0.6);margin-top:0.5rem;">{{ $step[2] }}</p>
                     </div>
                 @endforeach
             </div>
 
-            <div class="relative z-10 text-center home-scroll-reveal pt-8 border-t border-slate-800">
-                <p class="text-sm text-slate-400 mb-5">Creá tu cuenta gratis y empezá a explorar emprendimientos locales.</p>
+            <div class="relative z-10 text-center home-scroll-reveal pt-8" style="border-top:1px solid rgba(255,255,255,0.12);">
+                <p style="font-size:0.875rem;color:rgba(255,255,255,0.55);margin-bottom:1.25rem;">Creá tu cuenta gratis y empezá a explorar emprendimientos locales.</p>
                 <div class="home-cta-actions">
-                    <a href="{{ route('register.client') }}" class="auth-role-btn auth-role-btn-client auth-role-btn-inline">
+                    <a href="{{ route('register.client') }}"
+                       style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 2rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#1e3a2f;background:#f5a623;border:none;text-decoration:none;transition:all 0.2s;"
+                       onmouseenter="this.style.background='#e8961a';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(245,166,35,0.4)'"
+                       onmouseleave="this.style.background='#f5a623';this.style.transform='';this.style.boxShadow=''">
                         Registrarme
                     </a>
-                    <a href="{{ route('login') }}" class="auth-role-btn-outline auth-role-btn-outline-client auth-role-btn-inline">
+                    <a href="{{ route('login') }}"
+                       style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.5rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#ffffff;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);text-decoration:none;transition:all 0.2s;"
+                       onmouseenter="this.style.background='rgba(255,255,255,0.2)';this.style.transform='translateY(-2px)'"
+                       onmouseleave="this.style.background='rgba(255,255,255,0.1)';this.style.transform=''">
                         Iniciar sesión
                     </a>
                 </div>
@@ -122,16 +134,16 @@
 
     {{-- Para emprendedores --}}
     <section id="para-emprendedores" class="relative z-10 scroll-mt-24">
-        <div class="rounded-3xl border border-slate-800 bg-slate-900/40 p-8 md:p-12 overflow-hidden relative">
-            <div class="absolute top-0 right-0 w-64 h-64 rounded-full opacity-30 pointer-events-none" style="background: radial-gradient(circle, rgba(233,157,98,0.25) 0%, transparent 70%);"></div>
+        <div class="rounded-3xl p-8 md:p-12 overflow-hidden relative" style="background:radial-gradient(ellipse at 50% 0%, #2d6a4f 0%, #1a4a33 45%, #0f2e1e 100%);border:1px solid rgba(255,255,255,0.08);">
+            <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image:radial-gradient(#ffffff 1px,transparent 1px);background-size:16px 16px;"></div>
 
             <div class="relative z-10 text-center mb-10 home-scroll-reveal">
-                <span class="px-3 py-1 text-xs font-semibold tracking-wider rounded-full border uppercase" style="color: #d88448; background: #fff7f0; border-color: #e99d62;">
+                <span style="display:inline-block;padding:0.2rem 0.75rem;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:9999px;">
                     Para emprendedores
                 </span>
-                <h2 class="text-2xl md:text-3xl font-extrabold mt-4">Potenciá tu negocio local</h2>
-                <p class="text-slate-400 mt-2 max-w-2xl mx-auto text-sm md:text-base">
-                    Publicá tu catálogo, gestioná horarios y recibí reservas directas. Dejá de coordinar todo por mensajes: tus clientes reservan solos y vos gestionás desde un panel.
+                <h2 class="text-2xl md:text-3xl font-extrabold mt-4" style="color:#ffffff !important;">Potenciá tu negocio local</h2>
+                <p style="color:rgba(255,255,255,0.65);margin-top:0.5rem;max-width:42rem;margin-left:auto;margin-right:auto;font-size:0.95rem;">
+                    Publicá tu catálogo, gestioná horarios y recibí reservas directas. Tus clientes reservan solos y vos gestionás desde un panel.
                 </p>
             </div>
 
@@ -144,46 +156,48 @@
                     ['Recetas e insumos', 'Organizá ingredientes y costos de lo que ofrecés.', 'home-scroll-reveal-delay-2'],
                     ['Métricas del negocio', 'Mirá cómo rinde tu emprendimiento en el dashboard.', 'home-scroll-reveal-delay-3'],
                 ] as $feature)
-                    <div class="home-seller-card home-scroll-reveal {{ $feature[2] }} rounded-xl border border-slate-800 bg-slate-950/60 p-5 transition-all duration-300">
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center mb-3" style="background: #fff7f0; border: 1px solid #e99d62;">
-                            <svg class="w-4 h-4" style="color: #d88448;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <div class="home-seller-card home-scroll-reveal {{ $feature[2] }} rounded-xl p-5 transition-all duration-300" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);">
+                        <div style="width:2.25rem;height:2.25rem;border-radius:0.5rem;display:flex;align-items:center;justify-content:center;margin-bottom:0.75rem;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.35);">
+                            <svg style="width:1rem;height:1rem;color:#f5a623;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <h3 class="text-base font-bold">{{ $feature[0] }}</h3>
-                        <p class="text-sm text-slate-400 mt-1.5">{{ $feature[1] }}</p>
+                        <h3 class="text-base font-bold" style="color:#ffffff !important;">{{ $feature[0] }}</h3>
+                        <p style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:0.375rem;">{{ $feature[1] }}</p>
                     </div>
                 @endforeach
             </div>
 
-            <div class="grid md:grid-cols-3 gap-6 mb-10">
+            <div class="grid md:grid-cols-3 gap-6 mb-10" style="margin-top:2rem;">
                 @foreach ([
                     ['1', 'Registrate', 'Creá tu cuenta como emprendedor en pocos minutos.', 'home-scroll-reveal-delay-1'],
                     ['2', 'Completá tu perfil', 'Subí tu catálogo, categorías y horarios disponibles.', 'home-scroll-reveal-delay-2'],
                     ['3', 'Recibí reservas', 'Compartí tu negocio y empezá a recibir pedidos.', 'home-scroll-reveal-delay-3'],
                 ] as $step)
                     <div class="home-scroll-reveal {{ $step[3] }} text-center md:text-left">
-                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold" style="background: #fff7f0; border: 1px solid #e99d62; color: #d88448;">
+                        <span style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:9999px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);font-size:0.875rem;font-weight:700;color:#f5a623;">
                             {{ $step[0] }}
                         </span>
-                        <h3 class="text-base font-bold mt-3">{{ $step[1] }}</h3>
-                        <p class="text-sm text-slate-400 mt-1">{{ $step[2] }}</p>
+                        <h3 class="text-base font-bold mt-3" style="color:#ffffff !important;">{{ $step[1] }}</h3>
+                        <p style="font-size:0.875rem;color:rgba(255,255,255,0.6);margin-top:0.25rem;">{{ $step[2] }}</p>
                     </div>
                 @endforeach
             </div>
 
-            <div class="text-center home-scroll-reveal pt-4 border-t border-slate-800">
-                <p class="text-sm text-slate-400 mb-5">¿Listo para publicar tu negocio?</p>
+            <div class="text-center home-scroll-reveal pt-6" style="border-top:1px solid rgba(255,255,255,0.12);">
+                <p style="font-size:0.875rem;color:rgba(255,255,255,0.55);margin-bottom:1.25rem;">¿Listo para publicar tu negocio?</p>
                 <div class="home-cta-actions">
                     <a href="{{ route('register.seller') }}"
                        id="btn-select-seller"
-                       class="home-btn-peach auth-role-btn-inline inline-flex items-center justify-center px-8 py-3 rounded-xl text-sm font-semibold transition-all duration-300">
+                       style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 2rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#1e3a2f;background:#f5a623;border:none;text-decoration:none;transition:all 0.2s;"
+                       onmouseenter="this.style.background='#e8961a';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(245,166,35,0.4)'"
+                       onmouseleave="this.style.background='#f5a623';this.style.transform='';this.style.boxShadow=''">
                         Registrar mi emprendimiento
                     </a>
                 </div>
-                <p class="text-xs text-slate-400 mt-4">
+                <p style="font-size:0.875rem;color:rgba(255,255,255,0.55);margin-top:1rem;">
                     ¿Tenés dudas antes de registrarte?
-                    <a href="#contacto-emprendedores" class="font-semibold hover:underline" style="color:#d88448">Escribinos</a>
+                    <a href="#contacto-emprendedores" style="font-weight:600;color:#f5a623;text-decoration:none;">Escribinos</a>
                 </p>
             </div>
         </div>
@@ -247,17 +261,27 @@
         </div>
     </section>
 
+
     {{-- Footer CTA --}}
     <section class="relative z-10 text-center home-scroll-reveal">
-        <h2 class="text-lg font-bold mb-4">¿Listo para empezar?</h2>
+        <h2 class="text-2xl font-bold mb-6" style="color:#1e3a2f !important;">¿Listo para empezar?</h2>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a href="{{ route('register.client') }}" class="inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-600 to-indigo-500 transition-all duration-300">
+            <a href="{{ route('register.client') }}"
+               style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.75rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#ffffff;background:#1e3a2f;text-decoration:none;transition:all 0.2s;"
+               onmouseenter="this.style.background='#2d6a4f';this.style.transform='translateY(-2px)'"
+               onmouseleave="this.style.background='#1e3a2f';this.style.transform='translateY(0)'">
                 Registrarme como cliente
             </a>
-            <a href="{{ route('register.seller') }}" class="home-btn-peach inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300">
+            <a href="{{ route('register.seller') }}"
+               style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.75rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#1e3a2f;background:#f5a623;text-decoration:none;transition:all 0.2s;"
+               onmouseenter="this.style.background='#e8961a';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(245,166,35,0.4)'"
+               onmouseleave="this.style.background='#f5a623';this.style.transform='translateY(0)';this.style.boxShadow='none'">
                 Registrar emprendimiento
             </a>
-            <a href="{{ route('register.hub') }}" class="auth-role-btn-outline auth-role-btn-outline-neutral">
+            <a href="{{ route('register.hub') }}"
+               style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.75rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#1e3a2f;background:transparent;border:1.5px solid #1e3a2f;text-decoration:none;transition:all 0.2s;"
+               onmouseenter="this.style.background='rgba(30,58,47,0.08)';this.style.transform='translateY(-2px)'"
+               onmouseleave="this.style.background='transparent';this.style.transform='translateY(0)'">
                 Ver opciones de registro
             </a>
         </div>
@@ -265,31 +289,31 @@
 
     {{-- Contacto emprendedores (final de página) --}}
     <section id="contacto-emprendedores" class="relative z-10 scroll-mt-24 home-scroll-reveal pb-4">
-        <div class="rounded-3xl border border-slate-800 bg-slate-900/40 p-8 md:p-12 overflow-hidden relative">
-            <div class="absolute top-0 right-0 w-64 h-64 rounded-full opacity-30 pointer-events-none" style="background: radial-gradient(circle, rgba(233,157,98,0.25) 0%, transparent 70%);"></div>
+        <div class="rounded-3xl overflow-hidden relative" style="padding:4rem 3rem 5rem;background:radial-gradient(ellipse at 50% 0%, #2d6a4f 0%, #1a4a33 45%, #0f2e1e 100%);border:1px solid rgba(255,255,255,0.08);">
+            <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image:radial-gradient(#ffffff 1px,transparent 1px);background-size:16px 16px;"></div>
 
             <div class="relative z-10 text-center mb-8">
-                <span class="px-3 py-1 text-xs font-semibold tracking-wider rounded-full border uppercase" style="color: #d88448; background: #fff7f0; border-color: #e99d62;">
+                <span style="display:inline-block;padding:0.2rem 0.75rem;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:9999px;">
                     Contacto emprendedores
                 </span>
-                <h2 class="text-2xl md:text-3xl font-extrabold mt-4">¿Querés sumarte o tenés consultas?</h2>
-                <p class="text-slate-400 mt-2 max-w-xl mx-auto text-sm md:text-base">
+                <h2 class="text-2xl md:text-3xl font-extrabold mt-4" style="color:#ffffff !important;">¿Querés sumarte o tenés consultas?</h2>
+                <p style="color:rgba(255,255,255,0.65);margin-top:0.5rem;max-width:36rem;margin-left:auto;margin-right:auto;font-size:0.95rem;">
                     Escribinos y te ayudamos a publicar tu emprendimiento en la plataforma.
                 </p>
             </div>
 
             @if (session('contact_success'))
-                <div class="max-w-xl mx-auto mb-6 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 text-sm">
+                <div class="max-w-xl mx-auto mb-6 p-4 rounded-xl text-sm" style="background:rgba(45,140,78,0.2);border:1px solid rgba(45,140,78,0.4);color:#86efac;">
                     {{ session('contact_success') }}
                 </div>
             @endif
 
             <div class="max-w-xl mx-auto">
-                <form action="{{ route('entrepreneur.contact.store') }}" method="POST" class="space-y-4 rounded-2xl border border-slate-800 bg-slate-950/60 p-6 @if($errors->has('business_name') || $errors->has('contact_name') || $errors->has('email') || $errors->has('message')) animate-shake @endif">
+                <form action="{{ route('entrepreneur.contact.store') }}" method="POST" class="space-y-5 @if($errors->has('business_name') || $errors->has('contact_name') || $errors->has('email') || $errors->has('message')) animate-shake @endif">
                     @csrf
 
                     @if ($errors->has('business_name') || $errors->has('contact_name') || $errors->has('email') || $errors->has('phone') || $errors->has('message'))
-                        <div class="p-3 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-300 text-sm">
+                        <div class="p-3 rounded-xl text-sm" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;">
                             <ul class="list-disc list-inside space-y-1">
                                 @foreach (['business_name', 'contact_name', 'email', 'phone', 'message'] as $field)
                                     @error($field)
@@ -302,37 +326,39 @@
 
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
-                            <label for="contact_business_name" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Nombre del negocio</label>
+                            <label for="contact_business_name" style="display:block;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.6);">Nombre del negocio</label>
                             <input type="text" name="business_name" id="contact_business_name" value="{{ old('business_name') }}" required
-                                   class="block w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm">
+                                   style="display:block;width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:0.75rem;font-size:0.875rem;color:#ffffff;outline:none;box-sizing:border-box;">
                         </div>
                         <div class="space-y-1.5">
-                            <label for="contact_name" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Tu nombre</label>
+                            <label for="contact_name" style="display:block;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.6);">Tu nombre</label>
                             <input type="text" name="contact_name" id="contact_name" value="{{ old('contact_name') }}" required
-                                   class="block w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm">
+                                   style="display:block;width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:0.75rem;font-size:0.875rem;color:#ffffff;outline:none;box-sizing:border-box;">
                         </div>
                     </div>
 
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
-                            <label for="contact_email" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Email</label>
+                            <label for="contact_email" style="display:block;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.6);">Email</label>
                             <input type="email" name="email" id="contact_email" value="{{ old('email') }}" required
-                                   class="block w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm">
+                                   style="display:block;width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:0.75rem;font-size:0.875rem;color:#ffffff;outline:none;box-sizing:border-box;">
                         </div>
                         <div class="space-y-1.5">
-                            <label for="contact_phone" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Teléfono (opcional)</label>
+                            <label for="contact_phone" style="display:block;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.6);">Teléfono (opcional)</label>
                             <input type="text" name="phone" id="contact_phone" value="{{ old('phone') }}"
-                                   class="block w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm">
+                                   style="display:block;width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:0.75rem;font-size:0.875rem;color:#ffffff;outline:none;box-sizing:border-box;">
                         </div>
                     </div>
 
                     <div class="space-y-1.5">
-                        <label for="contact_message" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Mensaje</label>
+                        <label for="contact_message" style="display:block;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.6);">Mensaje</label>
                         <textarea name="message" id="contact_message" rows="4" required placeholder="Contanos sobre tu emprendimiento o tu consulta..."
-                                  class="block w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm resize-none">{{ old('message') }}</textarea>
+                                  style="display:block;width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:0.75rem;font-size:0.875rem;color:#ffffff;outline:none;resize:none;box-sizing:border-box;">{{ old('message') }}</textarea>
                     </div>
 
-                    <button type="submit" class="home-btn-peach w-full py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300">
+                    <button type="submit" class="btn-orange-home"
+                            onmouseenter="this.style.background='#e8961a';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(245,166,35,0.4)'"
+                            onmouseleave="this.style.background='#f5a623';this.style.transform='translateY(0)';this.style.boxShadow='none'">
                         Enviar consulta
                     </button>
                 </form>

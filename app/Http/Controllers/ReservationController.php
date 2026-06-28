@@ -10,6 +10,8 @@ use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Http\Requests\UpdateReservationStatusRequest;
 use App\Notifications\ReservationUpdated;
+use App\Notifications\PaymentUploaded;
+use App\Notifications\PaymentConfirmed;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -73,6 +75,7 @@ class ReservationController extends Controller
                 'reservation_time' => $request->reservation_time,
                 'notes'            => $request->notes,
                 'status'           => 'pending',
+                'payment_status'   => 'pending_upload',
             ]);
         });
 
@@ -81,9 +84,7 @@ class ReservationController extends Controller
                 ->withErrors(['reservation_time' => 'Este horario ya no está disponible. Por favor elegí otro.']);
         }
 
-        return redirect()->route('reservations.create')
-            ->with('success', 'Reserva solicitada con éxito. Te confirmaremos pronto el turno para el '
-                . $request->reservation_date . ' a las ' . $request->reservation_time . '.');
+        return redirect()->route('reservations.payment', $reservation->id);
     }
 
     public function index(): View
@@ -502,5 +503,106 @@ class ReservationController extends Controller
             return response()->json(['success' => false, 'message' => $message], 422);
         }
         return back()->with('error', $message);
+    }
+
+    public function showPayment(Reservation $reservation): View|RedirectResponse
+    {
+        if (Auth::id() !== $reservation->user_id) {
+            abort(403);
+        }
+
+        if ($reservation->payment_status !== 'pending_upload') {
+            return redirect()->route('reservations.index');
+        }
+
+        $reservation->load('product.businessProfile');
+
+        return view('reservations.payment', compact('reservation'));
+    }
+
+    public function uploadReceipt(Request $request, Reservation $reservation): RedirectResponse
+    {
+        if (Auth::id() !== $reservation->user_id) {
+            abort(403);
+        }
+
+        if ($reservation->payment_status !== 'pending_upload') {
+            return redirect()->route('reservations.index')
+                ->with('error', 'Este comprobante ya fue enviado.');
+        }
+
+        $request->validate([
+            'transfer_amount'    => 'required|numeric|min:0.01',
+            'transfer_date'      => 'required|date|before_or_equal:today',
+            'transfer_reference' => 'required|string|max:255',
+            'receipt'            => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+        ], [
+            'transfer_amount.required'    => 'Ingresá el monto transferido.',
+            'transfer_date.required'      => 'Ingresá la fecha de la transferencia.',
+            'transfer_date.before_or_equal' => 'La fecha no puede ser futura.',
+            'transfer_reference.required' => 'Ingresá el número de operación o referencia.',
+            'receipt.required'            => 'Adjuntá el comprobante.',
+            'receipt.mimes'               => 'El comprobante debe ser JPG, PNG o PDF.',
+            'receipt.max'                 => 'El archivo no puede superar los 5 MB.',
+        ]);
+
+        $path = $request->file('receipt')->store('receipts', 'public');
+
+        $reservation->update([
+            'payment_status'     => 'uploaded',
+            'transfer_amount'    => $request->transfer_amount,
+            'transfer_date'      => $request->transfer_date,
+            'transfer_reference' => $request->transfer_reference,
+            'receipt_path'       => $path,
+        ]);
+
+        $seller = $reservation->product?->businessProfile?->user;
+        if ($seller) {
+            $seller->notify(new PaymentUploaded($reservation->fresh()));
+        }
+
+        return redirect()->route('reservations.index')
+            ->with('success', '¡Comprobante enviado! El emprendedor lo revisará y confirmará tu reserva a la brevedad.');
+    }
+
+    public function confirmPayment(Request $request, Reservation $reservation): RedirectResponse|JsonResponse
+    {
+        $businessProfile = $request->user()->businessProfile;
+
+        if (!$businessProfile) {
+            abort(403);
+        }
+
+        if ($reservation->product->business_profile_id !== $businessProfile->id) {
+            abort(403);
+        }
+
+        if ($reservation->payment_status !== 'uploaded') {
+            $msg = 'El comprobante no está disponible para confirmar.';
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $msg], 422);
+            }
+            return back()->with('error', $msg);
+        }
+
+        $reservation->update([
+            'payment_status'      => 'confirmed',
+            'payment_confirmed_at' => now(),
+            'status'              => 'confirmed',
+        ]);
+
+        if ($reservation->user) {
+            $reservation->user->notify(new PaymentConfirmed($reservation->fresh()));
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pago confirmado. La reserva fue confirmada.',
+            ]);
+        }
+
+        return redirect()->route('reservations.detail', $reservation->id)
+            ->with('success', 'Pago confirmado. La reserva está confirmada.');
     }
 }

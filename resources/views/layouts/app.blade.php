@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Plataforma de Reservas y Emprendimientos')</title>
-    <meta name="description" content="Regístrate como cliente para realizar reservas o como emprendedor para potenciar tu negocio.">
+    <title>@yield('title', 'Cocinet')</title>
+    <meta name="description" content="Cocinet — Conectá con emprendimientos locales, reservá y pagá fácil.">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     @vite(['resources/css/app.css'])
     @stack('styles')
 </head>
@@ -14,15 +15,8 @@
     <header class="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/75 backdrop-blur-md">
         <div class="container mx-auto px-4 min-h-16 py-2 flex items-center justify-between gap-3">
 
-            <a href="{{ route('register.select') }}" class="flex items-center space-x-2 group">
-                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5 text-emerald-450" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 22C2 22 6 18 12 18M12 18C18 18 22 22 22 22M12 18V2M12 6C9.5 8.5 7 11 7 14M12 10C14.5 12.5 17 15 17 18"/>
-                    </svg>
-                </div>
-                <span class="font-bold text-lg tracking-tight text-white">
-                    ProyectoUTN
-                </span>
+            <a href="{{ route('register.select') }}" class="flex items-center group" style="text-decoration:none;">
+                <img src="{{ asset('cocinet_logo_v2.png') }}" alt="Cocinet" style="height: 70px;px;width:auto;mix-blend-mode:screen;">
             </a>
 
             <div class="flex items-center gap-2 min-w-0 flex-1 justify-end">
@@ -41,7 +35,7 @@
                         </a>
                         <a href="{{ route('reservations.index') }}"
                            class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.index') || request()->routeIs('reservations.edit') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Mis Pedidos
+                            Mis Reservas
                         </a>
                     @endif
                 @endauth
@@ -132,7 +126,7 @@
             @auth
                     <div class="relative shrink-0" id="notif-bell-container">
                         <a href="{{ route('notifications.index') }}"
-                           class="flex items-center justify-center w-9 h-9 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all relative"
+                           class="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-white/10 transition-all relative" style="color:rgba(255,255,255,0.75);"
                            aria-label="Notificaciones">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
@@ -211,7 +205,7 @@
         </div>
     </header>
 
-    <main class="flex-grow flex @yield('main_align', 'items-center justify-center') py-12 px-4 sm:px-6 lg:px-8 relative z-10" style="flex-grow: 1;">
+    <main class="flex-grow flex @yield('main_align', 'items-center justify-center') py-12 px-4 sm:px-6 lg:px-8 relative z-10" style="flex-grow: 1; padding-bottom: 7rem;">
         <div class="w-full @yield('content_width', 'max-w-4xl')">
             @if (session('success'))
                 <div class="mb-8 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 flex items-start space-x-3 shadow-lg shadow-emerald-500/5 animate-fade-in" id="alert-success">
@@ -257,8 +251,12 @@
         </div>
     </main>
 
-    <footer class="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500 relative z-10">
-        <p>&copy; {{ date('Y') }} ProyectoUTN. Todos los derechos reservados.</p>
+    <footer style="background-color:#1e3a2f;border-top:1px solid rgba(255,255,255,0.08);padding:2rem 1.5rem;text-align:center;position:relative;z-index:10;">
+        <div style="max-width:480px;margin:0 auto;">
+            <p style="font-size:1.1rem;font-weight:700;color:#ffffff;letter-spacing:0.02em;">Cocinet</p>
+            <p style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:0.375rem;">Conectamos emprendimientos gastronómicos locales con quienes quieren reservar.</p>
+            <p style="font-size:0.7rem;color:rgba(255,255,255,0.3);margin-top:1rem;">&copy; {{ date('Y') }} Cocinet. Todos los derechos reservados.</p>
+        </div>
     </footer>
 
     <script>
