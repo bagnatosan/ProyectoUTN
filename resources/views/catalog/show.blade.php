@@ -2,49 +2,58 @@
 
 @section('title', 'Catálogo de ' . $business->business_name . ' | ProyectoUTN')
 
+@section('main_align', 'items-start')
+@section('content_width', 'w-full max-w-none px-0')
 @section('content')
-<div class="space-y-8 animate-fade-in">
-    <!-- Perfil del Negocio Banner (Mockup style) -->
-    <div class="relative overflow-hidden rounded-3xl bg-[#133b2c] border border-[#1c4d36] p-8 text-center shadow-xl space-y-4">
+<div class="space-y-8 animate-fade-in -mt-12 -mx-4 sm:-mx-6 lg:-mx-8">
+    <!-- Perfil del Negocio Banner -->
+    <div class="relative overflow-hidden px-8 pt-16 pb-10 text-center shadow-xl space-y-4 -mx-4 sm:-mx-6 lg:-mx-8"
+         style="background: radial-gradient(ellipse at 50% 0%, #2d6a4f 0%, #1a4a33 40%, #0f2e1e 100%);">
         <!-- Decorative subtle grid -->
         <div class="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
-        <div class="flex flex-col items-center space-y-3 relative z-10">
-            <!-- Leaf sprig logo -->
-            <div class="w-16 h-16 rounded-full bg-[#2d6a4f]/20 border border-[#2d6a4f]/30 flex items-center justify-center text-emerald-450 shadow-inner">
-                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 22C2 22 6 18 12 18M12 18C18 18 22 22 22 22M12 18V2M12 6C9.5 8.5 7 11 7 14M12 10C14.5 12.5 17 15 17 18"/>
-                </svg>
-            </div>
+        <div class="flex flex-col items-center justify-center space-y-4 relative z-10 w-full">
+            {{-- Logo del negocio --}}
+            @if($business->logo)
+                <img src="{{ filter_var($business->logo, FILTER_VALIDATE_URL) ? $business->logo : asset('storage/' . $business->logo) }}"
+                     alt="{{ $business->business_name }}"
+                     class="w-24 h-24 rounded-2xl object-cover border-2 border-white/20 shadow-xl">
+            @else
+                <div class="w-24 h-24 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center shadow-xl">
+                    <span class="text-4xl font-black text-white">{{ strtoupper(substr($business->business_name, 0, 1)) }}</span>
+                </div>
+            @endif
 
-            <!-- Business name & info -->
+            {{-- Nombre y descripción --}}
             <div class="space-y-1">
-                <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight leading-none">{{ $business->business_name }}</h1>
-                <p class="text-emerald-300/90 text-sm sm:text-base font-medium mt-1">
-                    {{ $business->description ?? 'Pedidos artesanales' }} 
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-none" style="color:#ffffff !important;">{{ $business->business_name }}</h1>
+                <p class="text-sm sm:text-base font-medium mt-1" style="color:rgba(255,255,255,0.75) !important;">
+                    {{ $business->description ?? 'Pedidos artesanales' }}
                     @if($business->address)
-                        • {{ $business->address }}
+                        · {{ $business->address }}
                     @endif
                 </p>
             </div>
 
-            <!-- Contact/Phone link -->
+            {{-- Botón WhatsApp --}}
             @if($business->phone)
-                <a href="https://wa.me/{{ preg_replace('/\D/', '', $business->phone) }}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#2d6a4f] hover:bg-[#20724b] text-white text-xs font-semibold rounded-full shadow-md transition-all">
-                    <svg class="w-3.5 h-3.5 text-emerald-350 fill-current" viewBox="0 0 24 24">
+                <a href="https://wa.me/{{ preg_replace('/\D/', '', $business->phone) }}" target="_blank"
+                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-bold rounded-full shadow-lg transition-all">
+                    <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                         <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.18 1.449 4.725 1.45 5.556 0 10.074-4.522 10.077-10.077.001-2.691-1.042-5.222-2.937-7.12C16.518 1.51 13.98 1.465 11.298 1.465c-5.555 0-10.074 4.52-10.077 10.077-.001 1.765.463 3.489 1.345 5.008l-.985 3.593 3.682-.966c1.554.847 3.193 1.29 4.794 1.29zm10.978-7.525c-.302-.151-1.785-.882-2.057-.982-.272-.1-.47-.15-.668.151-.198.3-.765.982-.94 1.181-.173.2-.347.225-.648.075-.302-.15-1.272-.469-2.423-1.496-.895-.798-1.5-1.784-1.675-2.086-.175-.302-.018-.465.132-.614.135-.134.302-.351.453-.526.151-.175.202-.3.302-.5.101-.2.05-.376-.025-.526-.075-.15-.668-1.609-.915-2.203-.241-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.785-.73 2.033-1.433.248-.704.248-1.311.173-1.436-.075-.125-.272-.2-.574-.35z"/>
                     </svg>
-                    <span>Enviar Mensaje</span>
+                    Contactar por WhatsApp
                 </a>
             @endif
         </div>
     </div>
 
+    <div class="max-w-4xl mx-auto px-8 sm:px-10 lg:px-12 space-y-8">
     <!-- Buscador y Filtros -->
     <div class="space-y-4">
-        <div class="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
-            <!-- Buscador -->
-            <div class="relative flex-grow max-w-md input-icon-group">
+        <div class="flex flex-col items-center gap-2">
+            <!-- Buscador centrado -->
+            <div class="relative w-full max-w-md input-icon-group">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
                     <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -54,7 +63,7 @@
             </div>
 
             <!-- Info de productos mostrados -->
-            <div class="text-xs text-slate-400 self-center" id="results-count">
+            <div class="text-xs text-slate-400" id="results-count">
                 Mostrando {{ $products->count() }} productos
             </div>
         </div>
@@ -242,4 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+    </div>{{-- cierre max-w-4xl --}}
+</div>{{-- cierre space-y-8 --}}
 @endsection

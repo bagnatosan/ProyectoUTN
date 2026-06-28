@@ -1,24 +1,25 @@
 @extends('layouts.app')
 
-@section('title', 'Notificaciones | ProyectoUTN')
+@section('title', 'Notificaciones | Cocinet')
 
-@section('main_align', 'items-start')
+@section('main_align', 'items-start justify-center')
 @section('content_width', 'max-w-3xl')
 
 @section('content')
 <div class="space-y-6 animate-fade-in">
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Notificaciones</h1>
-      <p class="text-sm text-slate-400 mt-1">Mantenete al día con el estado de tus reservas.</p>
-    </div>
+  {{-- Header centrado --}}
+  <div style="text-align:center;margin-bottom:0.5rem;">
+    <h1 style="font-size:1.75rem;font-weight:800;color:#1a1918;letter-spacing:-0.02em;">Notificaciones</h1>
+    <p style="font-size:0.9rem;color:#6a6966;margin-top:0.375rem;">Mantenete al día con el estado de tus reservas.</p>
     @if(auth()->user()->unreadNotifications->isNotEmpty())
-      <form action="{{ route('notifications.mark-all-read') }}" method="POST">
-        @csrf
-        <button type="submit" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 rounded-lg px-3 py-1.5 transition-all">
-          Marcar todas como leídas
-        </button>
-      </form>
+      <div style="margin-top:1rem;margin-bottom:0.5rem;">
+        <form action="{{ route('notifications.mark-all-read') }}" method="POST" style="display:inline;">
+          @csrf
+          <button type="submit" style="font-size:0.75rem;font-weight:600;color:#2d8c4e;background:rgba(45,140,78,0.1);border:1px solid rgba(45,140,78,0.25);border-radius:0.5rem;padding:0.4rem 0.9rem;cursor:pointer;transition:all 0.2s;">
+            Marcar todas como leídas
+          </button>
+        </form>
+      </div>
     @endif
   </div>
 
@@ -27,34 +28,35 @@
   @endphp
 
   @if($notifications->isEmpty())
-    <div class="rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 p-12 text-center">
-      <svg class="w-12 h-12 mx-auto text-slate-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div style="border-radius:1rem;border:1.5px dashed #e8e0d0;background:#f9f7f2;padding:3rem;text-align:center;">
+      <svg style="width:3rem;height:3rem;margin:0 auto 1rem;color:#b8b0a0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
       </svg>
-      <p class="text-slate-400 font-medium">No tenés notificaciones.</p>
+      <p style="color:#6a6966;font-weight:500;">No tenés notificaciones.</p>
     </div>
   @else
-    <div class="space-y-3">
+    <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1.25rem;">
       @foreach($notifications as $notification)
         @php
           $data = $notification->data;
           $isUnread = is_null($notification->read_at);
         @endphp
-        <div class="rounded-xl border {{ $isUnread ? 'border-indigo-500/30 bg-indigo-500/5' : 'border-slate-800 bg-slate-900/40' }} p-4 transition-all">
+        <div style="border-radius:0.75rem;border:1.5px solid {{ $isUnread ? 'rgba(245,166,35,0.4)' : '#e8e0d0' }};background:{{ $isUnread ? 'rgba(245,166,35,0.06)' : '#ffffff' }};padding:1rem;transition:all 0.2s;">
           <div class="flex items-start justify-between gap-3">
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium {{ $isUnread ? 'text-white' : 'text-slate-300' }}">
+              <p style="font-size:0.875rem;font-weight:{{ $isUnread ? '600' : '500' }};color:#1a1918;">
                 {{ $data['message'] ?? 'Notificación' }}
               </p>
               @if(!empty($data['date']) && !empty($data['time']))
-                <p class="text-xs text-slate-500 mt-1">{{ $data['date'] }} - {{ $data['time'] }}</p>
+                <p style="font-size:0.75rem;color:#6a6966;margin-top:0.25rem;">{{ $data['date'] }} - {{ $data['time'] }}</p>
               @endif
-              <p class="text-xs text-slate-500 mt-0.5">{{ $notification->created_at->diffForHumans() }}</p>
+              <p style="font-size:0.7rem;color:#9a9390;margin-top:0.125rem;">{{ $notification->created_at->diffForHumans() }}</p>
             </div>
             <div class="flex items-center gap-2 shrink-0">
               @if($isUnread)
                 <button type="button"
-                        class="notif-mark-read text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-2.5 py-1 transition-all"
+                        class="notif-mark-read"
+                        style="font-size:0.7rem;font-weight:600;color:#2d8c4e;background:rgba(45,140,78,0.1);border:1px solid rgba(45,140,78,0.25);border-radius:0.5rem;padding:0.25rem 0.6rem;cursor:pointer;transition:all 0.2s;"
                         data-notif-id="{{ $notification->id }}">
                   Leída
                 </button>

@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
         map = L.map('map', {
             zoomControl: false,
             scrollWheelZoom: true
-        }).setView(defaultCenter, 12);
+        }).setView(defaultCenter, userLocation ? 14 : 12);
 
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
