@@ -543,7 +543,7 @@
   {{-- Back link --}}
   <a href="{{ route('reservations.manage') }}" class="sr-detail__back">
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-    Volver a gesti\u00F3n de pedidos
+    Volver a gestion de pedidos
   </a>
 
   {{-- Header --}}
@@ -645,7 +645,7 @@
     @if($reservation->notes)
       <div class="sr-detail__notes">{{ $reservation->notes }}</div>
     @else
-      <div class="sr-detail__notes sr-detail__notes--empty">El cliente no dej\u00F3 notas en su pedido.</div>
+      <div class="sr-detail__notes sr-detail__notes--empty">El cliente no ha dejado notas en su pedido.</div>
     @endif
   </div>
 
@@ -672,7 +672,7 @@
             @if($reservation->created_at->format('Y-m-d H:i:s') !== $reservation->updated_at->format('Y-m-d H:i:s'))
               {{ $reservation->updated_at->format('d/m/Y \a \l\a\s H:i') }}
             @else
-              Pendiente de confirmaci\u00F3n manual
+              Pendiente de confirmacion manual
             @endif
           </div>
         </div>
@@ -713,7 +713,7 @@
       Nota Interna
       <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--sd-text-secondary);font-size:0.75rem;">(opcional, solo visible para vos)</span>
     </h2>
-    <textarea id="sr-detail-seller-notes" class="sr-detail__textarea" placeholder="Escrib\u00ED una nota interna sobre esta reserva...">{{ $reservation->seller_notes }}</textarea>
+    <textarea id="sr-detail-seller-notes" class="sr-detail__textarea" placeholder="Escribe una nota interna sobre esta reserva...">{{ $reservation->seller_notes }}</textarea>
     <div class="sr-detail__notes-actions">
       <button type="button"
               id="sr-detail-save-notes"
@@ -919,7 +919,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     })
     .catch(function () {
-      showToast('Error de conexi\u00F3n.', 'error');
+      showToast('Error de conexion.', 'error');
     })
     .finally(function () {
       btn.disabled = false;

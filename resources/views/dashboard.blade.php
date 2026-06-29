@@ -10,7 +10,7 @@
 
     {{-- ===== BANNER full-width ===== --}}
     <div class="relative overflow-hidden text-center"
-         style="margin-top:-3rem;width:100vw;margin-left:calc(-50vw + 50%);padding:4.5rem 1.5rem 2.75rem;background:radial-gradient(ellipse at 50% 0%, #2d6a4f 0%, #1a4a33 45%, #0f2e1e 100%);">
+     style="max-width:1100px;margin:0 auto;border-radius:1.5rem;padding:4.5rem 1.5rem 2.75rem;background:radial-gradient(ellipse at 50% 0%, #2d6a4f 0%, #1a4a33 45%, #0f2e1e 100%);">
         <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image:radial-gradient(#ffffff 1px,transparent 1px);background-size:16px 16px;"></div>
         <div class="relative z-10" style="max-width:680px;margin:0 auto;">
             <h1 style="font-size:2.5rem;font-weight:900;color:#ffffff !important;letter-spacing:-0.03em;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,0.35);">

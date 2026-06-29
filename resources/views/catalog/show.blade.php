@@ -5,10 +5,10 @@
 @section('main_align', 'items-start')
 @section('content_width', 'w-full max-w-none px-0')
 @section('content')
-<div class="space-y-8 animate-fade-in -mt-12 -mx-4 sm:-mx-6 lg:-mx-8">
+
     <!-- Perfil del Negocio Banner -->
-    <div class="relative overflow-hidden px-8 pt-16 pb-10 text-center shadow-xl space-y-4 -mx-4 sm:-mx-6 lg:-mx-8"
-         style="background: radial-gradient(ellipse at 50% 0%, #2d6a4f 0%, #1a4a33 40%, #0f2e1e 100%);">
+    <div class="relative overflow-hidden px-8 pt-16 pb-10 text-center shadow-xl space-y-4"
+     style="max-width:1100px;margin:0 auto 2rem auto;border-radius:1.5rem;background: radial-gradient(ellipse at 50% 0%, #2d6a4f 0%, #1a4a33 40%, #0f2e1e 100%);">
         <!-- Decorative subtle grid -->
         <div class="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
@@ -17,9 +17,9 @@
             @if($business->logo)
                 <img src="{{ filter_var($business->logo, FILTER_VALIDATE_URL) ? $business->logo : asset('storage/' . $business->logo) }}"
                      alt="{{ $business->business_name }}"
-                     class="w-24 h-24 rounded-2xl object-cover border-2 border-white/20 shadow-xl">
+                    class="w-32 h-32 rounded-2xl object-contain bg-white/10 border-2 border-white/20 shadow-xl p-2">
             @else
-                <div class="w-24 h-24 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center shadow-xl">
+                <div class="w-32 h-32 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center shadow-xl">
                     <span class="text-4xl font-black text-white">{{ strtoupper(substr($business->business_name, 0, 1)) }}</span>
                 </div>
             @endif
