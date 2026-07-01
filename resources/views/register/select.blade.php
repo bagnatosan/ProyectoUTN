@@ -11,22 +11,25 @@
     <div class="home-blob-peach" aria-hidden="true"></div>
 
     {{-- Hero --}}
-    <section class="relative z-10 text-center pt-4 md:pt-8">
+    <section class="relative z-10 text-center pt-4 md:pt-8 rounded-3xl overflow-hidden"
+             style="background-image: url('{{ asset('images/banner-home.png') }}'); background-size: cover; background-position: center;">
+        <div class="absolute inset-0 rounded-3xl" style="background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.6) 100%);"></div>
+        <div class="relative z-10 pb-10 pt-10 px-4 md:px-10">
         <span class="inline-block px-3 py-1 text-xs font-semibold tracking-wider text-indigo-400 bg-indigo-500/10 rounded-full border border-indigo-500/20 uppercase animate-fade-in-up">
             Plataforma de reservas locales
         </span>
 
         <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mt-5 max-w-3xl mx-auto leading-tight animate-fade-in-up animate-delay-1"
-            style="background: linear-gradient(135deg, #0f2e1e 0%, #2d6a4f 40%, #52b788 70%, #f5a623 100%);
+            style="background: linear-gradient(135deg, #ffffff 0%, #d4f5e2 40%, #52b788 70%, #f5a623 100%);
                    -webkit-background-clip: text;
                    -webkit-text-fill-color: transparent;
                    background-clip: text;
                    letter-spacing:-0.04em;
-                   filter: drop-shadow(0 4px 16px rgba(45,106,79,0.25));">
+                   filter: drop-shadow(0 4px 24px rgba(0,0,0,0.4));">
             Cocinet
         </h1>
 
-        <p class="text-slate-400 mt-4 max-w-2xl mx-auto text-sm md:text-lg animate-fade-in-up animate-delay-2">
+        <p class="text-white/80 mt-4 max-w-2xl mx-auto text-sm md:text-lg animate-fade-in-up animate-delay-2" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);">
             Conectamos emprendimientos gastronómicos locales con quienes quieren reservar. Explorá catálogos, elegí horarios y reservá al instante.
         </p>
 
@@ -60,6 +63,7 @@
                 </div>
             </div>
         </div>
+        </div>
     </section>
 
     {{-- Trust bar --}}
@@ -78,6 +82,31 @@
                     <span style="font-size:0.875rem;font-weight:600;color:#ffffff;text-shadow:0 0 8px rgba(255,255,255,0.15);">{{ $item[0] }}</span>
                 </div>
             @endforeach
+        </div>
+    </section>
+
+    {{-- Galería de emprendimientos --}}
+    <section class="relative z-10 home-scroll-reveal">
+        <div class="text-center mb-8">
+            <h2 class="text-xl md:text-2xl font-extrabold">Emprendimientos que ya están en Cocinet</h2>
+            <p class="text-slate-400 mt-2 text-sm">Pastelería, comida casera, catering y mucho más.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="rounded-2xl overflow-hidden aspect-[4/3] home-scroll-reveal-delay-1">
+                <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&q=80&fit=crop"
+                     alt="Pastelería artesanal"
+                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+            </div>
+            <div class="rounded-2xl overflow-hidden aspect-[4/3] home-scroll-reveal-delay-2">
+                <img src="https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=600&q=80&fit=crop"
+                     alt="Comida casera"
+                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+            </div>
+            <div class="rounded-2xl overflow-hidden aspect-[4/3] home-scroll-reveal-delay-3">
+                <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80&fit=crop"
+                     alt="Catering y eventos"
+                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+            </div>
         </div>
     </section>
 
@@ -110,6 +139,26 @@
                         <p style="font-size:0.875rem;color:rgba(255,255,255,0.6);margin-top:0.5rem;">{{ $step[2] }}</p>
                     </div>
                 @endforeach
+            </div>
+
+            {{-- Foto 50/50 para clientes --}}
+            <div class="relative z-10 grid md:grid-cols-2 gap-6 mb-10 items-center home-scroll-reveal">
+                <div class="rounded-2xl overflow-hidden shadow-xl aspect-[4/3]">
+                    <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80&fit=crop"
+                         alt="Persona eligiendo comida desde su celular"
+                         class="w-full h-full object-cover">
+                </div>
+                <div style="color:rgba(255,255,255,0.85);">
+                    <h3 class="text-xl font-bold mb-3" style="color:#ffffff !important;">Tu comida favorita, sin llamadas</h3>
+                    <p style="font-size:0.95rem;color:rgba(255,255,255,0.65);line-height:1.7;">
+                        Entrás a Cocinet, buscás el emprendimiento que más te gusta y reservás tu turno o pedido en segundos. Sin mensajes por WhatsApp, sin esperar respuesta.
+                    </p>
+                    <ul class="mt-4 space-y-2" style="font-size:0.875rem;color:rgba(255,255,255,0.6);">
+                        <li style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#f5a623;">✓</span> Catálogos con fotos y precios</li>
+                        <li style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#f5a623;">✓</span> Horarios disponibles en tiempo real</li>
+                        <li style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#f5a623;">✓</span> Confirmación inmediata de tu reserva</li>
+                    </ul>
+                </div>
             </div>
 
             <div class="relative z-10 text-center home-scroll-reveal pt-8" style="border-top:1px solid rgba(255,255,255,0.12);">
@@ -145,6 +194,20 @@
                 <p style="color:rgba(255,255,255,0.65);margin-top:0.5rem;max-width:42rem;margin-left:auto;margin-right:auto;font-size:0.95rem;">
                     Publicá tu catálogo, gestioná horarios y recibí reservas directas. Tus clientes reservan solos y vos gestionás desde un panel.
                 </p>
+            </div>
+
+            {{-- Foto de emprendedor cocinando --}}
+            <div class="relative z-10 rounded-2xl overflow-hidden mb-10 home-scroll-reveal" style="height:280px;">
+                <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1200&q=80&fit=crop"
+                     alt="Chef preparando pedidos"
+                     class="w-full h-full object-cover object-center">
+                <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);"></div>
+                <div class="absolute inset-0 flex items-center px-8 md:px-12">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color:#f5a623;">Para emprendedores</p>
+                        <p class="text-2xl md:text-3xl font-extrabold leading-tight max-w-xs" style="color:#ffffff !important;">Tu cocina, tu negocio, tu panel.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
@@ -263,27 +326,28 @@
 
 
     {{-- Footer CTA --}}
-    <section class="relative z-10 text-center home-scroll-reveal">
-        <h2 class="text-2xl font-bold mb-6" style="color:#1e3a2f !important;">¿Listo para empezar?</h2>
+    <section class="relative z-10 home-scroll-reveal rounded-3xl overflow-hidden" style="min-height:320px;">
+        <img src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=1400&q=80&fit=crop"
+             alt="Mesa lista para una cena"
+             class="absolute inset-0 w-full h-full object-cover object-center">
+        <div class="absolute inset-0" style="background:linear-gradient(135deg, rgba(15,46,30,0.88) 0%, rgba(30,58,47,0.75) 100%);"></div>
+        <div class="relative z-10 text-center py-16 px-6">
+        <h2 class="text-2xl md:text-3xl font-bold mb-3" style="color:#ffffff !important;">¿Listo para empezar?</h2>
+        <p class="text-white/70 text-sm mb-8 max-w-md mx-auto">Unite a los emprendimientos y clientes que ya usan Cocinet para reservar sin complicaciones.</p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a href="{{ route('register.client') }}"
-               style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.75rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#ffffff;background:#1e3a2f;text-decoration:none;transition:all 0.2s;"
-               onmouseenter="this.style.background='#2d6a4f';this.style.transform='translateY(-2px)'"
-               onmouseleave="this.style.background='#1e3a2f';this.style.transform='translateY(0)'">
+               style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.75rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#1e3a2f;background:#ffffff;text-decoration:none;transition:all 0.2s;box-shadow:0 4px 14px rgba(0,0,0,0.25);"
+               onmouseenter="this.style.background='#f0f0f0';this.style.transform='translateY(-2px)'"
+               onmouseleave="this.style.background='#ffffff';this.style.transform='translateY(0)'">
                 Registrarme como cliente
             </a>
             <a href="{{ route('register.seller') }}"
-               style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.75rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#1e3a2f;background:#f5a623;text-decoration:none;transition:all 0.2s;"
-               onmouseenter="this.style.background='#e8961a';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(245,166,35,0.4)'"
-               onmouseleave="this.style.background='#f5a623';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+               style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.75rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#1e3a2f;background:#f5a623;text-decoration:none;transition:all 0.2s;box-shadow:0 4px 14px rgba(245,166,35,0.4);"
+               onmouseenter="this.style.background='#e8961a';this.style.transform='translateY(-2px)'"
+               onmouseleave="this.style.background='#f5a623';this.style.transform='translateY(0)'">
                 Registrar emprendimiento
             </a>
-            <a href="{{ route('register.hub') }}"
-               style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.75rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#1e3a2f;background:transparent;border:1.5px solid #1e3a2f;text-decoration:none;transition:all 0.2s;"
-               onmouseenter="this.style.background='rgba(30,58,47,0.08)';this.style.transform='translateY(-2px)'"
-               onmouseleave="this.style.background='transparent';this.style.transform='translateY(0)'">
-                Ver opciones de registro
-            </a>
+        </div>
         </div>
     </section>
 

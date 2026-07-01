@@ -114,6 +114,7 @@
                         @enderror
                     </div>
 
+                    {{-- Datos de cobro --}}
                     <div class="profile-section-divider">
                         <span class="profile-section-label">Datos de cobro</span>
                     </div>

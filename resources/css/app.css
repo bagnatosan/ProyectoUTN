@@ -37,6 +37,13 @@
    GLOBAL STYLES & OVERRIDES FOR THE LIGHT/ORGANIC THEME
    -------------------------------------------------- */
 
+@media (min-width: 800px) {
+    .main-content-wrapper {
+        width: 90% !important;
+        max-width: 90% !important;
+    }
+}
+
 body {
     background-color: #f5efe6 !important;
     color: #333333 !important;
