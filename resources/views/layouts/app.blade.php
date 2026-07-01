@@ -10,7 +10,9 @@
     @vite(['resources/css/app.css'])
     @stack('styles')
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col" style="min-height: 100%; display: flex; flex-direction: column; margin: 0;">
+<body class="text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col" style="background-color:#1e3a2f; min-height:100%; display:flex; flex-direction:column; margin:0;">
+
+    @stack('page_bg')
 
     <header class="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/75 backdrop-blur-md">
         <div class="container mx-auto px-4 min-h-16 py-2 flex items-center justify-between gap-3">
@@ -206,9 +208,9 @@
     </header>
 
     <main class="flex-grow flex @yield('main_align', 'items-center justify-center') py-12 px-4 sm:px-6 lg:px-8 relative z-10" style="flex-grow: 1; padding-bottom: 7rem;">
-        <div class="w-full @yield('content_width', 'max-w-4xl')">
+        <div class="w-full main-content-wrapper @yield('content_width', 'max-w-4xl')">
 
-            <div class="w-full max-w-4xl mx-auto">
+            <div class="w-full">
                 @if (session('success'))
                     <div class="mb-8 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 flex items-start space-x-3 shadow-lg shadow-emerald-500/5 animate-fade-in" id="alert-success">
                         <svg class="w-5 h-5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">

@@ -2,35 +2,47 @@
 
 @section('title', 'Catálogo de ' . $business->business_name . ' | ProyectoUTN')
 
-@section('main_align', 'items-start')
+@section('main_align', 'items-start justify-center')
 @section('content_width', 'w-full max-w-none px-0')
 @section('content')
 
-    <!-- Perfil del Negocio Banner -->
-    <div class="relative overflow-hidden px-8 pt-16 pb-10 text-center shadow-xl space-y-4"
-     style="max-width:1100px;margin:0 auto 2rem auto;border-radius:1.5rem;background: radial-gradient(ellipse at 50% 0%, #2d6a4f 0%, #1a4a33 40%, #0f2e1e 100%);">
-        <!-- Decorative subtle grid -->
-        <div class="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    {{-- Perfil del Negocio Banner --}}
+    @php
+        $catalogCoverUrl = $business->cover_image ? asset('storage/' . $business->cover_image) : null;
+    @endphp
+    <div class="relative overflow-hidden shadow-xl" style="max-width:900px;margin:0 auto 2rem auto;border-radius:1rem;min-height:220px;">
 
-        <div class="flex flex-col items-center justify-center space-y-4 relative z-10 w-full">
-            {{-- Logo del negocio --}}
+        {{-- Fondo: foto de portada o gradiente --}}
+        @if($catalogCoverUrl)
+            <img src="{{ $catalogCoverUrl }}" alt="Portada de {{ $business->business_name }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+        @else
+            <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,#2d6a4f 0%,#1a4a33 40%,#0f2e1e 100%);"></div>
+        @endif
+
+        {{-- Overlay oscuro --}}
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.2) 60%,rgba(0,0,0,0.15) 100%);"></div>
+
+        {{-- Contenido centrado --}}
+        <div style="position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem 2rem 2.5rem;gap:1rem;">
+
+            {{-- Logo --}}
             @if($business->logo)
                 <img src="{{ filter_var($business->logo, FILTER_VALIDATE_URL) ? $business->logo : asset('storage/' . $business->logo) }}"
                      alt="{{ $business->business_name }}"
-                    class="w-32 h-32 rounded-2xl object-contain bg-white/10 border-2 border-white/20 shadow-xl p-2">
+                     style="width:7rem;height:7rem;border-radius:0.875rem;object-fit:cover;background:#fff;border:3px solid rgba(255,255,255,0.9);box-shadow:0 4px 20px rgba(0,0,0,0.3);">
             @else
-                <div class="w-32 h-32 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center shadow-xl">
-                    <span class="text-4xl font-black text-white">{{ strtoupper(substr($business->business_name, 0, 1)) }}</span>
+                <div style="width:7rem;height:7rem;border-radius:0.875rem;background:rgba(255,255,255,0.15);border:3px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+                    <span style="font-size:2.5rem;font-weight:900;color:#fff;">{{ strtoupper(substr($business->business_name, 0, 1)) }}</span>
                 </div>
             @endif
 
             {{-- Nombre y descripción --}}
-            <div class="space-y-1">
-                <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-none" style="color:#ffffff !important;">{{ $business->business_name }}</h1>
-                <p class="text-sm sm:text-base font-medium mt-1" style="color:rgba(255,255,255,0.75) !important;">
-                    {{ $business->description ?? 'Pedidos artesanales' }}
+            <div>
+                <h1 style="color:#ffffff !important;font-size:1.875rem;font-weight:900;line-height:1.1;text-shadow:0 2px 8px rgba(0,0,0,0.4);">{{ $business->business_name }}</h1>
+                <p style="color:rgba(255,255,255,0.8) !important;font-size:0.875rem;margin-top:0.375rem;text-shadow:0 1px 4px rgba(0,0,0,0.4);">
+                    {{ $business->description ?? '' }}
                     @if($business->address)
-                        · {{ $business->address }}
+                        @if($business->description) · @endif{{ $business->address }}
                     @endif
                 </p>
             </div>
@@ -38,8 +50,9 @@
             {{-- Botón WhatsApp --}}
             @if($business->phone)
                 <a href="https://wa.me/{{ preg_replace('/\D/', '', $business->phone) }}" target="_blank"
-                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-bold rounded-full shadow-lg transition-all">
-                    <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+                   style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 1.25rem;background:#25D366;color:#fff;font-size:0.875rem;font-weight:700;border-radius:9999px;box-shadow:0 4px 12px rgba(37,211,102,0.35);text-decoration:none;transition:background 0.2s;"
+                   onmouseover="this.style.background='#20bd5a'" onmouseout="this.style.background='#25D366'">
+                    <svg style="width:1rem;height:1rem;fill:currentColor;flex-shrink:0;" viewBox="0 0 24 24">
                         <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.18 1.449 4.725 1.45 5.556 0 10.074-4.522 10.077-10.077.001-2.691-1.042-5.222-2.937-7.12C16.518 1.51 13.98 1.465 11.298 1.465c-5.555 0-10.074 4.52-10.077 10.077-.001 1.765.463 3.489 1.345 5.008l-.985 3.593 3.682-.966c1.554.847 3.193 1.29 4.794 1.29zm10.978-7.525c-.302-.151-1.785-.882-2.057-.982-.272-.1-.47-.15-.668.151-.198.3-.765.982-.94 1.181-.173.2-.347.225-.648.075-.302-.15-1.272-.469-2.423-1.496-.895-.798-1.5-1.784-1.675-2.086-.175-.302-.018-.465.132-.614.135-.134.302-.351.453-.526.151-.175.202-.3.302-.5.101-.2.05-.376-.025-.526-.075-.15-.668-1.609-.915-2.203-.241-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.785-.73 2.033-1.433.248-.704.248-1.311.173-1.436-.075-.125-.272-.2-.574-.35z"/>
                     </svg>
                     Contactar por WhatsApp
@@ -48,7 +61,7 @@
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto px-8 sm:px-10 lg:px-12 space-y-8">
+    <div class="max-w-3xl mx-auto px-6 space-y-8">
     <!-- Buscador y Filtros -->
     <div class="space-y-4">
         <div class="flex flex-col items-center gap-2">

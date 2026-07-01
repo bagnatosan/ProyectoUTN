@@ -11,14 +11,13 @@
 
 @section('content')
 <div class="space-y-8 home-scroll-reveal is-visible">
-    <div class="text-center md:text-left">
-        <span class="px-3 py-1 text-xs font-semibold tracking-wider text-indigo-400 bg-indigo-500/10 rounded-full border border-indigo-500/20 uppercase">
-            Explorá cerca tuyo
-        </span>
-        <h1 class="text-2xl md:text-3xl font-extrabold mt-4">Emprendimientos locales en el mapa</h1>
-        <p class="text-slate-400 mt-2 text-sm md:text-base max-w-2xl">
-            Encontrá negocios registrados en la plataforma, mirá dónde están y accedé a su catálogo para reservar.
-        </p>
+    <div class="page-banner">
+        <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+        <div class="page-banner__overlay"></div>
+        <div class="page-banner__content">
+            <h1 class="page-banner__title">Emprendimientos locales en el mapa</h1>
+            <p class="page-banner__subtitle">Encontrá negocios registrados, mirá dónde están y reservá desde su catálogo.</p>
+        </div>
     </div>
 
     <div id="map-shell" class="map-page-shell hidden">

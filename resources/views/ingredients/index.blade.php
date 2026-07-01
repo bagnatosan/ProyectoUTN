@@ -2,15 +2,21 @@
 
 @section('title', 'Mis Ingredientes')
 
+@section('main_align', 'items-start')
+@section('content_width', 'max-w-6xl mx-auto')
+
 @section('content')
+<div class="page-banner" style="margin-bottom:1.5rem;">
+    <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+    <div class="page-banner__overlay"></div>
+    <div class="page-banner__content">
+        <h1 class="page-banner__title">Mis Ingredientes</h1>
+        <p class="page-banner__subtitle">Administrá las materias primas y sus costos.</p>
+    </div>
+</div>
 <div class="w-full max-w-3xl mx-auto px-2 sm:px-6 py-2">
 
-    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-800 pb-5">
-        <div>
-            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Mis ingredientes</h2>
-            <p class="text-slate-400 text-xs sm:text-sm mt-0.5">Catálogo de materias primas y sus costos por unidad de compra</p>
-        </div>
-
+    <div class="mb-6 flex justify-end pb-5">
         <a href="{{ route('ingredients.create') }}"
            class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold px-4 py-2 rounded-lg transition-colors duration-200 inline-flex items-center justify-center shadow-md shadow-emerald-500/5 whitespace-nowrap">
             + Nuevo Ingrediente

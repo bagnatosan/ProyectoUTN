@@ -2,17 +2,24 @@
 
 @section('title', 'Crear cuenta | ProyectoUTN')
 
+@push('page_bg')
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none;">
+    <img src="{{ asset('images/banner-home.png') }}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.55);"></div>
+</div>
+@endpush
+
 @section('content')
 <div class="max-w-3xl mx-auto">
-    <div class="text-center mb-10">
-        <a href="{{ route('register.select') }}" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 mb-6 transition-colors">
+    <div class="text-center mb-10 auth-page-text">
+        <a href="{{ route('register.select') }}" class="inline-flex items-center gap-2 text-sm mb-6 transition-colors" style="color:#ffffff;">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Volver al inicio
         </a>
-        <h1 class="text-2xl md:text-3xl font-extrabold">¿Cómo querés unirte?</h1>
-        <p class="text-slate-400 mt-2 text-sm md:text-base">Elegí el tipo de cuenta que mejor se adapte a vos.</p>
+        <h1 class="text-2xl md:text-3xl font-extrabold" style="color:#ffffff;">¿Cómo querés unirte?</h1>
+        <p class="mt-2 text-sm md:text-base" style="color:rgba(255,255,255,0.75);">Elegí el tipo de cuenta que mejor se adapte a vos.</p>
     </div>
 
     <div class="grid md:grid-cols-2 gap-6">
@@ -65,9 +72,9 @@
         </div>
     </div>
 
-    <p class="text-center text-xs text-slate-500 mt-8">
+    <p class="text-center text-xs mt-8" style="color:rgba(255,255,255,0.7);">
         ¿Tenés dudas sobre registrar tu emprendimiento?
-        <a href="{{ route('register.select') }}#contacto-emprendedores" class="text-indigo-400 hover:underline">Escribinos</a>
+        <a href="{{ route('register.select') }}#contacto-emprendedores" class="hover:underline" style="color:#93c5fd;">Escribinos</a>
     </p>
 </div>
 @endsection

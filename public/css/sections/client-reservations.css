@@ -23,8 +23,12 @@
 /* ---- Page Header ---- */
 
 .cr-history {
-  max-width: 720px;
+  max-width: 100%;
   margin: 0 auto;
+}
+
+.cr-history .page-banner {
+  max-width: 100%;
 }
 
 .cr-history__header {

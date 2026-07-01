@@ -2,33 +2,30 @@
 
 @section('title', 'Gestionar Categorías | ProyectoUTN')
 
+@section('main_align', 'items-start')
+@section('content_width', 'max-w-6xl mx-auto')
+
 @section('content')
 @php
     $categoriesList = $categories->loadCount('products');
 @endphp
 
+<div class="page-banner" style="margin-bottom:1.5rem;">
+    <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+    <div class="page-banner__overlay"></div>
+    <div class="page-banner__content">
+        <h1 class="page-banner__title">Categorías</h1>
+        <p class="page-banner__subtitle">Organizá tus productos por categoría.</p>
+    </div>
+</div>
 <div class="py-6">
-    <!-- Header Section -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-6 border-b border-slate-800/60">
-        <div>
-            <!--<span class="px-2.5 py-1 text-[10px] font-bold tracking-wider rounded-full uppercase bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-                Módulo de Catálogo
-            </span>-->
-            <h1 class="text-3xl font-bold tracking-tight text-white mt-3 font-sans">
-                Categorías de Productos
-            </h1>
-            <p class="text-slate-400 mt-1.5 text-sm">
-                Organiza tus productos en categorías para facilitar la navegación en el catálogo.
-            </p>
-        </div>
-        <div class="mt-4 md:mt-0">
-            <a href="{{ route('dashboard') }}" class="inline-flex items-center space-x-2 text-xs text-slate-400 hover:text-white bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 rounded-xl px-4 py-2.5 transition-all duration-200">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                <span>Volver al Panel</span>
-            </a>
-        </div>
+    <div class="flex justify-end mb-6">
+        <a href="{{ route('dashboard') }}" class="inline-flex items-center space-x-2 text-xs text-slate-400 hover:text-white bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 rounded-xl px-4 py-2.5 transition-all duration-200">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Volver al Panel</span>
+        </a>
     </div>
 
     <!-- Main Grid Layout -->

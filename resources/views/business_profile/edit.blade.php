@@ -3,7 +3,7 @@
 @section('title', 'Perfil del Emprendimiento | ProyectoUTN')
 
 @section('main_align', 'items-start')
-@section('content_width', 'max-w-6xl mx-auto')
+@section('content_width', 'w-full mx-auto')
 
 @php
     $logoUrl = null;
@@ -16,70 +16,112 @@
 
 @section('content')
 <div class="w-full animate-fade-in">
-    <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 mb-6 transition-colors">
+
+    @php
+        $coverUrl = null;
+        if ($profile && $profile->cover_image) {
+            $coverUrl = asset('storage/' . $profile->cover_image);
+        }
+    @endphp
+
+    <div class="max-w-4xl mx-auto">
+
+    <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 mb-4 transition-colors">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
         <span>Volver al panel</span>
     </a>
 
-    <div class="mb-8">
-        <!-- <span class="auth-role-badge auth-role-badge-seller">Mi negocio</span> -->
-        <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Perfil del emprendimiento</h1>
-        <p class="text-sm text-slate-400 mt-1">Editá la información pública que ven tus clientes en el catálogo y el mapa.</p>
-    </div>
+    <form action="{{ route('business_profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        @csrf
+        @method('PUT')
 
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {{-- ===== PROFILE HEADER ===== --}}
+        <div style="position:relative;height:220px;border-radius:1rem;overflow:hidden;margin-bottom:0.5rem;">
+
+            {{-- Fondo: cover image o gradiente --}}
+            @if($coverUrl)
+                <img src="{{ $coverUrl }}" id="cover-preview-img" alt="Foto de portada" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+            @else
+                <img id="cover-preview-img" alt="Foto de portada" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;">
+                <div id="cover-placeholder" style="position:absolute;inset:0;background:linear-gradient(135deg,#1e3a2f 0%,#2d6a4f 60%,#3a8a62 100%);"></div>
+            @endif
+
+            {{-- Overlay degradado --}}
+            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.05) 60%);"></div>
+
+            {{-- Botón cambiar portada (arriba derecha) --}}
+            <label style="position:absolute;top:1rem;right:1rem;cursor:pointer;display:inline-flex;align-items:center;gap:0.375rem;padding:0.375rem 0.875rem;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.3);border-radius:0.625rem;color:#fff;font-size:0.72rem;font-weight:600;backdrop-filter:blur(6px);transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.65)'" onmouseout="this.style.background='rgba(0,0,0,0.45)'">
+                <svg style="width:0.875rem;height:0.875rem;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/>
+                </svg>
+                {{ $coverUrl ? 'Cambiar portada' : 'Subir portada' }}
+                <input type="file" name="cover_image" id="cover-image-input" accept="image/jpeg,image/png,image/jpg" class="hidden">
+            </label>
+
+            {{-- Logo + nombre (abajo izquierda) --}}
+            <div style="position:absolute;bottom:1.25rem;left:1.5rem;display:flex;align-items:flex-end;gap:1rem;">
+                <div style="position:relative;">
+                    <div id="profile-logo-preview" style="width:5rem;height:5rem;border-radius:0.875rem;border:3px solid #fff;overflow:hidden;background:#f0ebe2;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,0.25);">
+                        @if($logoUrl)
+                            <img src="{{ $logoUrl }}" alt="Logo del negocio" id="profile-logo-img" style="width:100%;height:100%;object-fit:cover;">
+                        @else
+                            <svg style="width:2rem;height:2rem;color:#9a9390;" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="profile-logo-placeholder">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        @endif
+                    </div>
+                    {{-- Botón cambiar logo (círculo verde) --}}
+                    <label style="position:absolute;bottom:-6px;right:-6px;cursor:pointer;width:1.75rem;height:1.75rem;background:#2d6a4f;border-radius:9999px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25);" title="Cambiar logo">
+                        <svg style="width:0.875rem;height:0.875rem;color:#fff;" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/>
+                        </svg>
+                        <input type="file" name="logo" id="profile-logo-input" accept="image/jpeg,image/png,image/jpg" class="hidden">
+                    </label>
+                </div>
+                <div style="padding-bottom:0.25rem;">
+                    <p style="color:#fff;font-weight:700;font-size:1.125rem;text-shadow:0 1px 6px rgba(0,0,0,0.5);line-height:1.2;">{{ $profile->business_name ?? 'Tu emprendimiento' }}</p>
+                    <p style="color:rgba(255,255,255,0.7);font-size:0.75rem;margin-top:0.1rem;">Perfil del emprendimiento</p>
+                </div>
+            </div>
+        </div>
+
+        @error('cover_image')
+            <p class="profile-field-error">{{ $message }}</p>
+        @enderror
+
+        {{-- Alertas --}}
+        @if($errors->any())
+            <div class="profile-alert profile-alert-error">
+                <ul class="space-y-1">
+                    @foreach($errors->all() as $error)
+                        <li>• {{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if(session('success'))
+            <div class="profile-alert profile-alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Formulario --}}
-        <div class="lg:col-span-3">
+        <div class="lg:col-span-2">
             <div class="profile-card relative">
                 <div class="absolute inset-x-0 top-0 auth-accent-bar-seller rounded-t-2xl"></div>
 
                 <div class="profile-card-header">
                     <h2 class="profile-card-title">Datos del negocio</h2>
-                    <p class="profile-card-subtitle">Logo, contacto y ubicación en el mapa.</p>
+                    <p class="profile-card-subtitle">Contacto y ubicación en el mapa.</p>
                 </div>
 
-                @if($errors->any())
-                    <div class="profile-alert profile-alert-error">
-                        <ul class="space-y-1">
-                            @foreach($errors->all() as $error)
-                                <li>• {{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                @if(session('success'))
-                    <div class="profile-alert profile-alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                <form action="{{ route('business_profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                    @csrf
-                    @method('PUT')
-
-                    {{-- Logo --}}
-                    <div class="profile-logo-block">
-                        <div id="profile-logo-preview" class="profile-logo-preview">
-                            @if($logoUrl)
-                                <img src="{{ $logoUrl }}" alt="Logo del negocio" id="profile-logo-img">
-                            @else
-                                <svg class="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="profile-logo-placeholder">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            @endif
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold text-slate-300">{{ $profile->business_name ?? auth()->user()->name }}</p>
-                            <label class="profile-logo-upload-btn mt-2">
-                                Cambiar logo
-                                <input type="file" name="logo" id="profile-logo-input" accept="image/jpeg,image/png,image/jpg" class="hidden">
-                            </label>
-                            <p class="text-xs text-slate-500 mt-1.5">JPG o PNG, máximo 2 MB.</p>
-                        </div>
-                    </div>
+                <div class="space-y-6">
 
                     <div class="profile-field">
                         <label for="business_name" class="profile-label">Nombre comercial</label>
@@ -114,6 +156,7 @@
                         @enderror
                     </div>
 
+                    {{-- Datos de cobro --}}
                     <div class="profile-section-divider">
                         <span class="profile-section-label">Datos de cobro</span>
                     </div>
@@ -217,12 +260,12 @@
                     <button type="submit" class="auth-role-btn auth-role-btn-seller w-full">
                         Guardar cambios
                     </button>
-                </form>
-            </div>
-        </div>
+                </div>{{-- /space-y-6 --}}
+            </div>{{-- /profile-card --}}
+        </div>{{-- /col-span-2 --}}
 
         {{-- Sidebar --}}
-        <div class="lg:col-span-2 space-y-6">
+        <div class="lg:col-span-1 space-y-6">
             <div class="profile-card">
                 <div class="profile-card-header !pb-3">
                     <h2 class="profile-card-title">Vista previa pública</h2>
@@ -293,7 +336,11 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div>{{-- /grid --}}
+
+    </form>{{-- /main form --}}
+
+    </div>{{-- /max-w-4xl --}}
 </div>
 @endsection
 
@@ -326,6 +373,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 previewWrap.innerHTML = '<img src="' + url + '" alt="Logo del negocio" id="profile-logo-img" class="w-full h-full object-cover">';
                 previewSidebar.innerHTML = '<img src="' + url + '" alt="" id="preview-logo-img" class="w-full h-full object-cover rounded-xl">';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    var coverInput = document.getElementById('cover-image-input');
+    if (coverInput) {
+        coverInput.addEventListener('change', function () {
+            var file = coverInput.files && coverInput.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var img = document.getElementById('cover-preview-img');
+                var placeholder = document.getElementById('cover-placeholder');
+                img.src = event.target.result;
+                img.style.display = 'block';
+                img.classList.remove('hidden');
+                if (placeholder) placeholder.style.display = 'none';
             };
             reader.readAsDataURL(file);
         });

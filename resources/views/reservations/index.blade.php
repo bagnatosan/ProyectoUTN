@@ -2,17 +2,26 @@
 
 @section('title', 'Mis Reservas | ProyectoUTN')
 
+@section('main_align', 'items-start')
+@section('content_width', 'max-w-6xl mx-auto')
+
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/sections/client-reservations.css') }}">
 @endpush
 
 @section('content')
 <div class="cr-history">
-  <div class="cr-history__header">
-    <h1 class="cr-history__title">Mis reservas</h1>
-    <p class="cr-history__subtitle">Turnos y pedidos que hiciste desde la plataforma.</p>
+  {{-- Banner --}}
+  <div class="page-banner">
+    <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+    <div class="page-banner__overlay"></div>
+    <div class="page-banner__content">
+      <h1 class="page-banner__title">Mis reservas</h1>
+      <p class="page-banner__subtitle">Turnos y pedidos que hiciste desde la plataforma.</p>
+    </div>
   </div>
 
+  <div style="max-width:720px;margin:0 auto;">
   <div class="cr-filters" role="tablist" aria-label="Filtrar por estado">
     <button class="cr-filters__btn cr-filters__btn--active" data-filter="all" role="tab" aria-selected="true">Todas</button>
     <button class="cr-filters__btn" data-filter="pending" role="tab">Pendientes</button>
@@ -238,4 +247,5 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
+  </div>
 @endsection
