@@ -93,17 +93,17 @@
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="rounded-2xl overflow-hidden aspect-[4/3] home-scroll-reveal-delay-1">
-                <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&q=80&fit=crop"
+                <img src="{{ asset('images/galeria-pasteleria.jpg') }}"
                      alt="Pastelería artesanal"
                      class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
             </div>
             <div class="rounded-2xl overflow-hidden aspect-[4/3] home-scroll-reveal-delay-2">
-                <img src="https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=600&q=80&fit=crop"
+                <img src="{{ asset('images/galeria-comida-casera.jpg') }}"
                      alt="Comida casera"
                      class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
             </div>
             <div class="rounded-2xl overflow-hidden aspect-[4/3] home-scroll-reveal-delay-3">
-                <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80&fit=crop"
+                <img src="{{ asset('images/galeria-catering.jpg') }}"
                      alt="Catering y eventos"
                      class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
             </div>
@@ -144,8 +144,8 @@
             {{-- Foto 50/50 para clientes --}}
             <div class="relative z-10 grid md:grid-cols-2 gap-6 mb-10 items-center home-scroll-reveal">
                 <div class="rounded-2xl overflow-hidden shadow-xl aspect-[4/3]">
-                    <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80&fit=crop"
-                         alt="Persona eligiendo comida desde su celular"
+                <img src="{{ asset('images/clientes-celular.jpg') }}"
+                     alt="Persona eligiendo comida desde su celular"
                          class="w-full h-full object-cover">
                 </div>
                 <div style="color:rgba(255,255,255,0.85);">
@@ -198,7 +198,7 @@
 
             {{-- Foto de emprendedor cocinando --}}
             <div class="relative z-10 rounded-2xl overflow-hidden mb-10 home-scroll-reveal" style="height:280px;">
-                <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1200&q=80&fit=crop"
+                <img src="{{ asset('images/emprendedor-cocina.jpg') }}"
                      alt="Chef preparando pedidos"
                      class="w-full h-full object-cover object-center">
                 <div class="absolute inset-0" style="background:linear-gradient(to right, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);"></div>
@@ -327,7 +327,7 @@
 
     {{-- Footer CTA --}}
     <section class="relative z-10 home-scroll-reveal rounded-3xl overflow-hidden" style="min-height:320px;">
-        <img src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=1400&q=80&fit=crop"
+        <img src="{{ asset('images/cta-mesa.jpg') }}"
              alt="Mesa lista para una cena"
              class="absolute inset-0 w-full h-full object-cover object-center">
         <div class="absolute inset-0" style="background:linear-gradient(135deg, rgba(15,46,30,0.88) 0%, rgba(30,58,47,0.75) 100%);"></div>

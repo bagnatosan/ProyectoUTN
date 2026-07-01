@@ -2,6 +2,9 @@
 
 @section('title', 'Mis Productos')
 
+@section('main_align', 'items-start')
+@section('content_width', 'max-w-6xl mx-auto')
+
 @section('content')
 @php
     $productsList = $products;
@@ -10,33 +13,28 @@
     $inactiveProducts = $inactivos;
 @endphp
 
+<div class="page-banner" style="margin-bottom:1.5rem;">
+    <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+    <div class="page-banner__overlay"></div>
+    <div class="page-banner__content">
+        <h1 class="page-banner__title">Mis Productos</h1>
+        <p class="page-banner__subtitle">Gestioná el catálogo de tu emprendimiento.</p>
+    </div>
+</div>
 <div class="py-6">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-6 border-b border-slate-800/60">
-        <div>
-            <!--<span class="px-2.5 py-1 text-[10px] font-bold tracking-wider rounded-full uppercase bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-                Módulo de Catálogo
-            </span>-->
-            <h1 class="text-3xl font-bold tracking-tight text-white mt-3 font-sans">
-                Mis Productos
-            </h1>
-            <p class="text-slate-400 mt-1.5 text-sm">
-                Administra el catálogo de productos de tu negocio, sus precios y recetas.
-            </p>
-        </div>
-        <div class="mt-4 md:mt-0 flex items-center space-x-3">
-            <a href="{{ route('dashboard') }}" class="inline-flex items-center space-x-2 text-xs text-slate-400 hover:text-white bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 rounded-xl px-4 py-2.5 transition-all duration-200">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                <span>Volver al Panel</span>
-            </a>
-            <a href="{{ route('products.create') }}" class="inline-flex items-center space-x-2 text-xs bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold rounded-xl px-4 py-2.5 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 transition-all duration-300">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                <span>Nuevo Producto</span>
-            </a>
-        </div>
+    <div class="flex justify-end gap-3 mb-6">
+        <a href="{{ route('dashboard') }}" class="inline-flex items-center space-x-2 text-xs text-slate-400 hover:text-white bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 rounded-xl px-4 py-2.5 transition-all duration-200">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Volver al Panel</span>
+        </a>
+        <a href="{{ route('products.create') }}" class="inline-flex items-center space-x-2 text-xs bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold rounded-xl px-4 py-2.5 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 transition-all duration-300">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span>Nuevo Producto</span>
+        </a>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">

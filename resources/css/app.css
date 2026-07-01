@@ -44,6 +44,64 @@
     }
 }
 
+.page-banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    height: 160px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1.5rem;
+}
+
+.page-banner img.page-banner__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.page-banner__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(15,46,30,0.65) 0%, rgba(15,46,30,0.88) 100%);
+}
+
+.page-banner__content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+}
+
+.page-banner__title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffffff !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    letter-spacing: -0.02em;
+}
+
+@media (min-width: 800px) {
+    .page-banner__title {
+        font-size: 1.875rem;
+    }
+}
+
+.page-banner__subtitle {
+    margin-top: 0.375rem;
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.72);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
 body {
     background-color: #f5efe6 !important;
     color: #333333 !important;
@@ -59,6 +117,16 @@ div[class*="bg-purple-900/20"],
 /* Headings color override */
 h1, h2, h3, h4, h5, h6 {
     color: #133b2c !important;
+}
+
+.auth-page-text h1,
+.auth-page-text h2,
+.auth-page-text h3 {
+    color: #ffffff !important;
+}
+
+.auth-page-text p {
+    color: rgba(255,255,255,0.75) !important;
 }
 
 /* Text color fixes for standard utility classes */

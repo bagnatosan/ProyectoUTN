@@ -3,10 +3,23 @@
 @section('title', 'Mi Perfil | ProyectoUTN')
 
 @section('main_align', 'items-start')
-@section('content_width', 'max-w-3xl mx-auto')
+@section('content_width', 'w-full mx-auto')
 
 @section('content')
 <div class="w-full animate-fade-in">
+
+    {{-- Banner --}}
+    <div class="page-banner">
+        <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+        <div class="page-banner__overlay"></div>
+        <div class="page-banner__content">
+            <h1 class="page-banner__title">Mi perfil</h1>
+            <p class="page-banner__subtitle">Editá tus datos y tu dirección para encontrar emprendimientos cerca tuyo.</p>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto mt-8">
+
     <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 mb-6 transition-colors">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -14,13 +27,7 @@
         <span>Volver al panel</span>
     </a>
 
-    <div class="mb-8">
-        <!-- <span class="auth-role-badge auth-role-badge-client">Mi cuenta</span> -->
-        <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Mi perfil</h1>
-        <p class="text-sm text-slate-400 mt-1">Editá tus datos y tu dirección para encontrar emprendimientos cerca tuyo.</p>
-    </div>
-
-    <div class="space-y-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
         <div class="profile-card relative">
             <div class="absolute inset-x-0 top-0 auth-accent-bar-client rounded-t-2xl"></div>
@@ -143,7 +150,8 @@
             </form>
         </div>
 
-    </div>
+    </div>{{-- /grid --}}
+    </div>{{-- /max-w-4xl --}}
 </div>
 @endsection
 

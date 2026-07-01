@@ -6,13 +6,21 @@
 <link rel="stylesheet" href="{{ asset('css/sections/availability.css') }}">
 @endpush
 
+@section('main_align', 'items-start')
+@section('content_width', 'max-w-6xl mx-auto')
+
 @section('content')
+<div class="page-banner" style="margin-bottom:1.5rem;">
+    <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+    <div class="page-banner__overlay"></div>
+    <div class="page-banner__content">
+        <h1 class="page-banner__title">Disponibilidad</h1>
+        <p class="page-banner__subtitle">Configurá los días y horarios en que aceptás reservas.</p>
+    </div>
+</div>
 <div class="max-w-3xl mx-auto py-6 sm:py-8 px-4">
   <div class="availability__card">
-    <div style="text-align:center;margin-bottom:1.5rem;">
-      <h1 style="font-size:1.75rem;font-weight:800;color:#1a1918;letter-spacing:-0.02em;">Configurar Disponibilidad</h1>
-      <p style="font-size:0.9rem;color:#6a6966;margin-top:0.375rem;">Definí tus días y horarios de atención.</p>
-    </div>
+    <div style="margin-bottom:1.5rem;">
 
     <div id="form-feedback" class="availability__feedback availability__feedback--hidden" role="alert"></div>
 

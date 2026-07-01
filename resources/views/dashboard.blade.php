@@ -2,61 +2,56 @@
 
 @section('title', auth()->user()->role === 'client' ? 'Catálogos Disponibles' : 'Panel de Control')
 
-@section('content_width', 'w-full max-w-none')
+@section('main_align', 'items-start')
+@section('content_width', 'max-w-6xl mx-auto')
+
+@push('page_bg')
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none;background:#1e3a2f;"></div>
+@endpush
 
 @section('content')
 @if(auth()->user()->role === 'client')
 <div class="animate-fade-in">
 
-    {{-- ===== BANNER full-width ===== --}}
-    <div class="relative overflow-hidden text-center"
-     style="max-width:1100px;margin:0 auto;border-radius:1.5rem;padding:4.5rem 1.5rem 2.75rem;background:radial-gradient(ellipse at 50% 0%, #2d6a4f 0%, #1a4a33 45%, #0f2e1e 100%);">
-        <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image:radial-gradient(#ffffff 1px,transparent 1px);background-size:16px 16px;"></div>
-        <div class="relative z-10" style="max-width:680px;margin:0 auto;">
-            <h1 style="font-size:2.5rem;font-weight:900;color:#ffffff !important;letter-spacing:-0.03em;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,0.35);">
-                Emprendimientos Locales
-            </h1>
-            <p style="color:rgba(255,255,255,0.75);font-size:0.95rem;margin-top:0.6rem;line-height:1.6;">
-                Explorá las tiendas disponibles y reservá en simples pasos.
-            </p>
-
-            {{-- Próximas Reservas dentro del banner --}}
-            @if($upcomingReservations->isNotEmpty())
-            <div style="margin-top:1.75rem;text-align:left;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
-                    <span style="font-size:0.8rem;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;">
-                        Mis próximas reservas
-                    </span>
-                    <a href="{{ route('reservations.index') }}" style="font-size:0.75rem;font-weight:600;color:#f5a623;">Ver todas →</a>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                    @foreach($upcomingReservations as $res)
-                    <div style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;padding:0.625rem 0.875rem;border-radius:0.75rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);">
-                        <div style="display:flex;align-items:center;gap:0.625rem;min-width:0;overflow:hidden;">
-                            <span style="font-size:0.75rem;font-weight:700;color:#f5a623;white-space:nowrap;">{{ \Carbon\Carbon::parse($res->reservation_time)->format('H:i') }}</span>
-                            <div style="min-width:0;overflow:hidden;">
-                                <p style="font-size:0.8rem;font-weight:600;color:#ffffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $res->product?->name ?? 'Producto' }}</p>
-                                <p style="font-size:0.7rem;color:rgba(255,255,255,0.5);">{{ $res->reservation_date->format('d/m/Y') }} · {{ $res->product?->businessProfile?->business_name ?? 'Emprendedor' }}</p>
-                            </div>
-                        </div>
-                        <span style="font-size:0.65rem;font-weight:700;text-transform:uppercase;padding:0.2rem 0.5rem;border-radius:9999px;white-space:nowrap;
-                            {{ $res->status === 'pending' ? 'background:rgba(245,166,35,0.15);color:#f5a623;border:1px solid rgba(245,166,35,0.3);' : 'background:rgba(56,189,248,0.12);color:#7dd3fc;border:1px solid rgba(56,189,248,0.25);' }}">
-                            {{ $res->status === 'pending' ? 'Pendiente' : 'Confirmada' }}
-                        </span>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-            @else
-            <div style="margin-top:1.5rem;padding:0.875rem;border-radius:0.75rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
-                <p style="font-size:0.8rem;color:rgba(255,255,255,0.45);">No tenés reservas próximas.</p>
-            </div>
-            @endif
+    {{-- ===== BANNER ===== --}}
+    <div class="page-banner">
+        <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+        <div class="page-banner__overlay"></div>
+        <div class="page-banner__content">
+            <h1 class="page-banner__title">Emprendimientos Locales</h1>
+            <p class="page-banner__subtitle">Explorá las tiendas disponibles y reservá en simples pasos.</p>
         </div>
     </div>
 
+    {{-- Próximas Reservas (debajo del banner) --}}
+    @if($upcomingReservations->isNotEmpty())
+    <div style="margin-bottom:1.5rem;padding:1rem 1.25rem;border-radius:0.875rem;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.95);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+            <span style="font-size:0.75rem;font-weight:700;color:#6a6966;text-transform:uppercase;letter-spacing:0.08em;">Mis próximas reservas</span>
+            <a href="{{ route('reservations.index') }}" style="font-size:0.75rem;font-weight:600;color:#2d6a4f;">Ver todas →</a>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            @foreach($upcomingReservations as $res)
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;padding:0.5rem 0.75rem;border-radius:0.625rem;background:#f9f7f2;border:1px solid #e8e0d0;">
+                <div style="display:flex;align-items:center;gap:0.625rem;min-width:0;overflow:hidden;">
+                    <span style="font-size:0.75rem;font-weight:700;color:#2d6a4f;white-space:nowrap;">{{ \Carbon\Carbon::parse($res->reservation_time)->format('H:i') }}</span>
+                    <div style="min-width:0;overflow:hidden;">
+                        <p style="font-size:0.8rem;font-weight:600;color:#1a1918;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $res->product?->name ?? 'Producto' }}</p>
+                        <p style="font-size:0.7rem;color:#6a6966;">{{ $res->reservation_date->format('d/m/Y') }} · {{ $res->product?->businessProfile?->business_name ?? 'Emprendedor' }}</p>
+                    </div>
+                </div>
+                <span style="font-size:0.65rem;font-weight:700;text-transform:uppercase;padding:0.2rem 0.5rem;border-radius:9999px;white-space:nowrap;
+                    {{ $res->status === 'pending' ? 'background:rgba(245,166,35,0.12);color:#b45309;border:1px solid rgba(245,166,35,0.35);' : 'background:rgba(45,106,79,0.1);color:#2d6a4f;border:1px solid rgba(45,106,79,0.25);' }}">
+                    {{ $res->status === 'pending' ? 'Pendiente' : 'Confirmada' }}
+                </span>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     {{-- ===== CONTENT (negocios) ===== --}}
-    <div style="padding:2rem 1.5rem;max-width:1100px;margin:0 auto;"  class="space-y-6">
+    <div class="space-y-6">
 
         {{-- Buscador --}}
         <div class="relative max-w-md mx-auto">
@@ -65,27 +60,43 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
             </div>
-            <input type="text" id="business-search" placeholder="Buscar emprendimientos..." style="width:100%;padding:0.6rem 1rem 0.6rem 2.5rem;border-radius:0.75rem;border:1.5px solid #e8e0d0;background:#ffffff;color:#1a1918;font-size:0.875rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='rgba(45,140,78,0.5)'" onblur="this.style.borderColor='#e8e0d0'">
+            <input type="text" id="business-search" placeholder="Buscar emprendimientos..." style="width:100%;padding:0.6rem 1rem 0.6rem 2.5rem;border-radius:0.75rem;border:1.5px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#ffffff;font-size:0.875rem;outline:none;transition:border-color 0.2s;" placeholder-style="color:rgba(255,255,255,0.6);" onfocus="this.style.borderColor='rgba(255,255,255,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.3)'">
         </div>
 
         {{-- Grilla de Negocios --}}
         @if($businesses->isEmpty())
-            <div style="border:1.5px dashed #e8e0d0;border-radius:1rem;padding:4rem;text-align:center;background:#f9f7f2;">
-                <svg style="width:3rem;height:3rem;margin:0 auto 1rem;color:#b8b0a0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-                <p style="font-size:0.95rem;color:#6a6966;font-weight:500;">No hay emprendimientos registrados en este momento.</p>
+            <div class="relative overflow-hidden" style="border-radius:1rem;min-height:200px;">
+                <img src="{{ asset('images/cta-mesa.jpg') }}" alt="" class="absolute inset-0 w-full h-full object-cover">
+                <div class="absolute inset-0" style="background:rgba(245,239,230,0.88);"></div>
+                <div class="relative flex flex-col items-center justify-center py-16 px-6 text-center">
+                    <svg style="width:3rem;height:3rem;margin:0 auto 1rem;color:#b8b0a0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <p style="font-size:0.95rem;color:#6a6966;font-weight:500;">No hay emprendimientos registrados en este momento.</p>
+                </div>
             </div>
         @else
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="businesses-grid">
                 @foreach($businesses as $business)
                     <div class="business-card group relative flex flex-col justify-between overflow-hidden transition-all duration-300"
-                         style="border-radius:1rem;border:1.5px solid #e8e0d0;background:#ffffff;padding:1.25rem;box-shadow:0 1px 4px rgba(0,0,0,0.06);cursor:pointer;"
+                         style="border-radius:1rem;border:1.5px solid #e8e0d0;background:#ffffff;box-shadow:0 1px 4px rgba(0,0,0,0.06);cursor:pointer;"
                          onmouseenter="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.10)';this.style.borderColor='rgba(45,140,78,0.35)';"
                          onmouseleave="this.style.boxShadow='0 1px 4px rgba(0,0,0,0.06)';this.style.borderColor='#e8e0d0';"
                          data-name="{{ strtolower($business->business_name) }}">
 
-                        <div class="flex items-start gap-4 mb-4">
+                        {{-- Cover image --}}
+                        @php
+                            $fallbacks = ['galeria-pasteleria.jpg','galeria-comida-casera.jpg','galeria-catering.jpg','emprendedor-cocina.jpg'];
+                            $coverSrc = $business->cover_image
+                                ? asset('storage/' . $business->cover_image)
+                                : asset('images/' . $fallbacks[$loop->index % count($fallbacks)]);
+                        @endphp
+                        <div class="relative overflow-hidden" style="height:110px;">
+                            <img src="{{ $coverSrc }}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 100%);"></div>
+                        </div>
+
+                        <div class="flex items-start gap-4 mb-4" style="padding:1.25rem 1.25rem 0;">
                             {{-- Logo --}}
                             @if($business->logo && (filter_var($business->logo, FILTER_VALIDATE_URL) || file_exists(public_path('storage/' . $business->logo))))
                                 <img src="{{ filter_var($business->logo, FILTER_VALIDATE_URL) ? $business->logo : asset('storage/' . $business->logo) }}" alt="Logo {{ $business->business_name }}" style="width:3.5rem;height:3.5rem;border-radius:0.75rem;object-fit:cover;border:1.5px solid #e8e0d0;flex-shrink:0;">
@@ -105,7 +116,7 @@
                             </div>
                         </div>
 
-                        <div style="padding-top:0.875rem;border-top:1px solid #f0ebe2;display:flex;align-items:center;justify-content:space-between;">
+                        <div style="padding:0.875rem 1.25rem 1.25rem;border-top:1px solid #f0ebe2;display:flex;align-items:center;justify-content:space-between;">
                             <div style="display:flex;flex-direction:column;gap:0.25rem;font-size:0.7rem;color:#9a9390;">
                                 @if($business->address)
                                     <div style="display:flex;align-items:center;gap:0.3rem;">
@@ -138,11 +149,11 @@
                 @endforeach
             </div>
 
-            <div id="no-results-message" class="hidden" style="border:1.5px dashed #e8e0d0;border-radius:1rem;padding:4rem;text-align:center;background:#f9f7f2;">
-                <svg style="width:3rem;height:3rem;margin:0 auto 1rem;color:#b8b0a0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div id="no-results-message" class="hidden" style="border:1.5px dashed rgba(255,255,255,0.3);border-radius:1rem;padding:4rem;text-align:center;background:rgba(0,0,0,0.3);">
+                <svg style="width:3rem;height:3rem;margin:0 auto 1rem;color:rgba(255,255,255,0.4);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p style="font-size:0.95rem;color:#6a6966;font-weight:500;">No encontramos ningún emprendimiento con ese nombre.</p>
+                <p style="font-size:0.95rem;color:rgba(255,255,255,0.75);font-weight:500;">No encontramos ningún emprendimiento con ese nombre.</p>
             </div>
         @endif
     </div>
@@ -183,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @else
-<div class="max-w-2xl mx-auto text-center animate-fade-in py-12">
+<div class="w-full animate-fade-in text-center" style="background:rgba(255,255,255,0.92);border-radius:1.25rem;padding:2rem 2.5rem 2.5rem;box-shadow:0 8px 32px rgba(0,0,0,0.18);margin-top:1.5rem;">
 
     <!-- User/Role Badge -->
     <!-- @if(auth()->user()->role === 'admin')
@@ -197,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
     @endif -->
 
     <!-- Heading -->
-    <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mt-6" style="color:#1a1918;">
+    <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mt-6" style="color:#1a1918 !important;">
         ¡Bienvenido,
         <span style="color:#f5a623;">
             @if(auth()->user()->role === 'seller' && auth()->user()->businessProfile)
@@ -208,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </span>!
     </h1>
 
-    <p class="text-slate-400 mt-4 max-w-md mx-auto text-sm md:text-base leading-relaxed">
+    <p class="text-slate-500 mt-4 max-w-md mx-auto text-sm md:text-base leading-relaxed">
         Este es tu panel de control. Has ingresado correctamente en la plataforma y tu sesión se encuentra activa.
     </p>
 

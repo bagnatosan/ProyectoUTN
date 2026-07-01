@@ -54,6 +54,7 @@ class BusinessProfileController extends Controller
             'latitude'             => 'nullable|numeric|between:-90,90',
             'longitude'            => 'nullable|numeric|between:-180,180',
             'logo'                 => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'cover_image'          => 'nullable|image|mimes:jpeg,png,jpg|max:4096',
             'profit_margin'        => 'nullable|numeric|min:1|max:50',
             'bank_cbu'             => 'nullable|string|max:22',
             'bank_alias'           => 'nullable|string|max:100',
@@ -107,6 +108,13 @@ class BusinessProfileController extends Controller
                 Storage::disk('public')->delete($profile->logo);
             }
             $profile->logo = $request->file('logo')->store('logos', 'public');
+        }
+
+        if ($request->hasFile('cover_image')) {
+            if ($profile->cover_image) {
+                Storage::disk('public')->delete($profile->cover_image);
+            }
+            $profile->cover_image = $request->file('cover_image')->store('covers', 'public');
         }
 
         $profile->save();

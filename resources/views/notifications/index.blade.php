@@ -2,15 +2,23 @@
 
 @section('title', 'Notificaciones | Cocinet')
 
-@section('main_align', 'items-start justify-center')
-@section('content_width', 'max-w-3xl')
+@section('main_align', 'items-start')
+@section('content_width', 'max-w-6xl mx-auto')
 
 @section('content')
 <div class="space-y-6 animate-fade-in">
-  {{-- Header centrado --}}
+  {{-- Banner --}}
+  <div class="page-banner">
+    <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+    <div class="page-banner__overlay"></div>
+    <div class="page-banner__content">
+      <h1 class="page-banner__title">Notificaciones</h1>
+      <p class="page-banner__subtitle">Mantenete al día con el estado de tus reservas.</p>
+    </div>
+  </div>
+
+  <div style="max-width:48rem;margin:0 auto;">
   <div style="text-align:center;margin-bottom:0.5rem;">
-    <h1 style="font-size:1.75rem;font-weight:800;color:#1a1918;letter-spacing:-0.02em;">Notificaciones</h1>
-    <p style="font-size:0.9rem;color:#6a6966;margin-top:0.375rem;">Mantenete al día con el estado de tus reservas.</p>
     @if(auth()->user()->unreadNotifications->isNotEmpty())
       <div style="margin-top:1rem;margin-bottom:0.5rem;">
         <form action="{{ route('notifications.mark-all-read') }}" method="POST" style="display:inline;">
@@ -99,4 +107,5 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
+  </div>
 @endsection

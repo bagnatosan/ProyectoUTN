@@ -2,23 +2,25 @@
 
 @section('title', 'Gesti\u00F3n de Pedidos | ProyectoUTN')
 
+@section('main_align', 'items-start')
+@section('content_width', 'max-w-6xl mx-auto')
+
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/sections/seller-reservations.css') }}">
 
+<div class="page-banner" style="margin-bottom:1.5rem;">
+  <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+  <div class="page-banner__overlay"></div>
+  <div class="page-banner__content">
+    <h1 class="page-banner__title">Gestión de Pedidos</h1>
+    <p class="page-banner__subtitle">Revisá y gestioná las reservas de tus clientes.</p>
+  </div>
+</div>
+
 <div class="seller-reservations">
-  {{-- Header --}}
+  {{-- Header acciones --}}
   <div class="seller-reservations__header">
     <div class="seller-reservations__header-left">
-      <div class="seller-reservations__icon">
-        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
-        </svg>
-      </div>
-      <div>
-        <h1 class="seller-reservations__title">Gestion de Pedidos</h1>
-        <p class="seller-reservations__subtitle">Administrar las reservas de tus productos.</p>
-      </div>
-    </div>
     <div class="seller-reservations__header-right">
       <div class="seller-reservations__total-badge" id="sr-total" role="status" aria-live="polite">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">

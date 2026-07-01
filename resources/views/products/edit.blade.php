@@ -2,7 +2,18 @@
 
 @section('title', 'Editar Producto | ProyectoUTN')
 
+@section('main_align', 'items-start')
+@section('content_width', 'max-w-6xl mx-auto')
+
 @section('content')
+<div class="page-banner" style="margin-bottom:1.5rem;">
+    <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+    <div class="page-banner__overlay"></div>
+    <div class="page-banner__content">
+        <h1 class="page-banner__title">Editar Producto</h1>
+        <p class="page-banner__subtitle">Modificá los datos de tu producto.</p>
+    </div>
+</div>
 <div class="max-w-2xl mx-auto py-8">
     <div class="border border-slate-800 bg-slate-900/40 backdrop-blur rounded-2xl p-8 shadow-xl relative overflow-hidden group">
         <!-- Accent Glow -->

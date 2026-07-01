@@ -2,7 +2,18 @@
 
 @section('title', 'Nuevo Ingrediente')
 
+@section('main_align', 'items-start')
+@section('content_width', 'max-w-6xl mx-auto')
+
 @section('content')
+<div class="page-banner" style="margin-bottom:1.5rem;">
+    <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
+    <div class="page-banner__overlay"></div>
+    <div class="page-banner__content">
+        <h1 class="page-banner__title">Nuevo Ingrediente</h1>
+        <p class="page-banner__subtitle">Registrá un ingrediente y su costo unitario.</p>
+    </div>
+</div>
 <div class="w-full max-w-2xl mx-auto px-4 py-6">
 
     <div class="mb-4">
