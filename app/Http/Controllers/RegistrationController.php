@@ -20,6 +20,14 @@ class RegistrationController extends Controller
      */
     public function select()
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role === 'client') {
+                return redirect()->route('dashboard');
+            } elseif ($user->role === 'seller') {
+                return redirect()->route('dashboard');
+            }
+        }
         return view('register.select');
     }
 
@@ -28,6 +36,14 @@ class RegistrationController extends Controller
      */
     public function registerHub()
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role === 'client') {
+                return redirect()->route('dashboard');
+            } elseif ($user->role === 'seller') {
+                return redirect()->route('dashboard');
+            }
+        }
         return view('register.hub');
     }
 
