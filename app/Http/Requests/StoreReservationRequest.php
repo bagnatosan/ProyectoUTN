@@ -12,13 +12,27 @@ class StoreReservationRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('client_phone')) {
+            $this->merge([
+                'client_phone' => trim($this->client_phone),
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         $rules = [
             'product_id'       => 'required|integer|exists:products,id',
             'client_name'      => 'required|string|max:255',
             'client_email'     => 'required|email|max:255',
-            'client_phone'     => 'nullable|string|max:50',
+            'client_phone'     => [
+                'nullable',
+                'string',
+                'max:50',
+                'regex:/^\+54\d+$/'
+            ],
             'reservation_date' => 'required|date_format:Y-m-d|after_or_equal:today',
             'reservation_time' => 'required|date_format:H:i',
             'notes'            => 'nullable|string|max:1000',
@@ -39,6 +53,7 @@ class StoreReservationRequest extends FormRequest
             'client_name.required'             => 'El nombre es obligatorio.',
             'client_email.required'            => 'El correo electrónico es obligatorio.',
             'client_email.email'               => 'El correo electrónico no es válido.',
+            'client_phone.regex'               => 'El teléfono debe comenzar con +54 y no debe contener espacios.',
             'reservation_date.required'        => 'La fecha es obligatoria.',
             'reservation_date.date_format'     => 'Formato de fecha inválido.',
             'reservation_date.after_or_equal'  => 'La fecha no puede ser anterior a hoy.',

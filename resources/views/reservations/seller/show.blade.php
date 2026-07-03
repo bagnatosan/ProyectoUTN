@@ -869,7 +869,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (action === 'confirm') bodyData.status = 'confirmed';
       else if (action === 'complete') bodyData.status = 'completed';
       else if (action === 'cancel') {
-        var reason = prompt('Motivo de cancelaci\u00F3n (opcional):');
+        var reason = prompt('Motivo de cancelación (opcional):');
         bodyData.status = 'cancelled';
         if (reason) bodyData.cancellation_reason = reason;
       }
@@ -890,7 +890,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
       .catch(function () {
-        showToast('Error de conexi\u00F3n.', 'error');
+        showToast('Error de conexión.', 'error');
         btn.disabled = false;
       });
     });

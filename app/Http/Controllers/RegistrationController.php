@@ -119,6 +119,10 @@ class RegistrationController extends Controller
             return redirect()->route('dashboard');
         }
 
+        $request->merge([
+            'phone' => $request->has('phone') ? trim($request->phone) : null
+        ]);
+
         $validated = $request->validate([
             // User validations
             'name' => 'required|string|max:255',
@@ -127,9 +131,16 @@ class RegistrationController extends Controller
             // Business profile validations
             'business_name' => 'required|string|max:255',
             'description' => 'required|string',
-            'phone' => 'required|string|max:50',
+            'phone' => [
+                'required',
+                'string',
+                'max:50',
+                'regex:/^\+54\d+$/'
+            ],
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'address' => 'nullable|string|max:255',
+        ], [
+            'phone.regex' => 'El teléfono debe comenzar con +54 y no debe contener espacios.',
         ]);
 
         // El logo se sube ANTES de la transacción, así si falla el guardado en DB

@@ -46,10 +46,19 @@ class BusinessProfileController extends Controller
 
     public function update(Request $request, GeocodingService $geocodingService)
     {
+        $request->merge([
+            'phone' => $request->has('phone') ? trim($request->phone) : null
+        ]);
+
         $validated = $request->validate([
             'business_name'        => 'required|string|max:255',
             'description'          => 'nullable|string',
-            'phone'                => 'nullable|string|max:20',
+            'phone'                => [
+                'nullable',
+                'string',
+                'max:20',
+                'regex:/^\+54\d+$/'
+            ],
             'address'              => 'nullable|string|max:255',
             'latitude'             => 'nullable|numeric|between:-90,90',
             'longitude'            => 'nullable|numeric|between:-180,180',
@@ -60,6 +69,8 @@ class BusinessProfileController extends Controller
             'bank_alias'           => 'nullable|string|max:100',
             'bank_name'            => 'nullable|string|max:100',
             'bank_account_holder'  => 'nullable|string|max:255',
+        ], [
+            'phone.regex' => 'El teléfono debe comenzar con +54 y no debe contener espacios.',
         ]);
 
         $user    = Auth::user();

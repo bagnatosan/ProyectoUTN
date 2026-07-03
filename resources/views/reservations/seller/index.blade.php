@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gesti\u00F3n de Pedidos | ProyectoUTN')
+@section('title', 'Gestión de Pedidos | ProyectoUTN')
 
 @section('main_align', 'items-start')
 @section('content_width', 'max-w-6xl mx-auto')
@@ -80,7 +80,7 @@
       <button type="button"
               id="sr-search-clear"
               class="seller-reservations__search-clear"
-              aria-label="Limpiar b\u00FAsqueda">&times;</button>
+              aria-label="Limpiar búsqueda">&times;</button>
     </div>
   </div>
 
@@ -137,12 +137,12 @@
       </button>
     </div>
     <div>
-      <p class="seller-reservations__modal-value" style="margin-bottom: 0.75rem;">&iquest;Est\u00E1s seguro de cancelar esta reserva?</p>
-      <label for="sr-cancel-reason" class="seller-reservations__modal-label">Motivo de cancelaci\u00F3n <span style="font-weight: 400; text-transform: none; letter-spacing: 0;">(opcional)</span></label>
-      <textarea id="sr-cancel-reason" class="seller-reservations__cancel-reason" placeholder="Ej: El cliente solicit\u00F3 la cancelaci\u00F3n..."></textarea>
+      <p class="seller-reservations__modal-value" style="margin-bottom: 0.75rem;">¿Estás seguro de cancelar esta reserva?</p>
+      <label for="sr-cancel-reason" class="seller-reservations__modal-label">Motivo de cancelación <span style="font-weight: 400; text-transform: none; letter-spacing: 0;">(opcional)</span></label>
+      <textarea id="sr-cancel-reason" class="seller-reservations__cancel-reason" placeholder="Ej: El cliente solicitó la cancelación..."></textarea>
       <div class="seller-reservations__modal-actions">
         <button type="button" class="seller-reservations__btn seller-reservations__btn--detail" onclick="document.getElementById('sr-cancel-overlay').classList.remove('seller-reservations__modal-overlay--visible'); document.body.style.overflow = '';">Volver</button>
-        <button type="button" id="sr-cancel-confirm" class="seller-reservations__btn seller-reservations__btn--cancel">S\u00ED, cancelar</button>
+        <button type="button" id="sr-cancel-confirm" class="seller-reservations__btn seller-reservations__btn--cancel">Sí, cancelar</button>
       </div>
     </div>
   </div>
