@@ -416,6 +416,61 @@
   }
 
   /* =========================================
+     QUANTITY SELECTOR
+     ========================================= */
+  .qty-selector {
+    display: flex;
+    align-items: center;
+    background: rgba(51, 65, 85, 0.6);
+    border: 1px solid #334155;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    width: fit-content;
+    transition: border-color 0.2s;
+  }
+
+  .qty-selector:focus-within {
+    border-color: rgba(34, 197, 94, 0.6);
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
+  }
+
+  .qty-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .qty-btn:hover:not(:disabled) {
+    background: rgba(71, 85, 105, 0.6);
+    color: #fff;
+  }
+
+  .qty-btn:disabled {
+    color: #475569;
+    cursor: not-allowed;
+  }
+
+  .qty-display {
+    min-width: 3rem;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    border-left: 1px solid #334155;
+    border-right: 1px solid #334155;
+    padding: 0.5rem 0.25rem;
+    user-select: none;
+  }
+
+  /* =========================================
      RESPONSIVE ADJUSTMENTS
      ========================================= */
   @media (max-width: 640px) {
@@ -476,6 +531,28 @@
                   @endforeach
                 </select>
                 <ul id="error-product" class="form-field__errors form-field__errors--hidden" data-error-for="product" role="alert"></ul>
+              </div>
+
+              {{-- Cantidad --}}
+              <div class="form-field mt-5">
+                <label class="form-field__label">
+                  Cantidad <span class="text-rose-400" aria-hidden="true">*</span>
+                </label>
+                <div class="qty-selector" role="group" aria-label="Selector de cantidad">
+                  <button type="button" class="qty-btn" id="qty-minus" aria-label="Reducir cantidad" disabled>
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H6" />
+                    </svg>
+                  </button>
+                  <span class="qty-display" id="qty-display" aria-live="polite">1</span>
+                  <button type="button" class="qty-btn" id="qty-plus" aria-label="Aumentar cantidad">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                    </svg>
+                  </button>
+                </div>
+                <input type="hidden" name="quantity" id="quantity" value="{{ old('quantity', 1) }}">
+                <p class="text-xs text-slate-500 mt-1.5">Máximo 50 unidades por reserva.</p>
               </div>
             </div>
 
@@ -615,6 +692,28 @@
       feedbackId: 'form-feedback',
       submitBtnId: 'btn-submit-reservation',
     });
+
+    // ── Selector de Cantidad ──────────────────────────────
+    const qtyMinus   = document.getElementById('qty-minus');
+    const qtyPlus    = document.getElementById('qty-plus');
+    const qtyDisplay = document.getElementById('qty-display');
+    const qtyInput   = document.getElementById('quantity');
+    const MAX_QTY    = 50;
+
+    let qty = parseInt(qtyInput.value) || 1;
+
+    function updateQty(newQty) {
+      qty = Math.max(1, Math.min(MAX_QTY, newQty));
+      qtyDisplay.textContent = qty;
+      qtyInput.value = qty;
+      qtyMinus.disabled = qty <= 1;
+      qtyPlus.disabled  = qty >= MAX_QTY;
+    }
+
+    updateQty(qty); // Estado inicial
+
+    qtyMinus.addEventListener('click', () => updateQty(qty - 1));
+    qtyPlus.addEventListener('click',  () => updateQty(qty + 1));
   });
 </script>
 @endsection

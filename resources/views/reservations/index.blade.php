@@ -50,7 +50,12 @@
         @endif
 
         <div class="cr-card__body">
-          <h3 class="cr-card__product">{{ $product->name ?? 'Producto' }}</h3>
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="cr-card__product">{{ $product->name ?? 'Producto' }}</h3>
+            <span class="text-[10px] font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md shrink-0 ml-2">
+              #{{ str_pad($reservation->id, 5, '0', STR_PAD_LEFT) }}
+            </span>
+          </div>
           <p class="cr-card__seller">{{ $sellerName }}</p>
 
           <div class="cr-card__meta">
@@ -60,8 +65,11 @@
             <span class="cr-card__meta-item">
               {{ \Illuminate\Support\Str::of($reservation->reservation_time)->substr(0, 5) }} hs
             </span>
+            @if(($reservation->quantity ?? 1) > 1)
+              <span class="cr-card__meta-item">{{ $reservation->quantity }} unid.</span>
+            @endif
             @if($product && $product->price > 0)
-              <span class="cr-card__meta-item cr-card__price">${{ number_format($product->price, 2) }}</span>
+              <span class="cr-card__meta-item cr-card__price">${{ number_format($product->price * ($reservation->quantity ?? 1), 2) }}</span>
             @endif
           </div>
 

@@ -24,6 +24,13 @@ class BusinessProfile extends Model
         'bank_alias',
         'bank_name',
         'bank_account_holder',
+        'street',
+        'street_number',
+        'floor',
+        'apartment',
+        'province',
+        'locality',
+        'postal_code',
     ];
 
     // Relaciones

@@ -16,7 +16,7 @@ const SellerReservations = (() => {
   };
 
   var state = {
-    filter: 'today',
+    filter: 'all',
     status: '',
     search: '',
     page: 1,
@@ -37,6 +37,11 @@ const SellerReservations = (() => {
     initPagination();
     initModalClose();
     initCancelModal();
+
+    // Marcar el botón "Todas" como activo al cargar
+    var allBtn = document.querySelector('[data-sr-filter="all"]');
+    if (allBtn) setActiveFilter(allBtn);
+
     loadReservations();
   }
 
@@ -398,10 +403,15 @@ const SellerReservations = (() => {
             '<div class="seller-reservations__card-client-email">' + escapeHtml(r.client_email || '') + '</div>' +
           '</div>' +
         '</div>' +
-        '<span class="seller-reservations__badge ' + statusClass + '">' +
-          '<span class="seller-reservations__badge-dot" aria-hidden="true"></span>' +
-          statusLabel +
-        '</span>' +
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.375rem;flex-shrink:0;">' +
+          '<span class="seller-reservations__badge ' + statusClass + '">' +
+            '<span class="seller-reservations__badge-dot" aria-hidden="true"></span>' +
+            statusLabel +
+          '</span>' +
+          '<span style="font-size:0.7rem;font-family:monospace;font-weight:700;color:#6a6966;background:#f5f1ea;border:1px solid #e8e0d0;padding:0.15rem 0.5rem;border-radius:0.375rem;">' +
+            '#' + String(r.id).padStart(5, '0') +
+          '</span>' +
+        '</div>' +
       '</div>' +
       '<div class="seller-reservations__card-body">' +
         '<div class="seller-reservations__card-row">' +
@@ -415,6 +425,11 @@ const SellerReservations = (() => {
           '<svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>' +
           '<span class="seller-reservations__card-datetime">' + formatDate(r.reservation_date) + ' \u00B7 ' + formatTime(r.reservation_time) + '</span>' +
         '</div>' +
+        (r.quantity > 1 ?
+          '<div class="seller-reservations__card-row">' +
+            '<svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg>' +
+            '<span class="seller-reservations__card-datetime"><strong>' + r.quantity + ' unidades</strong></span>' +
+          '</div>' : '') +
         notesHtml +
       '</div>' +
       '<div class="seller-reservations__card-actions">' +
@@ -519,8 +534,13 @@ const SellerReservations = (() => {
     var productName = r.product ? r.product.name : 'Producto eliminado';
     var statusLabel = STATUS_LABELS[r.status] || r.status;
     var phone = r.client_phone || 'No registrado';
+    var orderNumber = '#' + String(r.id).padStart(5, '0');
 
     var html =
+      '<div class="seller-reservations__modal-section">' +
+        '<span class="seller-reservations__modal-label">N\u00famero de Reserva</span>' +
+        '<div class="seller-reservations__modal-value" style="font-family:monospace;font-weight:700;color:#2d8c4e;">' + escapeHtml(orderNumber) + '</div>' +
+      '</div>' +
       '<div class="seller-reservations__modal-section">' +
         '<span class="seller-reservations__modal-label">Estado</span>' +
         '<div class="seller-reservations__modal-value">' + escapeHtml(statusLabel) + '</div>' +
@@ -545,6 +565,20 @@ const SellerReservations = (() => {
         '<span class="seller-reservations__modal-label">Fecha y Hora</span>' +
         '<div class="seller-reservations__modal-value">' + formatDate(r.reservation_date) + ' a las ' + formatTime(r.reservation_time) + '</div>' +
       '</div>';
+
+    if (r.quantity > 1) {
+      var price = r.product ? r.product.price : 0;
+      var total = price * r.quantity;
+      html +=
+      '<div class="seller-reservations__modal-section">' +
+        '<span class="seller-reservations__modal-label">Cantidad</span>' +
+        '<div class="seller-reservations__modal-value">' + r.quantity + ' unidades</div>' +
+      '</div>' +
+      '<div class="seller-reservations__modal-section">' +
+        '<span class="seller-reservations__modal-label">Total del Pedido</span>' +
+        '<div class="seller-reservations__modal-value" style="color:#2d8c4e;font-weight:700;">$' + total.toLocaleString('es-AR') + '</div>' +
+      '</div>';
+    }
 
     if (r.notes) {
       html +=

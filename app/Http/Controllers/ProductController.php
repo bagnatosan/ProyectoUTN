@@ -15,7 +15,6 @@ class ProductController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            // Aquí puedes definir tu middleware usando una función
             new Middleware(function ($request, $next) {
                 if ($request->user()->role !== 'seller') {
                     abort(403);
@@ -25,77 +24,72 @@ class ProductController extends Controller implements HasMiddleware
         ];
     }
 
-    
-
     public function index()
-{
-    // 1. Traemos los productos reales del negocio actual
-    $businessProfileId = auth()->user()->businessProfile?->id ?? 1;
-    $products = Product::where('business_profile_id', $businessProfileId)->get();
+    {
+        $businessProfileId = auth()->user()->businessProfile?->id ?? 1;
+        $products = Product::where('business_profile_id', $businessProfileId)->get();
 
-    // 2. Calculamos los contadores dinámicos para las tarjetitas de arriba
-    $totalProductos = $products->count();
-    $activos = $products->where('is_active', true)->count();
-    $inactivos = $products->where('is_active', false)->count();
+        $totalProductos = $products->count();
+        $activos        = $products->where('is_active', true)->count();
+        $inactivos      = $products->where('is_active', false)->count();
 
-    // 3. Pasamos todo a la vista de tu compañero (revisá cómo se llama su vista, ej: 'products.index')
-    return view('products.index', compact('products', 'totalProductos', 'activos', 'inactivos'));
-}
+        return view('products.index', compact('products', 'totalProductos', 'activos', 'inactivos'));
+    }
 
-
-    
     public function create(Request $request)
     {
         $businessProfileId = auth()->user()->businessProfile?->id;
         $categories = Category::where('business_profile_id', $businessProfileId)->orderBy('name')->get();
         return view('products.create', compact('categories'));
-
     }
 
     /**
      * Store a newly created product in storage.
      */
     public function store(Request $request)
-{
-    // 1. Validamos los datos básicos que vienen del formulario
-    $request->validate([
-        'name'        => 'required|string|max:255',
-        'description'=> 'nullable|string',
-        'price'       => 'required|numeric|min:0',
-        'category_id' => 'required', // Le exigimos que venga de la vista
-    ]);
+    {
+        // 1. Validar datos básicos
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price'       => 'required|numeric|min:0',
+            'category_id' => 'required',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
 
-    // 2. RESCATE DE INTEGRIDAD 1: ID del negocio (el que ya arreglamos antes)
-    $businessProfileId = auth()->user()->businessProfile?->id 
-        ?? \DB::table('business_profiles')->where('user_id', auth()->id())->value('id') 
-        ?? 1;
+        // 2. ID del negocio del vendedor logueado
+        $businessProfileId = auth()->user()->businessProfile?->id
+            ?? \DB::table('business_profiles')->where('user_id', auth()->id())->value('id')
+            ?? 1;
 
-    // 3. Validamos que la categoría elegida pertenezca a ESTE negocio.
-    // Antes, si category_id venía vacío, se buscaba "la primera categoría que exista"
-    // sin filtrar, lo que podía asociar el producto a la categoría de otro vendedor.
-    $categoryId = \App\Models\Category::where('id', $request->category_id)
-        ->where('business_profile_id', $businessProfileId)
-        ->value('id');
+        // 3. Validar que la categoría pertenezca a este negocio
+        $categoryId = \App\Models\Category::where('id', $request->category_id)
+            ->where('business_profile_id', $businessProfileId)
+            ->value('id');
 
-    if (!$categoryId) {
-        return back()
-            ->withInput()
-            ->withErrors(['category_id' => 'La categoría seleccionada no es válida.']);
+        if (!$categoryId) {
+            return back()
+                ->withInput()
+                ->withErrors(['category_id' => 'La categoría seleccionada no es válida.']);
+        }
+
+        // 4. Guardar imagen si viene en el request
+        $imagePath = $request->hasFile('image') ? $this->ImagePath($request) : null;
+
+        // 5. Crear el producto con todos los campos incluyendo la imagen
+        $product = Product::create([
+            'name'                => $request->name,
+            'description'         => $request->description,
+            'price'               => $request->price,
+            'status'              => $request->status ?? 'active',
+            'business_profile_id' => $businessProfileId,
+            'category_id'         => $categoryId,
+            'image'               => $imagePath,
+        ]);
+
+        return redirect('/recipes/' . $product->id . '/edit')
+            ->with('success', '¡Producto creado con éxito! Ahora asignale sus ingredientes.');
     }
-
-    // 4. Creamos el producto pasándole TODOS los campos obligatorios
-    $product = Product::create([
-        'name'                => $request->name,
-        'description'         => $request->description,
-        'price'               => $request->price,
-        'status'              => $request->status ?? 'active',
-        'business_profile_id' => $businessProfileId,
-        'category_id'         => $categoryId,
-    ]);
-
-    // 5. Te mandamos directo a tu pantalla de costos premium
-    return redirect('/recipes/' . $product->id . '/edit')->with('success', '¡Producto creado con éxito! Ahora asignale sus ingredientes.');
-}
 
     /**
      * Show the form for editing the specified product.
@@ -115,29 +109,28 @@ class ProductController extends Controller implements HasMiddleware
         $request->validate($this->DataValidation());
 
         $data = [
-                'name' => $request->name,
-                'description' => $request->description,
-                'category_id' => $request->category_id,
-                'price' => $request->price,
-                'is_active' => $request->is_active,
-                'custom_margin' => $request->filled('custom_margin') ? $request->custom_margin : null,
-            ];
+            'name'          => $request->name,
+            'description'   => $request->description,
+            'category_id'   => $request->category_id,
+            'price'         => $request->price,
+            'is_active'     => $request->is_active,
+            'custom_margin' => $request->filled('custom_margin') ? $request->custom_margin : null,
+        ];
 
-        if($request->hasFile('image')) {
-                $data['image'] = $this->ImagePath($request);
-            }
+        if ($request->hasFile('image')) {
+            $data['image'] = $this->ImagePath($request);
+        }
 
         $product->update($data);
 
-        // El margen pudo haber cambiado: recalculamos el precio sugerido con el costo ya guardado
         $this->recalculateSuggestedPrice($product);
 
         return redirect()->route('products.index')->with('success', 'Producto actualizado con éxito.');
     }
 
     /**
-     * Recalcula el precio sugerido de un producto usando su costo estimado ya guardado
-     * y el margen vigente (personalizado del producto, o el general del negocio).
+     * Recalcula el precio sugerido usando el costo estimado ya guardado
+     * y el margen vigente (personalizado del producto o general del negocio).
      */
     private function recalculateSuggestedPrice(Product $product)
     {
@@ -156,22 +149,19 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function destroy(Product $product)
     {
-        if($this->productBelongsToSeller($product)) //validar que el producto sea del vendedor logueado
+        if ($this->productBelongsToSeller($product)) {
             $product->delete();
-        else 
+        } else {
             abort(403);
+        }
 
-
-        return redirect()->route('products.index')->with('success', 'Producto eliminado con exito.');
+        return redirect()->route('products.index')->with('success', 'Producto eliminado con éxito.');
     }
 
     public function ChangeStatement(Request $request, Product $product)
     {
-        if($this->productBelongsToSeller($product)){
-            if($product->is_active)
-                $product->is_active = false;
-            else
-                $product->is_active = true;
+        if ($this->productBelongsToSeller($product)) {
+            $product->is_active = !$product->is_active;
         }
 
         $product->save();
@@ -179,7 +169,7 @@ class ProductController extends Controller implements HasMiddleware
         return response()->json([
             'success' => true,
             'mensaje' => 'Actualizado correctamente el estado del producto',
-            'state' => $product->is_active
+            'state'   => $product->is_active,
         ]);
     }
 
@@ -187,33 +177,28 @@ class ProductController extends Controller implements HasMiddleware
     {
         $imagePath = null;
 
-        if($request->hasFile('image'))
-            $imagePath = $request->file('image')->store('products' , 'public');
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
+        }
 
         return $imagePath;
     }
 
     public function productBelongsToSeller(Product $product)
     {
-        if($product->business_profile_id == Auth::user()->businessProfile->id)
-            return true;
-        else 
-            return false;
+        return $product->business_profile_id === Auth::user()->businessProfile->id;
     }
 
     public function DataValidation()
     {
-        $data = [
-            'name' => 'required|string|max:100',
-            'description' => 'nullable|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|max:2048', //2mb
-            'is_active' => 'required|boolean',
-            'custom_margin' => 'nullable|numeric|min:1|max:50',
+        return [
+            'name'         => 'required|string|max:100',
+            'description'  => 'nullable|string|max:255',
+            'category_id'  => 'required|exists:categories,id',
+            'price'        => 'required|numeric|min:0',
+            'image'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'is_active'    => 'required|boolean',
+            'custom_margin'=> 'nullable|numeric|min:1|max:50',
         ];
-
-        return $data;
     }
-
 }

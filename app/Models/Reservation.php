@@ -16,6 +16,7 @@ class Reservation extends Model
         'client_name',
         'client_email',
         'client_phone',
+        'quantity',
         'reservation_date',
         'reservation_time',
         'notes',

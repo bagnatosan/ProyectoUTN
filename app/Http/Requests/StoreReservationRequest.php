@@ -25,6 +25,7 @@ class StoreReservationRequest extends FormRequest
     {
         $rules = [
             'product_id'       => 'required|integer|exists:products,id',
+            'quantity'         => 'required|integer|min:1|max:50',
             'client_name'      => 'required|string|max:255',
             'client_email'     => 'required|email|max:255',
             'client_phone'     => [
@@ -50,6 +51,10 @@ class StoreReservationRequest extends FormRequest
         return [
             'product_id.required'              => 'Debes seleccionar un producto.',
             'product_id.exists'                => 'El producto seleccionado no existe.',
+            'quantity.required'                => 'La cantidad es obligatoria.',
+            'quantity.integer'                 => 'La cantidad debe ser un número entero.',
+            'quantity.min'                     => 'La cantidad mínima es 1.',
+            'quantity.max'                     => 'La cantidad máxima es 50.',
             'client_name.required'             => 'El nombre es obligatorio.',
             'client_email.required'            => 'El correo electrónico es obligatorio.',
             'client_email.email'               => 'El correo electrónico no es válido.',

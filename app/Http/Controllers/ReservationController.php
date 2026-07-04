@@ -29,14 +29,24 @@ class ReservationController extends Controller
 
     public function create(Request $request): View
     {
-        $products = Product::where('is_active', true)
-            ->with('businessProfile')
-            ->get();
-
         $selectedProduct = null;
+
         if ($request->has('product_id')) {
             $selectedProduct = Product::where('is_active', true)
                 ->find($request->input('product_id'));
+        }
+
+        // Solo mostrar productos del negocio al que pertenece el producto seleccionado.
+        // Si no viene product_id, mostrar todos (acceso directo a /reservations/create).
+        if ($selectedProduct) {
+            $products = Product::where('is_active', true)
+                ->where('business_profile_id', $selectedProduct->business_profile_id)
+                ->with('businessProfile')
+                ->get();
+        } else {
+            $products = Product::where('is_active', true)
+                ->with('businessProfile')
+                ->get();
         }
 
         return view('reservations.create', compact('products', 'selectedProduct'));
@@ -71,6 +81,7 @@ class ReservationController extends Controller
                 'client_name'      => $request->client_name,
                 'client_email'     => $request->client_email,
                 'client_phone'     => $request->client_phone,
+                'quantity'         => $request->quantity ?? 1,
                 'reservation_date' => $request->reservation_date,
                 'reservation_time' => $request->reservation_time,
                 'notes'            => $request->notes,
@@ -149,6 +160,7 @@ class ReservationController extends Controller
 
             $reservation->update([
                 'product_id'       => $request->product_id,
+                'quantity'         => $request->quantity ?? 1,
                 'reservation_date' => $request->reservation_date,
                 'reservation_time' => $request->reservation_time,
                 'notes'            => $request->notes,
@@ -534,13 +546,12 @@ class ReservationController extends Controller
         $request->validate([
             'transfer_amount'    => 'required|numeric|min:0.01',
             'transfer_date'      => 'required|date|before_or_equal:today',
-            'transfer_reference' => 'required|string|max:255',
+            'transfer_reference' => 'nullable|string|max:255',
             'receipt'            => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ], [
             'transfer_amount.required'    => 'Ingresá el monto transferido.',
             'transfer_date.required'      => 'Ingresá la fecha de la transferencia.',
             'transfer_date.before_or_equal' => 'La fecha no puede ser futura.',
-            'transfer_reference.required' => 'Ingresá el número de operación o referencia.',
             'receipt.required'            => 'Adjuntá el comprobante.',
             'receipt.mimes'               => 'El comprobante debe ser JPG, PNG o PDF.',
             'receipt.max'                 => 'El archivo no puede superar los 5 MB.',

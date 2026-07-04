@@ -553,7 +553,12 @@
         {{ strtoupper(substr($reservation->client_name, 0, 2)) }}
       </div>
       <div>
-        <h1 class="sr-detail__client-name">{{ $reservation->client_name }}</h1>
+        <div style="display:flex;align-items:center;gap:0.625rem;flex-wrap:wrap;">
+          <h1 class="sr-detail__client-name">{{ $reservation->client_name }}</h1>
+          <span style="font-size:0.75rem;font-family:monospace;font-weight:700;color:#2d8c4e;background:rgba(45,140,78,0.08);border:1px solid rgba(45,140,78,0.2);padding:0.2rem 0.6rem;border-radius:0.5rem;white-space:nowrap;">
+            #{{ str_pad($reservation->id, 5, '0', STR_PAD_LEFT) }}
+          </span>
+        </div>
         <div class="sr-detail__client-meta">
           @if($reservation->client_email)
             <span>

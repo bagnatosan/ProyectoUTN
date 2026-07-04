@@ -21,12 +21,7 @@ class RegistrationController extends Controller
     public function select()
     {
         if (Auth::check()) {
-            $user = Auth::user();
-            if ($user->role === 'client') {
-                return redirect()->route('dashboard');
-            } elseif ($user->role === 'seller') {
-                return redirect()->route('dashboard');
-            }
+            return redirect()->route('dashboard');
         }
         return view('register.select');
     }
@@ -37,12 +32,7 @@ class RegistrationController extends Controller
     public function registerHub()
     {
         if (Auth::check()) {
-            $user = Auth::user();
-            if ($user->role === 'client') {
-                return redirect()->route('dashboard');
-            } elseif ($user->role === 'seller') {
-                return redirect()->route('dashboard');
-            }
+            return redirect()->route('dashboard');
         }
         return view('register.hub');
     }
@@ -68,35 +58,52 @@ class RegistrationController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'address' => 'required|string|max:255',
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|string|email|max:255|unique:users',
+            'password'      => 'required|string|min:8|confirmed',
+            // Campos de dirección
+            'street'        => 'required|string|max:255',
+            'street_number' => 'required|string|max:20',
+            'floor'         => 'nullable|string|max:20',
+            'apartment'     => 'nullable|string|max:20',
+            'province'      => 'required|string|max:100',
+            'locality'      => 'required|string|max:100',
+            'postal_code'   => 'required|string|max:10',
         ]);
 
-        $user = DB::transaction(function () use ($validated, $geocodingService) {
+        // Componer la dirección completa para geocoding y compatibilidad
+        $address = $this->composeAddress($validated);
+
+        $user = DB::transaction(function () use ($validated, $address, $geocodingService) {
             $user = User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
+                'name'     => $validated['name'],
+                'email'    => $validated['email'],
                 'password' => $validated['password'],
-                'role' => 'client',
+                'role'     => 'client',
             ]);
 
             $profile = \App\Models\ClientProfile::create([
-                'user_id' => $user->id,
-                'address' => $validated['address'],
+                'user_id'       => $user->id,
+                'address'       => $address,
+                'street'        => $validated['street'],
+                'street_number' => $validated['street_number'],
+                'floor'         => $validated['floor'] ?? null,
+                'apartment'     => $validated['apartment'] ?? null,
+                'province'      => $validated['province'],
+                'locality'      => $validated['locality'],
+                'postal_code'   => $validated['postal_code'],
             ]);
 
-            $geocodingService->syncProfileCoordinates($profile, $profile->address, null, null, true);
+            $geocodingService->syncProfileCoordinates($profile, $address, null, null, true);
             $profile->save();
 
             return $user;
         });
 
-        // Auto-login the registered user
         Auth::login($user);
 
-        return redirect()->route('dashboard')->with('success', '¡Registro de cliente completado con éxito! Bienvenido, ' . $user->name);
+        return redirect()->route('dashboard')
+            ->with('success', '¡Registro de cliente completado con éxito! Bienvenido, ' . $user->name);
     }
 
     /**
@@ -120,64 +127,102 @@ class RegistrationController extends Controller
         }
 
         $request->merge([
-            'phone' => $request->has('phone') ? trim($request->phone) : null
+            'phone' => $request->has('phone') ? trim($request->phone) : null,
         ]);
 
         $validated = $request->validate([
-            // User validations
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            // Business profile validations
+            // Datos de usuario
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|string|email|max:255|unique:users',
+            'password'      => 'required|string|min:8|confirmed',
+            // Datos del negocio
             'business_name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'phone' => [
-                'required',
-                'string',
-                'max:50',
-                'regex:/^\+54\d+$/'
-            ],
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'address' => 'nullable|string|max:255',
+            'description'   => 'required|string',
+            'phone'         => ['required', 'string', 'max:50', 'regex:/^\+54\d+$/'],
+            'logo'          => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            // Campos de dirección (obligatorios para ubicar el comercio en el mapa)
+            'street'        => 'required|string|max:255',
+            'street_number' => 'required|string|max:20',
+            'floor'         => 'nullable|string|max:20',
+            'apartment'     => 'nullable|string|max:20',
+            'province'      => 'required|string|max:100',
+            'locality'      => 'required|string|max:100',
+            'postal_code'   => 'required|string|max:10',
         ], [
             'phone.regex' => 'El teléfono debe comenzar con +54 y no debe contener espacios.',
         ]);
 
-        // El logo se sube ANTES de la transacción, así si falla el guardado en DB
-        // no nos quedamos con un archivo huérfano en el storage.
+        // Componer la dirección completa para geocoding
+        $address = $this->composeAddress($validated);
+
         $logoPath = $request->hasFile('logo')
             ? $request->file('logo')->store('logos', 'public')
             : null;
 
-        $user = DB::transaction(function () use ($validated, $geocodingService, $logoPath) {
+        $user = DB::transaction(function () use ($validated, $address, $geocodingService, $logoPath) {
             $user = User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
+                'name'     => $validated['name'],
+                'email'    => $validated['email'],
                 'password' => $validated['password'],
-                'role' => 'seller',
+                'role'     => 'seller',
             ]);
 
             $profile = BusinessProfile::create([
-                'user_id' => $user->id,
+                'user_id'       => $user->id,
                 'business_name' => $validated['business_name'],
-                'description' => $validated['description'],
-                'phone' => $validated['phone'],
-                'logo' => $logoPath,
-                'address' => $validated['address'] ?? null,
+                'description'   => $validated['description'],
+                'phone'         => $validated['phone'],
+                'logo'          => $logoPath,
+                'address'       => $address,
+                'street'        => $validated['street'] ?? null,
+                'street_number' => $validated['street_number'] ?? null,
+                'floor'         => $validated['floor'] ?? null,
+                'apartment'     => $validated['apartment'] ?? null,
+                'province'      => $validated['province'] ?? null,
+                'locality'      => $validated['locality'] ?? null,
+                'postal_code'   => $validated['postal_code'] ?? null,
             ]);
 
-            if (!blank($profile->address)) {
-                $geocodingService->syncProfileCoordinates($profile, $profile->address, null, null, true);
-                $profile->save();
-            }
+            $geocodingService->syncProfileCoordinates($profile, $address, null, null, true);
+            $profile->save();
 
             return $user;
         });
 
-        // Auto-login the registered user
         Auth::login($user);
 
-        return redirect()->route('dashboard')->with('success', '¡Registro de emprendedor y negocio completado con éxito!');
+        return redirect()->route('dashboard')
+            ->with('success', '¡Registro de emprendedor y negocio completado con éxito!');
+    }
+
+    /**
+     * Compone la dirección completa a partir de los campos individuales.
+     * Resultado: "Av. Rivadavia 742, Piso 3, Dpto A, San Justo, Buenos Aires (1754)"
+     */
+    private function composeAddress(array $data): string
+    {
+        $parts = [trim($data['street']) . ' ' . trim($data['street_number'])];
+
+        if (!empty($data['floor'])) {
+            $parts[] = 'Piso ' . trim($data['floor']);
+        }
+        if (!empty($data['apartment'])) {
+            $parts[] = 'Dpto ' . trim($data['apartment']);
+        }
+        if (!empty($data['locality'])) {
+            $parts[] = trim($data['locality']);
+        }
+        if (!empty($data['province'])) {
+            $parts[] = trim($data['province']);
+        }
+
+        $address = implode(', ', $parts);
+
+        if (!empty($data['postal_code'])) {
+            $address .= ' (' . trim($data['postal_code']) . ')';
+        }
+
+        return $address;
     }
 
     /**
@@ -186,7 +231,8 @@ class RegistrationController extends Controller
     public function showLogin()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard')->with('info', 'Ya tenés una sesión activa. Cerrá sesión si querés ingresar con otra cuenta.');
+            return redirect()->route('dashboard')
+                ->with('info', 'Ya tenés una sesión activa. Cerrá sesión si querés ingresar con otra cuenta.');
         }
         return view('auth.login');
     }
@@ -201,14 +247,14 @@ class RegistrationController extends Controller
         }
 
         $credentials = $request->validate([
-            'email' => 'required|string|email',
+            'email'    => 'required|string|email',
             'password' => 'required|string',
         ]);
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            $user = Auth::user();
+            $user     = Auth::user();
             $redirect = $user->role === 'admin'
                 ? route('admin.dashboard')
                 : route('dashboard');
@@ -245,14 +291,14 @@ class RegistrationController extends Controller
             return view('dashboard', compact('businesses', 'upcomingReservations'));
         }
 
-        $reservationsToday = collect();
+        $reservationsToday    = collect();
         $reservationsTomorrow = collect();
-        $stats = [];
+        $stats                = [];
 
         if ($user->role === 'seller' && $user->businessProfile) {
-            $bpId = $user->businessProfile->id;
-            $today = Carbon::today()->format('Y-m-d');
-            $tomorrow = Carbon::tomorrow()->format('Y-m-d');
+            $bpId      = $user->businessProfile->id;
+            $today     = Carbon::today()->format('Y-m-d');
+            $tomorrow  = Carbon::tomorrow()->format('Y-m-d');
 
             $reservationsToday = Reservation::with('product')
                 ->forBusiness($bpId)
@@ -267,10 +313,10 @@ class RegistrationController extends Controller
                 ->get();
 
             $stats = [
-                'pending'    => Reservation::forBusiness($bpId)->pending()->count(),
-                'confirmed'  => Reservation::forBusiness($bpId)->confirmed()->count(),
-                'today'      => Reservation::forBusiness($bpId)->where('reservation_date', $today)->count(),
-                'overdue'    => Reservation::forBusiness($bpId)
+                'pending'   => Reservation::forBusiness($bpId)->pending()->count(),
+                'confirmed' => Reservation::forBusiness($bpId)->confirmed()->count(),
+                'today'     => Reservation::forBusiness($bpId)->where('reservation_date', $today)->count(),
+                'overdue'   => Reservation::forBusiness($bpId)
                     ->whereIn('status', ['pending', 'confirmed'])
                     ->where('reservation_date', '<', $today)
                     ->count(),

@@ -14,6 +14,13 @@ class ClientProfile extends Model
         'address',
         'latitude',
         'longitude',
+        'street',
+        'street_number',
+        'floor',
+        'apartment',
+        'province',
+        'locality',
+        'postal_code',
     ];
 
     protected function casts(): array

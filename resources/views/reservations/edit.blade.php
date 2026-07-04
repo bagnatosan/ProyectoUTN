@@ -4,6 +4,57 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/sections/client-reservations.css') }}">
+<style>
+  .qty-selector {
+    display: flex;
+    align-items: center;
+    background: #f8f5f0;
+    border: 1px solid #d1c9be;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    width: fit-content;
+  }
+  .qty-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 1.25rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .qty-btn:hover:not(:disabled) {
+    background: #ede8e0;
+    color: #1a1a1a;
+  }
+  .qty-btn:disabled {
+    color: #c9c3bb;
+    cursor: not-allowed;
+  }
+  .qty-display {
+    min-width: 3rem;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    border-left: 1px solid #d1c9be;
+    border-right: 1px solid #d1c9be;
+    padding: 0.5rem 0.25rem;
+    user-select: none;
+  }
+  .qty-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #374151;
+  }
+</style>
 @endpush
 
 @section('content')
@@ -39,6 +90,18 @@
       @error('product_id')
         <p class="cr-form__error">{{ $message }}</p>
       @enderror
+    </div>
+
+    {{-- Cantidad --}}
+    <div class="cr-form__group">
+      <label class="qty-label">Cantidad <span style="color:#ef4444">*</span></label>
+      <div class="qty-selector" role="group" aria-label="Selector de cantidad">
+        <button type="button" class="qty-btn" id="qty-minus" aria-label="Reducir cantidad">−</button>
+        <span class="qty-display" id="qty-display" aria-live="polite">{{ old('quantity', $reservation->quantity ?? 1) }}</span>
+        <button type="button" class="qty-btn" id="qty-plus" aria-label="Aumentar cantidad">+</button>
+      </div>
+      <input type="hidden" name="quantity" id="quantity" value="{{ old('quantity', $reservation->quantity ?? 1) }}">
+      <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.375rem;">Máximo 50 unidades por reserva.</p>
     </div>
 
     {{-- Fecha --}}
@@ -186,6 +249,26 @@ document.addEventListener('DOMContentLoaded', function () {
       alert('Corregí los siguientes errores:\n\n- ' + errors.join('\n- '));
     }
   });
+
+  // ── Selector de Cantidad ──────────────────────────────
+  var qtyMinus   = document.getElementById('qty-minus');
+  var qtyPlus    = document.getElementById('qty-plus');
+  var qtyDisplay = document.getElementById('qty-display');
+  var qtyInput   = document.getElementById('quantity');
+  var MAX_QTY    = 50;
+  var qty        = parseInt(qtyInput.value) || 1;
+
+  function updateQty(newQty) {
+    qty = Math.max(1, Math.min(MAX_QTY, newQty));
+    qtyDisplay.textContent = qty;
+    qtyInput.value = qty;
+    qtyMinus.disabled = qty <= 1;
+    qtyPlus.disabled  = qty >= MAX_QTY;
+  }
+
+  updateQty(qty);
+  qtyMinus.addEventListener('click', function () { updateQty(qty - 1); });
+  qtyPlus.addEventListener('click',  function () { updateQty(qty + 1); });
 });
 </script>
 @endsection

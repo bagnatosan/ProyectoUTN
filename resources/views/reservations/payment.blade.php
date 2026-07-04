@@ -24,7 +24,12 @@
 
     {{-- Resumen de la reserva --}}
     <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 space-y-3">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Tu reserva</h2>
+        <div class="flex items-center justify-between">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Tu reserva</h2>
+            <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-lg">
+                #{{ str_pad($reservation->id, 5, '0', STR_PAD_LEFT) }}
+            </span>
+        </div>
         <div class="flex items-center justify-between">
             <span class="text-sm text-slate-400">Producto</span>
             <span class="text-sm font-semibold text-white">{{ $product->name }}</span>
@@ -39,10 +44,22 @@
                 {{ $reservation->reservation_date->format('d/m/Y') }} a las {{ \Illuminate\Support\Str::of($reservation->reservation_time)->substr(0, 5) }} hs
             </span>
         </div>
+        @if(($reservation->quantity ?? 1) > 1)
+        <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-400">Cantidad</span>
+            <span class="text-sm font-semibold text-white">{{ $reservation->quantity }} unidades</span>
+        </div>
+        @endif
         @if($product->price > 0)
+        @php $total = $product->price * ($reservation->quantity ?? 1); @endphp
         <div class="flex items-center justify-between pt-2 border-t border-slate-800">
             <span class="text-sm font-bold text-slate-300">Total a pagar</span>
-            <span class="text-lg font-extrabold text-emerald-400">${{ number_format($product->price, 2) }}</span>
+            <div class="text-right">
+                @if(($reservation->quantity ?? 1) > 1)
+                    <p class="text-xs text-slate-500">${{ number_format($product->price, 2) }} × {{ $reservation->quantity }}</p>
+                @endif
+                <span class="text-lg font-extrabold text-emerald-400">${{ number_format($total, 2) }}</span>
+            </div>
         </div>
         @endif
     </div>
@@ -116,7 +133,7 @@
             <div class="space-y-1">
                 <label class="block text-sm font-medium text-slate-300" for="transfer_amount">Monto transferido ($)</label>
                 <input type="number" name="transfer_amount" id="transfer_amount" step="0.01" min="0.01"
-                    value="{{ old('transfer_amount', $product->price > 0 ? $product->price : '') }}"
+                    value="{{ old('transfer_amount', $product->price > 0 ? $product->price * ($reservation->quantity ?? 1) : '') }}"
                     class="w-full rounded-xl bg-slate-900 border border-slate-700 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 text-slate-200 px-4 py-2.5 text-sm focus:outline-none transition-all @error('transfer_amount') border-red-500/50 @enderror"
                     placeholder="Ej. 1500.00" required>
             </div>
@@ -128,14 +145,6 @@
                     max="{{ now()->format('Y-m-d') }}"
                     class="w-full rounded-xl bg-slate-900 border border-slate-700 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 text-slate-200 px-4 py-2.5 text-sm focus:outline-none transition-all @error('transfer_date') border-red-500/50 @enderror"
                     required>
-            </div>
-
-            <div class="space-y-1">
-                <label class="block text-sm font-medium text-slate-300" for="transfer_reference">Número de operación / referencia</label>
-                <input type="text" name="transfer_reference" id="transfer_reference"
-                    value="{{ old('transfer_reference') }}"
-                    class="w-full rounded-xl bg-slate-900 border border-slate-700 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 text-slate-200 px-4 py-2.5 text-sm focus:outline-none transition-all @error('transfer_reference') border-red-500/50 @enderror"
-                    placeholder="Ej. 0012345678" required>
             </div>
 
             <div class="space-y-1">
