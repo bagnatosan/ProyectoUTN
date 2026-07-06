@@ -231,6 +231,20 @@
         cancelReasonHtml = '<p class="cr-card__cancel-reason">Motivo: ' + this.escHtml(r.cancellation_reason) + '</p>';
       }
 
+      var paymentHtml = '';
+      if (r.status !== 'cancelled') {
+        var paymentLabels = {
+          'pending_upload': 'Esperando comprobante',
+          'uploaded': 'Comprobante enviado — pendiente de confirmación',
+          'confirmed': 'Pago confirmado',
+        };
+        var paymentLabel = paymentLabels[r.payment_status] || '';
+        var paymentClass = 'cr-payment--' + (r.payment_status || 'unknown');
+        if (paymentLabel) {
+          paymentHtml = '<p class="cr-card__payment ' + paymentClass + '">' + paymentLabel + '</p>';
+        }
+      }
+
       var modifiedHtml = '';
       if (r.was_modified) {
         modifiedHtml = '<p class="cr-card__modified">Modificada</p>';
@@ -271,6 +285,7 @@
           modifiedHtml +
           notesHtml +
           cancelReasonHtml +
+          paymentHtml +
         '</div>' +
         '<div class="cr-card__actions">' + actionsHtml + '</div>';
 
