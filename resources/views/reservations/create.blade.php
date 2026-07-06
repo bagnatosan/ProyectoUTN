@@ -14,8 +14,8 @@
   .form-field__label {
     display: block;
     font-size: 0.875rem;
-    font-weight: 500;
-    color: #cbd5e1;
+    font-weight: 600;
+    color: #1e293b;
     margin-bottom: 0.375rem;
   }
 
@@ -23,17 +23,25 @@
     display: block;
     width: 100%;
     padding: 0.625rem 1rem;
-    background-color: rgba(51, 65, 85, 0.6);
-    border: 1px solid #334155;
+    background-color: rgba(255, 255, 255, 0.85);
+    border: 1px solid #cbd5e1;
     border-radius: 0.75rem;
-    color: #f1f5f9;
+    color: #0f172a;
     font-size: 0.875rem;
     transition: all 0.2s ease;
     box-sizing: border-box;
   }
 
   .form-field__input::placeholder {
-    color: #64748b;
+    color: #94a3b8;
+  }
+
+  .form-field__input:-webkit-autofill,
+  .form-field__input:-webkit-autofill:hover,
+  .form-field__input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.92) inset !important;
+    -webkit-text-fill-color: #0f172a !important;
+    border-color: #cbd5e1 !important;
   }
 
   .form-field__input:focus {
@@ -85,8 +93,8 @@
      CALENDAR COMPONENT
      ========================================= */
   .calendar {
-    border: 1px solid rgba(51, 65, 85, 0.6);
-    background-color: rgba(51, 65, 85, 0.25);
+    border: 1px solid rgba(22, 163, 74, 0.3);
+    background-color: rgba(22, 163, 74, 0.07);
     border-radius: 1rem;
     padding: 1rem;
     user-select: none;
@@ -134,13 +142,13 @@
   .calendar__month-label {
     font-size: 1rem;
     font-weight: 600;
-    color: #fff;
+    color: #0f172a;
   }
 
   .calendar__year-label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #94a3b8;
+    color: #1e3a2f;
   }
 
   .calendar__day-headers {
@@ -153,7 +161,7 @@
     text-align: center;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #64748b;
+    color: #1e3a2f;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 0.25rem 0;
@@ -178,7 +186,7 @@
     cursor: pointer;
     border: 1px solid transparent;
     transition: all 0.15s ease;
-    color: #e2e8f0;
+    color: #0f172a;
     background: transparent;
     padding: 0;
   }
@@ -189,8 +197,8 @@
   }
 
   .calendar__day:hover:not(.calendar__day--past):not(.calendar__day--empty) {
-    background-color: rgba(51, 65, 85, 0.6);
-    border-color: rgba(71, 85, 105, 0.4);
+    background-color: rgba(22, 163, 74, 0.2);
+    border-color: rgba(22, 163, 74, 0.45);
   }
 
   .calendar__day--empty {
@@ -198,13 +206,13 @@
   }
 
   .calendar__day--past {
-    color: #475569;
+    color: #334155;
     cursor: not-allowed;
   }
 
   .calendar__day--today {
     font-weight: 700;
-    color: #4ade80;
+    color: #15803d;
   }
 
   .calendar__day--selected {
@@ -283,8 +291,8 @@
   }
 
   .time-slots__wrapper {
-    border: 1px solid rgba(51, 65, 85, 0.6);
-    background-color: rgba(51, 65, 85, 0.2);
+    border: 1px solid rgba(22, 163, 74, 0.3);
+    background-color: rgba(22, 163, 74, 0.07);
     border-radius: 1rem;
     padding: 1rem;
   }
@@ -292,7 +300,7 @@
   .time-slots__heading {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #cbd5e1;
+    color: #0f172a;
     margin-bottom: 0.75rem;
   }
 
@@ -320,17 +328,17 @@
     font-size: 0.875rem;
     font-weight: 500;
     text-align: center;
-    border: 1px solid rgba(51, 65, 85, 0.6);
-    background-color: rgba(51, 65, 85, 0.25);
-    color: #cbd5e1;
+    border: 1px solid rgba(22, 163, 74, 0.35);
+    background-color: rgba(22, 163, 74, 0.1);
+    color: #0f172a;
     cursor: pointer;
     transition: all 0.2s ease;
   }
 
   .time-slots__slot:hover {
-    background-color: rgba(51, 65, 85, 0.6);
-    border-color: #475569;
-    color: #fff;
+    background-color: rgba(22, 163, 74, 0.25);
+    border-color: rgba(22, 163, 74, 0.6);
+    color: #0f172a;
   }
 
   .time-slots__slot:focus {
@@ -421,8 +429,8 @@
   .qty-selector {
     display: flex;
     align-items: center;
-    background: rgba(51, 65, 85, 0.6);
-    border: 1px solid #334155;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid #cbd5e1;
     border-radius: 0.75rem;
     overflow: hidden;
     width: fit-content;
@@ -442,19 +450,19 @@
     justify-content: center;
     background: transparent;
     border: none;
-    color: #94a3b8;
+    color: #475569;
     cursor: pointer;
     transition: all 0.2s;
     flex-shrink: 0;
   }
 
   .qty-btn:hover:not(:disabled) {
-    background: rgba(71, 85, 105, 0.6);
-    color: #fff;
+    background: rgba(22, 163, 74, 0.15);
+    color: #15803d;
   }
 
   .qty-btn:disabled {
-    color: #475569;
+    color: #cbd5e1;
     cursor: not-allowed;
   }
 
@@ -463,9 +471,9 @@
     text-align: center;
     font-size: 1rem;
     font-weight: 700;
-    color: #f1f5f9;
-    border-left: 1px solid #334155;
-    border-right: 1px solid #334155;
+    color: #0f172a;
+    border-left: 1px solid #cbd5e1;
+    border-right: 1px solid #cbd5e1;
     padding: 0.5rem 0.25rem;
     user-select: none;
   }

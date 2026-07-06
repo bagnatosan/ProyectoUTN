@@ -177,7 +177,10 @@
 
                             @if(auth()->user()->role === 'seller')
                                 <div class="py-1 mb-1 border-b border-slate-900">
-                                    <a href="{{ route('business_profile.edit') }}" class="nav-dropdown-link {{ request()->routeIs('business_profile.*') ? 'nav-dropdown-link-active' : '' }}">Perfil</a>
+                                    <a href="{{ route('business_profile.edit') }}" class="nav-dropdown-link {{ request()->routeIs('business_profile.*') ? 'nav-dropdown-link-active' : '' }}">Configurar Perfil</a>
+                                    @if(auth()->user()->businessProfile)
+                                        <a href="{{ route('catalog.show', auth()->user()->businessProfile->id) }}" class="nav-dropdown-link" target="_blank">Ver mi catálogo publico</a>
+                                    @endif
                                 </div>
                             @endif
 

@@ -73,7 +73,7 @@
         </table>
     </div>
 
-    <p class="text-[11px] text-slate-500 mt-4">
+    <p class="text-[11px] text-slate-500 mt-4 text-center">
         Estos ingredientes están disponibles para usar en cualquiera de tus recetas desde el
         <a href="{{ route('recipes.index') }}" class="text-indigo-300 underline">módulo de costos</a>.
     </p>

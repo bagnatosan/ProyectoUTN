@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <div class="max-w-2xl">
+    <div class="max-w-2xl mx-auto">
 
         <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 sm:p-5 backdrop-blur-sm">
             <div class="mb-4 flex items-center justify-between">

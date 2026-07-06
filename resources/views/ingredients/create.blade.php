@@ -28,7 +28,7 @@
             <p class="text-slate-400 text-xs mt-1">Registrá una materia prima para poder usarla en el cálculo de tus recetas.</p>
         </div>
 
-        <form action="{{ route('ingredients.store') }}" method="POST" class="space-y-5">
+        <form action="{{ route('ingredients.store') }}" method="POST" class="space-y-5" id="ingredient-form">
             @csrf
 
             <div>
@@ -56,7 +56,8 @@
                     <label for="unit_cost" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Costo ($)</label>
                     <div class="relative input-icon-group">
                         <span class="absolute left-3 top-2.5 text-slate-500 text-sm font-mono">$</span>
-                        <input type="number" name="unit_cost" id="unit_cost" step="0.01" min="0" required placeholder="0,00"
+                        <input type="text" name="unit_cost" id="unit_cost" required placeholder="Ej. 60.000"
+                               inputmode="numeric"
                                class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-7 pr-3 py-2.5 text-sm text-emerald-400 font-semibold font-mono focus:outline-none focus:border-emerald-500 transition-colors">
                     </div>
                 </div>
@@ -73,4 +74,10 @@
         </form>
     </div>
 </div>
+<script>
+document.getElementById('ingredient-form').addEventListener('submit', function () {
+    const input = document.getElementById('unit_cost');
+    input.value = input.value.replace(/\./g, '').replace(',', '.');
+});
+</script>
 @endsection
