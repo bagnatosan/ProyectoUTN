@@ -102,13 +102,167 @@ class ReservationController extends Controller
     {
         $this->authorize('viewAnyClient', Reservation::class);
 
-        $reservations = Reservation::forClient()
-            ->with(['product.businessProfile.user', 'product'])
-            ->orderBy('reservation_date', 'desc')
-            ->orderBy('reservation_time', 'desc')
-            ->get();
+        $products = Product::whereHas('reservations', function ($q) {
+            $q->where('user_id', Auth::id());
+        })->orderBy('name')->get();
 
-        return view('reservations.index', compact('reservations'));
+        return view('reservations.index', compact('products'));
+    }
+
+    public function myReservationsData(Request $request): JsonResponse
+    {
+        $this->authorize('viewAnyClient', Reservation::class);
+
+        $query = Reservation::forClient()
+            ->with(['product.businessProfile']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('notes', 'like', "%{$search}%")
+                  ->orWhereHas('product', fn ($pq) => $pq->where('name', 'like', "%{$search}%"))
+                  ->orWhereHas('product.businessProfile', fn ($bq) => $bq->where('business_name', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('quick_filter')) {
+            $today = Carbon::today();
+            switch ($request->quick_filter) {
+                case 'today':
+                    $query->whereDate('reservation_date', $today);
+                    break;
+                case 'tomorrow':
+                    $query->whereDate('reservation_date', $today->copy()->addDay());
+                    break;
+                case 'week':
+                    $query->whereBetween('reservation_date', [$today->copy()->startOfWeek(), $today->copy()->endOfWeek()]);
+                    break;
+                case 'month':
+                    $query->whereBetween('reservation_date', [$today->copy()->startOfMonth(), $today->copy()->endOfMonth()]);
+                    break;
+                case 'next_7_days':
+                    $query->whereBetween('reservation_date', [$today, $today->copy()->addDays(7)]);
+                    break;
+                case 'next_30_days':
+                    $query->whereBetween('reservation_date', [$today, $today->copy()->addDays(30)]);
+                    break;
+                case 'upcoming':
+                    $query->where('reservation_date', '>=', $today);
+                    break;
+                case 'past':
+                    $query->where('reservation_date', '<', $today);
+                    break;
+            }
+        }
+
+        if ($request->filled('date_from')) {
+            $query->where('reservation_date', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->where('reservation_date', '<=', $request->date_to);
+        }
+
+        if ($request->filled('product_id')) {
+            $query->where('product_id', $request->product_id);
+        }
+
+        if ($request->filled('reservation_scope')) {
+            $today = Carbon::today();
+            switch ($request->reservation_scope) {
+                case 'upcoming':
+                    $query->where('reservation_date', '>=', $today);
+                    break;
+                case 'past':
+                    $query->where('reservation_date', '<', $today);
+                    break;
+                case 'active':
+                    $query->whereIn('status', ['pending', 'confirmed']);
+                    break;
+                case 'closed':
+                    $query->whereIn('status', ['completed', 'cancelled']);
+                    break;
+            }
+        }
+
+        if ($request->has('has_notes') && $request->has_notes !== '') {
+            if (filter_var($request->has_notes, FILTER_VALIDATE_BOOLEAN)) {
+                $query->whereNotNull('notes')->where('notes', '!=', '');
+            } else {
+                $query->where(function ($q) {
+                    $q->whereNull('notes')->orWhere('notes', '');
+                });
+            }
+        }
+
+        $sortField = 'reservation_date';
+        $sortDir = 'desc';
+        if ($request->filled('sort')) {
+            switch ($request->sort) {
+                case 'date_asc':
+                    $sortField = 'reservation_date'; $sortDir = 'asc';
+                    break;
+                case 'date_desc':
+                    $sortField = 'reservation_date'; $sortDir = 'desc';
+                    break;
+                case 'created_desc':
+                    $sortField = 'created_at'; $sortDir = 'desc';
+                    break;
+                case 'created_asc':
+                    $sortField = 'created_at'; $sortDir = 'asc';
+                    break;
+            }
+        }
+
+        $perPage = $request->integer('per_page', 20);
+        $reservations = $query->orderBy($sortField, $sortDir)
+            ->orderBy('reservation_time')
+            ->paginate($perPage);
+
+        $formatted = collect($reservations->items())->map(function ($r) {
+            $product = $r->product;
+            $businessProfile = $product?->businessProfile;
+
+            return [
+                'id'                => $r->id,
+                'product_id'        => $r->product_id,
+                'quantity'          => $r->quantity,
+                'reservation_date'  => $r->reservation_date instanceof \Carbon\Carbon
+                    ? $r->reservation_date->format('Y-m-d')
+                    : $r->reservation_date,
+                'reservation_time'  => substr($r->reservation_time, 0, 5),
+                'notes'             => $r->notes,
+                'status'            => $r->status,
+                'cancellation_reason' => $r->cancellation_reason,
+                'can_cancel'        => $r->isCancellable(),
+                'was_modified'      => $r->updated_at && $r->created_at
+                    && $r->updated_at->diffInMinutes($r->created_at) > 1,
+                'created_at'        => $r->created_at->format('Y-m-d H:i'),
+                'product'           => $product ? [
+                    'name'          => $product->name,
+                    'image'         => $product->image ? storage_url($product->image) : null,
+                    'price'         => (float) $product->price,
+                    'business_name' => $businessProfile?->business_name ?? 'Emprendedor',
+                ] : [
+                    'name'          => 'Producto eliminado',
+                    'image'         => null,
+                    'price'         => 0,
+                    'business_name' => 'Emprendedor',
+                ],
+            ];
+        });
+
+        return response()->json([
+            'success'       => true,
+            'data'          => $formatted,
+            'total'         => $reservations->total(),
+            'current_page'  => $reservations->currentPage(),
+            'last_page'     => $reservations->lastPage(),
+            'per_page'      => $reservations->perPage(),
+        ]);
     }
 
     public function edit(Reservation $reservation): View|RedirectResponse
