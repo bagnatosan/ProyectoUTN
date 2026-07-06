@@ -7,128 +7,142 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/sections/client-reservations.css') }}">
+<link rel="stylesheet" href="{{ asset('css/sections/my-reservations.css') }}">
 @endpush
 
 @section('content')
-<div class="cr-history">
-  {{-- Banner --}}
+<div class="mr-page">
+
   <div class="page-banner">
     <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
     <div class="page-banner__overlay"></div>
     <div class="page-banner__content">
       <h1 class="page-banner__title">Mis reservas</h1>
-      <p class="page-banner__subtitle">Turnos y pedidos que hiciste desde la plataforma.</p>
+      <p class="page-banner__subtitle">Todos tus pedidos y turnos en un solo lugar. Filtralos, buscalos y gestionálos.</p>
     </div>
   </div>
 
-  <div style="max-width:720px;margin:0 auto;">
-  <div class="cr-filters" role="tablist" aria-label="Filtrar por estado">
-    <button class="cr-filters__btn cr-filters__btn--active" data-filter="all" role="tab" aria-selected="true">Todas</button>
-    <button class="cr-filters__btn" data-filter="pending" role="tab">Pendientes</button>
-    <button class="cr-filters__btn" data-filter="confirmed" role="tab">Confirmadas</button>
-    <button class="cr-filters__btn" data-filter="completed" role="tab">Completadas</button>
-    <button class="cr-filters__btn" data-filter="cancelled" role="tab">Canceladas</button>
-  </div>
+  <div class="mr-layout">
 
-  <div id="cr-list" class="cr-list">
-    @forelse($reservations as $reservation)
-      @php
-        $product = $reservation->product;
-        $sellerName = $product?->businessProfile?->business_name ?? $product?->businessProfile?->user?->name ?? 'Emprendedor';
-        $imagePath = $product?->image ? asset('storage/' . $product->image) : null;
-        $minDate = now()->addDays(2)->format('Y-m-d');
-        $canModify = $reservation->status === 'pending'
-          && $reservation->reservation_date->format('Y-m-d') >= $minDate;
-        $wasModified = $reservation->updated_at && $reservation->created_at
-          && $reservation->updated_at->diffInMinutes($reservation->created_at) > 1;
-      @endphp
-      <div class="cr-card" data-status="{{ $reservation->status }}">
-        @if($imagePath)
-          <img class="cr-card__image" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy">
-        @else
-          <div class="cr-card__image cr-card__image--placeholder">📷</div>
-        @endif
+    <div class="mr-filters" id="mr-filters">
+      <button class="mr-filters__toggle" id="mr-filters-toggle" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+        </svg>
+        <span>Filtros</span>
+        <svg class="mr-filters__toggle-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
 
-        <div class="cr-card__body">
-          <div class="flex items-center justify-between mb-1">
-            <h3 class="cr-card__product">{{ $product->name ?? 'Producto' }}</h3>
-            <span class="text-[10px] font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md shrink-0 ml-2">
-              #{{ str_pad($reservation->id, 5, '0', STR_PAD_LEFT) }}
-            </span>
+      <div class="mr-filters__panel" id="mr-filters-panel">
+
+        <div class="mr-filters__row mr-filters__row--search">
+          <div class="mr-search">
+            <svg class="mr-search__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input type="search" class="mr-search__input" id="mr-search" placeholder="Buscar por producto, notas, vendedor..." autocomplete="off">
           </div>
-          <p class="cr-card__seller">{{ $sellerName }}</p>
-
-          <div class="cr-card__meta">
-            <span class="cr-card__meta-item">
-              {{ $reservation->reservation_date->format('d/m/Y') }}
-            </span>
-            <span class="cr-card__meta-item">
-              {{ \Illuminate\Support\Str::of($reservation->reservation_time)->substr(0, 5) }} hs
-            </span>
-            @if(($reservation->quantity ?? 1) > 1)
-              <span class="cr-card__meta-item">{{ $reservation->quantity }} unid.</span>
-            @endif
-            @if($product && $product->price > 0)
-              <span class="cr-card__meta-item cr-card__price">${{ number_format($product->price * ($reservation->quantity ?? 1), 2) }}</span>
-            @endif
-          </div>
-
-          @if($wasModified)
-            <p class="cr-card__modified">Modificada</p>
-          @endif
-
-          @if($reservation->notes)
-            <p class="cr-card__notes">{{ $reservation->notes }}</p>
-          @endif
-
-          @if($reservation->status === 'cancelled' && $reservation->cancellation_reason)
-            <p class="cr-card__cancel-reason">Motivo: {{ $reservation->cancellation_reason }}</p>
-          @endif
+          <button class="mr-btn mr-btn--clear" id="mr-clear-filters" type="button">Limpiar</button>
         </div>
 
-        <div class="cr-card__actions">
-          <span class="cr-badge cr-badge--{{ $reservation->status }}">
-            @switch($reservation->status)
-              @case('pending') Pendiente @break
-              @case('confirmed') Confirmada @break
-              @case('completed') Completada @break
-              @case('cancelled') Cancelada @break
-              @default Desconocido
-            @endswitch
-          </span>
+        <div class="mr-filters__row mr-filters__row--selects">
+          <select class="mr-select" id="mr-filter-status" data-filter="status">
+            <option value="">Todos los estados</option>
+            <option value="pending">Pendientes</option>
+            <option value="confirmed">Confirmadas</option>
+            <option value="completed">Completadas</option>
+            <option value="cancelled">Canceladas</option>
+          </select>
 
-          @if($canModify)
-            <a href="{{ route('reservations.edit', $reservation) }}" class="cr-btn cr-btn--primary">Modificar</a>
-          @endif
+          <select class="mr-select" id="mr-filter-product" data-filter="product_id">
+            <option value="">Todos los productos</option>
+            @foreach($products as $product)
+              <option value="{{ $product->id }}">{{ $product->name }}</option>
+            @endforeach
+          </select>
 
-          @if($reservation->isCancellable())
-            <button type="button"
-                    class="cr-btn cr-btn--danger cr-cancel-trigger"
-                    data-id="{{ $reservation->id }}"
-                    data-product="{{ $product->name ?? 'Producto' }}"
-                    data-date="{{ $reservation->reservation_date->format('d/m/Y') }}"
-                    data-time="{{ \Illuminate\Support\Str::of($reservation->reservation_time)->substr(0, 5) }}">
-              Cancelar
-            </button>
-          @endif
+          <select class="mr-select" id="mr-filter-sort" data-filter="sort">
+            <option value="date_desc">Más próximas primero</option>
+            <option value="date_asc">Más lejanas primero</option>
+            <option value="created_desc">Más recientes creadas</option>
+            <option value="created_asc">Más antiguas creadas</option>
+          </select>
         </div>
-      </div>
-    @empty
-      <div class="cr-empty">
-        <p class="cr-empty__title">No hay reservas</p>
-        <p class="cr-empty__text">Explorá los catálogos y reservá un producto o turno.</p>
-        <a href="{{ route('dashboard') }}" class="cr-empty__link">Ver catálogos</a>
-      </div>
-    @endforelse
-  </div>
 
-  <div id="cr-empty-filter" class="cr-empty" style="display:none">
-    <p class="cr-empty__title" id="cr-empty-text">No hay reservas en este estado</p>
-    <p class="cr-empty__text">Probá con otro filtro.</p>
+        <div class="mr-quick-filters" id="mr-quick-filters">
+          <button class="mr-quick-btn" data-quick="today">Hoy</button>
+          <button class="mr-quick-btn" data-quick="tomorrow">Mañana</button>
+          <button class="mr-quick-btn" data-quick="week">Esta semana</button>
+          <button class="mr-quick-btn" data-quick="month">Este mes</button>
+          <button class="mr-quick-btn" data-quick="next_7_days">Próximos 7 días</button>
+          <button class="mr-quick-btn" data-quick="next_30_days">Próximos 30 días</button>
+          <button class="mr-quick-btn" data-quick="upcoming">Próximas</button>
+          <button class="mr-quick-btn" data-quick="past">Pasadas</button>
+        </div>
+
+        <div class="mr-filters__row mr-filters__row--dates">
+          <div class="mr-field">
+            <label class="mr-field__label" for="mr-date-from">Desde</label>
+            <input type="date" class="mr-field__input" id="mr-date-from" data-filter="date_from">
+          </div>
+          <div class="mr-field">
+            <label class="mr-field__label" for="mr-date-to">Hasta</label>
+            <input type="date" class="mr-field__input" id="mr-date-to" data-filter="date_to">
+          </div>
+          <div class="mr-field">
+            <label class="mr-field__label" for="mr-filter-scope">Ciclo</label>
+            <select class="mr-field__input" id="mr-filter-scope" data-filter="reservation_scope">
+              <option value="">Todas</option>
+              <option value="upcoming">Futuras</option>
+              <option value="past">Pasadas</option>
+              <option value="active">Activas</option>
+              <option value="closed">Cerradas</option>
+            </select>
+          </div>
+          <div class="mr-field mr-field--checkbox">
+            <label class="mr-field__label-check">
+              <input type="checkbox" id="mr-filter-notes" data-filter="has_notes" value="1">
+              <span>Solo con notas</span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="mr-results" id="mr-results">
+      <div class="mr-results__header">
+        <p class="mr-results__count" id="mr-results-count"></p>
+      </div>
+
+      <div class="mr-loader" id="mr-loader">
+        <div class="mr-loader__spinner"></div>
+        <p class="mr-loader__text">Cargando reservas...</p>
+      </div>
+
+      <div class="mr-empty" id="mr-empty" style="display:none">
+        <p class="mr-empty__title" id="mr-empty-title">No se encontraron reservas</p>
+        <p class="mr-empty__text" id="mr-empty-text">Probá cambiando los filtros o creá una nueva reserva.</p>
+      </div>
+
+      <div class="mr-error" id="mr-error" style="display:none">
+        <p class="mr-error__title">Error de conexión</p>
+        <p class="mr-error__text">No se pudieron cargar las reservas. Verificá tu conexión e intentá de nuevo.</p>
+        <button class="mr-btn mr-btn--retry" id="mr-retry-btn">Reintentar</button>
+      </div>
+
+      <div class="cr-list" id="mr-list"></div>
+
+      <div class="mr-load-more" id="mr-load-more" style="display:none">
+        <button class="mr-btn mr-btn--load-more" id="mr-load-more-btn">Cargar más reservas</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- Cancel Modal -->
 <div id="cr-cancel-modal" class="cr-modal-overlay cr-modal-overlay--hidden" role="dialog" aria-modal="true">
   <div class="cr-modal">
     <h2 class="cr-modal__title">Cancelar reserva</h2>
@@ -145,115 +159,8 @@
     </div>
   </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  /* ---- Filtros ---- */
-  var filterBtns = document.querySelectorAll('.cr-filters__btn');
-  var cards = document.querySelectorAll('.cr-card');
-  var list = document.getElementById('cr-list');
-  var emptyFilter = document.getElementById('cr-empty-filter');
-  var emptyText = document.getElementById('cr-empty-text');
-
-  filterBtns.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      filterBtns.forEach(function (b) {
-        b.classList.remove('cr-filters__btn--active');
-        b.setAttribute('aria-selected', 'false');
-      });
-      this.classList.add('cr-filters__btn--active');
-      this.setAttribute('aria-selected', 'true');
-
-      var filter = this.getAttribute('data-filter');
-      var visibleCount = 0;
-
-      cards.forEach(function (card) {
-        if (filter === 'all' || card.getAttribute('data-status') === filter) {
-          card.style.display = '';
-          visibleCount++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      var originalEmpty = document.querySelector('.cr-empty');
-      if (originalEmpty && filter !== 'all') {
-        originalEmpty.style.display = 'none';
-      }
-
-      if (visibleCount === 0) {
-        var labels = { pending: 'pendientes', confirmed: 'confirmadas', completed: 'completadas', cancelled: 'canceladas' };
-        emptyText.textContent = 'No hay reservas ' + (labels[filter] || '');
-        emptyFilter.style.display = '';
-        if (list) list.style.display = 'none';
-      } else {
-        emptyFilter.style.display = 'none';
-        if (list) list.style.display = '';
-      }
-    });
-  });
-
-  /* ---- Cancelación ---- */
-  var modal = document.getElementById('cr-cancel-modal');
-  var modalInfo = document.getElementById('cr-cancel-info');
-  var modalClose = document.getElementById('cr-cancel-close');
-  var modalConfirm = document.getElementById('cr-cancel-confirm');
-  var cancelReason = document.getElementById('cr-cancel-reason');
-  var currentId = null;
-
-  document.querySelectorAll('.cr-cancel-trigger').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      currentId = this.getAttribute('data-id');
-      var product = this.getAttribute('data-product');
-      var date = this.getAttribute('data-date');
-      var time = this.getAttribute('data-time');
-
-      modalInfo.textContent = '¿Estás seguro de cancelar la reserva de "' + product + '" para el ' + date + ' a las ' + time + '?';
-      cancelReason.value = '';
-      modal.classList.remove('cr-modal-overlay--hidden');
-    });
-  });
-
-  function closeCancelModal() {
-    modal.classList.add('cr-modal-overlay--hidden');
-    currentId = null;
-  }
-
-  modalClose.addEventListener('click', closeCancelModal);
-  modal.addEventListener('click', function (e) {
-    if (e.target === modal) closeCancelModal();
-  });
-
-  modalConfirm.addEventListener('click', function () {
-    if (!currentId) return;
-
-    var formData = new FormData();
-    formData.append('reason', cancelReason.value);
-
-    fetch('/reservations/' + currentId + '/cancel', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-        'Accept': 'application/json',
-      },
-      body: formData,
-    })
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-      if (data.success) {
-        location.reload();
-      } else {
-        alert(data.message || 'Error al cancelar la reserva.');
-      }
-    })
-    .catch(function () {
-      alert('Error de conexión. Intentalo de nuevo.');
-    })
-    .finally(function () {
-      closeCancelModal();
-    });
-  });
-});
-</script>
-  </div>
 @endsection
+
+@push('scripts')
+<script src="{{ asset('js/sections/my-reservations.js') }}"></script>
+@endpush
