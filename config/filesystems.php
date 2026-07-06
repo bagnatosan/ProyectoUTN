@@ -60,6 +60,20 @@ return [
             'report' => false,
         ],
 
+        'r2' => [
+            'driver' => 's3',
+            'key' => env('CLOUDFLARE_R2_ACCESS_KEY_ID'),
+            'secret' => env('CLOUDFLARE_R2_SECRET_ACCESS_KEY'),
+            'region' => 'auto',
+            'bucket' => env('CLOUDFLARE_R2_BUCKET'),
+            'endpoint' => 'https://'.env('CLOUDFLARE_R2_ACCOUNT_ID').'.r2.cloudflarestorage.com',
+            'url' => env('CLOUDFLARE_R2_PUBLIC_URL'),
+            'use_path_style_endpoint' => true,
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
     ],
 
     /*

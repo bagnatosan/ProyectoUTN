@@ -557,7 +557,7 @@ class ReservationController extends Controller
             'receipt.max'                 => 'El archivo no puede superar los 5 MB.',
         ]);
 
-        $path = $request->file('receipt')->store('receipts', 'public');
+        $path = $request->file('receipt')->store('receipts', 'r2');
 
         $reservation->update([
             'payment_status'     => 'uploaded',

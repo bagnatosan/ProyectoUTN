@@ -88,7 +88,7 @@
                         @php
                             $fallbacks = ['galeria-pasteleria.jpg','galeria-comida-casera.jpg','galeria-catering.jpg','emprendedor-cocina.jpg'];
                             $coverSrc = $business->cover_image
-                                ? asset('storage/' . $business->cover_image)
+                                ? storage_url($business->cover_image)
                                 : asset('images/' . $fallbacks[$loop->index % count($fallbacks)]);
                         @endphp
                         <div class="relative overflow-hidden" style="height:110px;">
@@ -98,8 +98,8 @@
 
                         <div class="flex items-start gap-4 mb-4" style="padding:1.25rem 1.25rem 0;">
                             {{-- Logo --}}
-                            @if($business->logo && (filter_var($business->logo, FILTER_VALIDATE_URL) || file_exists(public_path('storage/' . $business->logo))))
-                                <img src="{{ filter_var($business->logo, FILTER_VALIDATE_URL) ? $business->logo : asset('storage/' . $business->logo) }}" alt="Logo {{ $business->business_name }}" style="width:3.5rem;height:3.5rem;border-radius:0.75rem;object-fit:cover;border:1.5px solid #e8e0d0;flex-shrink:0;">
+                            @if($business->logo)
+                                <img src="{{ filter_var($business->logo, FILTER_VALIDATE_URL) ? $business->logo : storage_url($business->logo) }}" alt="Logo {{ $business->business_name }}" style="width:3.5rem;height:3.5rem;border-radius:0.75rem;object-fit:cover;border:1.5px solid #e8e0d0;flex-shrink:0;">
                             @else
                                 <div style="width:3.5rem;height:3.5rem;border-radius:0.75rem;background:linear-gradient(135deg,#2d6a4f,#1e3a2f);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;color:#ffffff;flex-shrink:0;">
                                     {{ strtoupper(substr($business->business_name, 0, 1)) }}

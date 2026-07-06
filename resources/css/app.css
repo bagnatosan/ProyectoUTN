@@ -44,6 +44,16 @@
     }
 }
 
+/* Responsive nav — CSS fallback so it works even before JS runs */
+@media (max-width: 767px) {
+    #desktop-nav { display: none !important; }
+    #mobile-nav-toggle { display: flex !important; }
+}
+@media (min-width: 768px) {
+    #mobile-nav-toggle { display: none !important; }
+    #mobile-menu { display: none !important; }
+}
+
 .page-banner {
     position: relative;
     overflow: hidden;

@@ -487,6 +487,7 @@
         }
         applyResponsive();
         window.addEventListener('resize', applyResponsive);
+        window.addEventListener('load', applyResponsive);
 
         // Mobile menu toggle
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');

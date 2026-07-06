@@ -8,7 +8,7 @@
 
     {{-- Perfil del Negocio Banner --}}
     @php
-        $catalogCoverUrl = $business->cover_image ? asset('storage/' . $business->cover_image) : null;
+        $catalogCoverUrl = $business->cover_image ? storage_url($business->cover_image) : null;
     @endphp
     <div class="relative overflow-hidden shadow-xl" style="max-width:900px;margin:0 auto 2rem auto;border-radius:1rem;min-height:220px;">
 
@@ -27,7 +27,7 @@
 
             {{-- Logo --}}
             @if($business->logo)
-                <img src="{{ filter_var($business->logo, FILTER_VALIDATE_URL) ? $business->logo : asset('storage/' . $business->logo) }}"
+                <img src="{{ filter_var($business->logo, FILTER_VALIDATE_URL) ? $business->logo : storage_url($business->logo) }}"
                      alt="{{ $business->business_name }}"
                      style="width:7rem;height:7rem;border-radius:0.875rem;object-fit:cover;background:#fff;border:3px solid rgba(255,255,255,0.9);box-shadow:0 4px 20px rgba(0,0,0,0.3);">
             @else
@@ -105,7 +105,7 @@
             <p class="font-medium text-slate-400 text-base">Este emprendimiento no tiene productos activos todavía.</p>
         </div>
     @else
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="products-grid">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="products-grid">
             @foreach($products as $product)
                 <div class="product-card group relative flex flex-col overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/20 hover:bg-slate-900/40 hover:border-slate-700/80 transition-all duration-300 shadow-lg hover:shadow-2xl" 
                      data-name="{{ strtolower($product->name) }}" 
@@ -114,7 +114,7 @@
                     <!-- Imagen o Placeholder -->
                     <div class="relative aspect-[4/3] w-full overflow-hidden bg-slate-950 border-b border-slate-800/60">
                         @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ storage_url($product->image) }}" alt="{{ $product->name }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
                         @else
                             <div class="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-950 text-slate-650 transition-colors group-hover:text-emerald-500/60">
                                 <svg class="w-12 h-12 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
@@ -132,7 +132,7 @@
                     </div>
 
                     <!-- Info -->
-                    <div class="flex flex-grow flex-col p-5 space-y-4">
+                    <div class="flex flex-grow flex-col p-5 space-y-4 text-center">
                         <div class="flex-grow space-y-1.5">
                             <h3 class="text-lg font-bold text-white tracking-tight leading-snug group-hover:text-emerald-400 transition-colors">
                                 {{ $product->name }}
@@ -149,13 +149,13 @@
                         </div>
 
                         <!-- Precio y Botón -->
-                        <div class="flex items-center justify-between pt-3 border-t border-slate-900">
+                        <div class="flex flex-col items-center gap-2 pt-3 border-t border-slate-900">
                             <div>
                                 <span class="block text-[10px] uppercase font-bold text-slate-500 tracking-wider">Precio</span>
                                 <span class="text-lg font-black text-emerald-400">${{ number_format($product->price, 2, ',', '.') }}</span>
                             </div>
                             
-                            <a href="{{ route('reservations.create', ['product_id' => $product->id]) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 shadow-md shadow-emerald-600/10 hover:shadow-emerald-500/20 border border-emerald-500/20 transition-all cursor-pointer">
+                            <a href="{{ route('reservations.create', ['product_id' => $product->id]) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 shadow-md shadow-emerald-600/10 hover:shadow-emerald-500/20 border border-emerald-500/20 transition-all cursor-pointer w-full justify-center">
                                 <span>Reservar</span>
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -264,6 +264,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-    </div>{{-- cierre max-w-4xl --}}
-</div>{{-- cierre space-y-8 --}}
 @endsection

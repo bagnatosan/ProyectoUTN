@@ -35,7 +35,7 @@
       @php
         $product = $reservation->product;
         $sellerName = $product?->businessProfile?->business_name ?? $product?->businessProfile?->user?->name ?? 'Emprendedor';
-        $imagePath = $product?->image ? asset('storage/' . $product->image) : null;
+        $imagePath = $product?->image ? storage_url($product->image) : null;
         $minDate = now()->addDays(2)->format('Y-m-d');
         $canModify = $reservation->status === 'pending'
           && $reservation->reservation_date->format('Y-m-d') >= $minDate;

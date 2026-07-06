@@ -116,16 +116,16 @@ class BusinessProfileController extends Controller
 
         if ($request->hasFile('logo')) {
             if ($profile->logo) {
-                Storage::disk('public')->delete($profile->logo);
+                Storage::disk('r2')->delete($profile->logo);
             }
-            $profile->logo = $request->file('logo')->store('logos', 'public');
+            $profile->logo = $request->file('logo')->store('logos', 'r2');
         }
 
         if ($request->hasFile('cover_image')) {
             if ($profile->cover_image) {
-                Storage::disk('public')->delete($profile->cover_image);
+                Storage::disk('r2')->delete($profile->cover_image);
             }
-            $profile->cover_image = $request->file('cover_image')->store('covers', 'public');
+            $profile->cover_image = $request->file('cover_image')->store('covers', 'r2');
         }
 
         $profile->save();

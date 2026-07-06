@@ -156,7 +156,7 @@ class RegistrationController extends Controller
         $address = $this->composeAddress($validated);
 
         $logoPath = $request->hasFile('logo')
-            ? $request->file('logo')->store('logos', 'public')
+            ? $request->file('logo')->store('logos', 'r2')
             : null;
 
         $user = DB::transaction(function () use ($validated, $address, $geocodingService, $logoPath) {

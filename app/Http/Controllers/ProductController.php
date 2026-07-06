@@ -178,7 +178,7 @@ class ProductController extends Controller implements HasMiddleware
         $imagePath = null;
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'public');
+            $imagePath = $request->file('image')->store('products', 'r2');
         }
 
         return $imagePath;

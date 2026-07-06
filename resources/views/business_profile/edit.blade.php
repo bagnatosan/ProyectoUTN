@@ -10,7 +10,7 @@
     if ($profile && $profile->logo) {
         $logoUrl = filter_var($profile->logo, FILTER_VALIDATE_URL)
             ? $profile->logo
-            : Storage::url($profile->logo);
+            : storage_url($profile->logo);
     }
 @endphp
 
@@ -18,10 +18,7 @@
 <div class="w-full animate-fade-in">
 
     @php
-        $coverUrl = null;
-        if ($profile && $profile->cover_image) {
-            $coverUrl = asset('storage/' . $profile->cover_image);
-        }
+        $coverUrl = $profile && $profile->cover_image ? storage_url($profile->cover_image) : null;
     @endphp
 
     <div class="max-w-4xl mx-auto">
