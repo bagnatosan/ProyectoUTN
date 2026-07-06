@@ -44,6 +44,16 @@
     }
 }
 
+/* Responsive nav — CSS fallback so it works even before JS runs */
+@media (max-width: 767px) {
+    #desktop-nav { display: none !important; }
+    #mobile-nav-toggle { display: flex !important; }
+}
+@media (min-width: 768px) {
+    #mobile-nav-toggle { display: none !important; }
+    #mobile-menu { display: none !important; }
+}
+
 .page-banner {
     position: relative;
     overflow: hidden;
@@ -53,6 +63,25 @@
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 1.5rem;
+}
+
+@media (max-width: 767px) {
+    .page-banner {
+        height: 140px;
+        border-radius: 0.75rem;
+    }
+    .page-banner__content {
+        padding: 1.25rem;
+        text-align: center;
+        align-items: center;
+    }
+    .page-banner__title {
+        font-size: 1.25rem;
+        text-align: center;
+    }
+    .page-banner__subtitle {
+        text-align: center;
+    }
 }
 
 .page-banner img.page-banner__bg {
@@ -161,6 +190,23 @@ header.bg-slate-950\/75 {
 }
 header a, header span {
     color: #ffffff !important;
+}
+/* Mobile menu — same green background as the header, white links */
+#mobile-menu {
+    background-color: #133b2c !important;
+    border-top: 1px solid #1c4d36 !important;
+}
+#mobile-menu a {
+    color: #ffffff !important;
+    font-family: inherit !important;
+    font-weight: 500 !important;
+}
+#mobile-menu a:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+#mobile-menu p {
+    color: rgba(255, 255, 255, 0.45) !important;
 }
 header nav a,
 header nav a.text-slate-300,

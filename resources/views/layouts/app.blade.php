@@ -9,6 +9,9 @@
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     @vite(['resources/css/app.css'])
     @stack('styles')
+    <style>
+        #mobile-menu { display: none; }
+    </style>
 </head>
 <body class="text-slate-100 font-sans antialiased overflow-x-hidden relative flex flex-col" style="background-color:#1e3a2f; min-height:100%; display:flex; flex-direction:column; margin:0;">
 
@@ -18,114 +21,114 @@
         <div class="container mx-auto px-4 min-h-16 py-2 flex items-center justify-between gap-3">
 
             <a href="{{ route('register.select') }}" class="flex items-center group" style="text-decoration:none;">
-                <img src="{{ asset('cocinet_logo_v2.png') }}" alt="Cocinet" style="height: 70px;px;width:auto;mix-blend-mode:screen;">
+                <img src="{{ asset('cocinet_logo_v2.png') }}" alt="Cocinet" style="height: 70px;width:auto;mix-blend-mode:screen;">
             </a>
 
-            <div class="flex items-center gap-2 min-w-0 flex-1 justify-end">
-            <nav class="flex items-center space-x-1 text-sm font-medium overflow-x-auto min-w-0">
+            {{-- Desktop nav --}}
+            <div id="desktop-nav" class="flex items-center gap-2 min-w-0 flex-1 justify-end">
+                <nav class="flex items-center space-x-1 text-sm font-medium overflow-x-auto min-w-0">
 
-                <a href="{{ route('map.index') }}"
-                   class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('map.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                    Mapa
-                </a>
+                    <a href="{{ route('map.index') }}"
+                       class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('map.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                        Mapa
+                    </a>
+
+                    @auth
+                        @if(auth()->user()->role === 'client')
+                            <a href="{{ route('dashboard') }}"
+                               class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') || request()->routeIs('catalog.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                                Catálogos
+                            </a>
+                            <a href="{{ route('reservations.index') }}"
+                               class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.index') || request()->routeIs('reservations.edit') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                                Mis Reservas
+                            </a>
+                        @endif
+                    @endauth
+
+                    @guest
+                        <a href="{{ route('login') }}"
+                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('login') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                            Ingresar
+                        </a>
+                        <a href="{{ route('register.hub') }}"
+                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('register.*') && !request()->routeIs('register.select') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                            Registrarse
+                        </a>
+                    @endguest
+
+                    @auth
+                        @if(auth()->user()->role === 'admin')
+                            <a href="{{ route('admin.dashboard') }}"
+                            class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('admin.*') ? 'bg-purple-600/20 text-purple-400 border border-purple-600/30' : '' }}">
+                                Admin Panel
+                            </a>
+                        @endif
+
+                        @if(auth()->user()->role === 'seller')
+                            @php
+                                $pendingReservationsCount = auth()->user()->businessProfile
+                                    ? \App\Models\Reservation::forBusiness(auth()->user()->businessProfile->id)->pending()->count()
+                                    : 0;
+                            @endphp
+
+                            <span class="text-slate-600 px-1 shrink-0">|</span>
+
+                            <a href="{{ route('dashboard') }}"
+                            class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                                Dashboard
+                            </a>
+
+                            <a href="{{ route('reservations.manage') }}"
+                            class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5 {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                                <span>Pedidos</span>
+                                @if($pendingReservationsCount > 0)
+                                    <span class="px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold shadow-sm shadow-rose-600/20">
+                                        {{ $pendingReservationsCount }}
+                                    </span>
+                                @endif
+                            </a>
+
+                            <a href="{{ route('availability.index') }}"
+                            class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('availability.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
+                                Horarios
+                            </a>
+                        @endif
+                    @endauth
+
+                </nav>
 
                 @auth
-                    @if(auth()->user()->role === 'client')
-                        <a href="{{ route('dashboard') }}"
-                           class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') || request()->routeIs('catalog.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Catálogos
-                        </a>
-                        <a href="{{ route('reservations.index') }}"
-                           class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.index') || request()->routeIs('reservations.edit') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Mis Reservas
-                        </a>
-                    @endif
-                @endauth
-
-                @guest
-                    <a href="{{ route('login') }}"
-                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('login') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                        Ingresar
-                    </a>
-                    <a href="{{ route('register.hub') }}"
-                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('register.*') && !request()->routeIs('register.select') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                        Registrarse
-                    </a>
-                @endguest
-
-                @auth
-                    @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}"
-                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('admin.*') ? 'bg-purple-600/20 text-purple-400 border border-purple-600/30' : '' }}">
-                            Admin Panel
-                        </a>
-                    @endif
-
                     @if(auth()->user()->role === 'seller')
-                        @php
-                            $pendingReservationsCount = auth()->user()->businessProfile
-                                ? \App\Models\Reservation::forBusiness(auth()->user()->businessProfile->id)->pending()->count()
-                                : 0;
-                        @endphp
-
-                        <span class="text-slate-600 px-1 shrink-0">|</span>
-
-                        <a href="{{ route('dashboard') }}"
-                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Dashboard
-                        </a>
-
-                        <a href="{{ route('reservations.manage') }}"
-                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5 {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            <span>Pedidos</span>
-                            @if($pendingReservationsCount > 0)
-                                <span class="px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold shadow-sm shadow-rose-600/20">
-                                    {{ $pendingReservationsCount }}
-                                </span>
-                            @endif
-                        </a>
-
-                        <a href="{{ route('availability.index') }}"
-                        class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('availability.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                            Horarios
-                        </a>
+                        <div class="relative shrink-0" id="catalogo-menu-container">
+                            <button type="button"
+                                    class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1 {{ request()->routeIs('categories.*') || request()->routeIs('products.*') || request()->routeIs('ingredients.*') || request()->routeIs('recipes.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}"
+                                    id="catalogo-trigger-btn">
+                                <span>Catálogo</span>
+                                <svg class="w-3 h-3 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" id="catalogo-arrow">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </button>
+                            <div class="absolute left-0 mt-2 w-44 origin-top-left rounded-xl border border-slate-800 bg-slate-950 p-1.5 shadow-2xl backdrop-blur-md transition-all duration-200 transform opacity-0 scale-95 pointer-events-none z-[60]"
+                                 id="catalogo-dropdown-menu">
+                                <a href="{{ route('categories.index') }}"
+                                   class="block text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('categories.*') ? 'text-green-400' : '' }}">
+                                    Categorías
+                                </a>
+                                <a href="{{ route('products.index') }}"
+                                   class="block text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('products.*') ? 'text-green-400' : '' }}">
+                                    Productos
+                                </a>
+                                <a href="{{ route('ingredients.index') }}"
+                                   class="block text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('ingredients.*') ? 'text-green-400' : '' }}">
+                                    Ingredientes
+                                </a>
+                            </div>
+                        </div>
                     @endif
                 @endauth
 
-            </nav>
-
-            @auth
-                @if(auth()->user()->role === 'seller')
-                    <div class="relative shrink-0" id="catalogo-menu-container">
-                        <button type="button"
-                                class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1 {{ request()->routeIs('categories.*') || request()->routeIs('products.*') || request()->routeIs('ingredients.*') || request()->routeIs('recipes.*') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}"
-                                id="catalogo-trigger-btn">
-                            <span>Catálogo</span>
-                            <svg class="w-3 h-3 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" id="catalogo-arrow">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </button>
-
-                        <div class="absolute left-0 mt-2 w-44 origin-top-left rounded-xl border border-slate-800 bg-slate-950 p-1.5 shadow-2xl backdrop-blur-md transition-all duration-200 transform opacity-0 scale-95 pointer-events-none z-[60]"
-                             id="catalogo-dropdown-menu">
-                            <a href="{{ route('categories.index') }}"
-                               class="block text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('categories.*') ? 'text-green-400' : '' }}">
-                                Categorías
-                            </a>
-                            <a href="{{ route('products.index') }}"
-                               class="block text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('products.*') ? 'text-green-400' : '' }}">
-                                Productos
-                            </a>
-                            <a href="{{ route('ingredients.index') }}"
-                               class="block text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('ingredients.*') ? 'text-green-400' : '' }}">
-                                Ingredientes
-                            </a>
-                        </div>
-                    </div>
-                @endif
-            @endauth
-
-            @auth
+                @auth
                     <div class="relative shrink-0" id="notif-bell-container">
                         <a href="{{ route('notifications.index') }}"
                            class="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-white/10 transition-all relative" style="color:rgba(255,255,255,0.75);"
@@ -133,9 +136,7 @@
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                             </svg>
-                            @php
-                                $unreadCount = auth()->user()->unreadNotifications->count();
-                            @endphp
+                            @php $unreadCount = auth()->user()->unreadNotifications->count(); @endphp
                             @if($unreadCount > 0)
                                 <span class="absolute -top-0.5 -right-0.5 w-4.5 h-4.5 flex items-center justify-center bg-rose-500 text-white text-[10px] font-bold rounded-full shadow-lg shadow-rose-500/30" id="notif-badge">
                                     {{ $unreadCount > 9 ? '9+' : $unreadCount }}
@@ -174,24 +175,23 @@
                                     @endif
                                 </p>
                             </div>
-
                             @if(auth()->user()->role === 'seller')
                                 <div class="py-1 mb-1 border-b border-slate-900">
-                                    <a href="{{ route('business_profile.edit') }}" class="nav-dropdown-link {{ request()->routeIs('business_profile.*') ? 'nav-dropdown-link-active' : '' }}">Perfil</a>
+                                    <a href="{{ route('business_profile.edit') }}" class="nav-dropdown-link {{ request()->routeIs('business_profile.*') ? 'nav-dropdown-link-active' : '' }}">Configurar Perfil</a>
+                                    @if(auth()->user()->businessProfile)
+                                        <a href="{{ route('catalog.show', auth()->user()->businessProfile->id) }}" class="nav-dropdown-link" target="_blank">Ver mi catálogo público</a>
+                                    @endif
                                 </div>
                             @endif
-
                             @if(auth()->user()->role === 'client')
                                 <div class="py-1 mb-1 border-b border-slate-900">
                                     <a href="{{ route('client_profile.edit') }}" class="nav-dropdown-link {{ request()->routeIs('client_profile.*') ? 'nav-dropdown-link-active' : '' }}">Mi Perfil</a>
                                     <a href="{{ route('reservations.index') }}" class="nav-dropdown-link {{ request()->routeIs('reservations.index') ? 'nav-dropdown-link-active' : '' }}">Mis reservas</a>
                                 </div>
                             @endif
-
                             <form action="{{ route('logout') }}" method="POST" class="block pt-1">
                                 @csrf
-                                <button type="submit"
-                                        id="btn-logout"
+                                <button type="submit" id="btn-logout"
                                         class="nav-dropdown-logout w-full flex items-center space-x-2 text-left text-xs font-semibold p-2.5 rounded-lg transition-all duration-200 cursor-pointer">
                                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
@@ -201,8 +201,144 @@
                             </form>
                         </div>
                     </div>
-            @endauth
+                @endauth
+            </div>
 
+            {{-- Mobile right: bell + hamburger --}}
+            <div id="mobile-nav-toggle" class="items-center gap-2">
+                @auth
+                    <a href="{{ route('notifications.index') }}"
+                       class="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-white/10 transition-all relative" style="color:rgba(255,255,255,0.75);">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                        </svg>
+                        @php $unreadCount = $unreadCount ?? auth()->user()->unreadNotifications->count(); @endphp
+                        @if($unreadCount > 0)
+                            <span class="absolute -top-0.5 -right-0.5 w-4.5 h-4.5 flex items-center justify-center bg-rose-500 text-white text-[10px] font-bold rounded-full">
+                                {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                            </span>
+                        @endif
+                    </a>
+                @endauth
+
+                <button type="button" id="mobile-menu-btn"
+                        style="display:flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border-radius:0.5rem;background:transparent;border:none;cursor:pointer;color:#ffffff;"
+                        aria-label="Menú">
+                    <svg id="hamburger-icon" style="width:1.25rem;height:1.25rem;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                    <svg id="close-icon" style="width:1.25rem;height:1.25rem;display:none;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        {{-- Mobile menu panel --}}
+        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-800 bg-slate-950/95 backdrop-blur-md">
+            <div class="px-4 py-4 space-y-1">
+
+                <a href="{{ route('map.index') }}"
+                   class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('map.*') ? 'bg-green-600/20 text-green-400' : '' }}">
+                    Mapa
+                </a>
+
+                @auth
+                    @if(auth()->user()->role === 'client')
+                        <a href="{{ route('dashboard') }}"
+                           class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') ? 'bg-green-600/20 text-green-400' : '' }}">
+                            Catálogos
+                        </a>
+                        <a href="{{ route('reservations.index') }}"
+                           class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.index') ? 'bg-green-600/20 text-green-400' : '' }}">
+                            Mis Reservas
+                        </a>
+                        <div class="border-t border-slate-800 my-2"></div>
+                        <a href="{{ route('client_profile.edit') }}"
+                           class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+                            Mi Perfil
+                        </a>
+                    @endif
+
+                    @if(auth()->user()->role === 'seller')
+                        @php
+                            $pendingReservationsCount = $pendingReservationsCount ?? (auth()->user()->businessProfile
+                                ? \App\Models\Reservation::forBusiness(auth()->user()->businessProfile->id)->pending()->count()
+                                : 0);
+                        @endphp
+                        <a href="{{ route('dashboard') }}"
+                           class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('dashboard') ? 'bg-green-600/20 text-green-400' : '' }}">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('reservations.manage') }}"
+                           class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.*') ? 'bg-green-600/20 text-green-400' : '' }}">
+                            <span>Pedidos</span>
+                            @if($pendingReservationsCount > 0)
+                                <span class="px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold">{{ $pendingReservationsCount }}</span>
+                            @endif
+                        </a>
+                        <a href="{{ route('availability.index') }}"
+                           class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('availability.*') ? 'bg-green-600/20 text-green-400' : '' }}">
+                            Horarios
+                        </a>
+                        <div class="border-t border-slate-800 my-2"></div>
+                        <p class="px-3 pt-1 pb-0.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Catálogo</p>
+                        <a href="{{ route('categories.index') }}"
+                           class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('categories.*') ? 'bg-green-600/20 text-green-400' : '' }}">
+                            Categorías
+                        </a>
+                        <a href="{{ route('products.index') }}"
+                           class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('products.*') ? 'bg-green-600/20 text-green-400' : '' }}">
+                            Productos
+                        </a>
+                        <a href="{{ route('ingredients.index') }}"
+                           class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('ingredients.*') ? 'bg-green-600/20 text-green-400' : '' }}">
+                            Ingredientes
+                        </a>
+                        <div class="border-t border-slate-800 my-2"></div>
+                        <a href="{{ route('business_profile.edit') }}"
+                           class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+                            Configurar Perfil
+                        </a>
+                        @if(auth()->user()->businessProfile)
+                            <a href="{{ route('catalog.show', auth()->user()->businessProfile->id) }}"
+                               class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
+                               target="_blank">
+                                Ver mi catálogo público
+                            </a>
+                        @endif
+                    @endif
+
+                    @if(auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}"
+                           class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('admin.*') ? 'bg-purple-600/20 text-purple-400' : '' }}">
+                            Admin Panel
+                        </a>
+                    @endif
+
+                    <div class="border-t border-slate-800 my-2"></div>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-rose-400 hover:text-rose-300 hover:bg-slate-800 transition-all text-left">
+                            <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                            </svg>
+                            Salir
+                        </button>
+                    </form>
+                @endauth
+
+                @guest
+                    <a href="{{ route('login') }}"
+                       class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+                        Ingresar
+                    </a>
+                    <a href="{{ route('register.hub') }}"
+                       class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all">
+                        Registrarse
+                    </a>
+                @endguest
             </div>
         </div>
     </header>
@@ -334,6 +470,46 @@
 
         setupDropdownTailwind('catalogo-trigger-btn', 'catalogo-dropdown-menu', 'catalogo-arrow');
         setupDropdownIsOpen('nav-user-display-btn', 'user-dropdown-menu', 'nav-user-arrow');
+
+        // Responsive nav
+        const desktopNav = document.getElementById('desktop-nav');
+        const mobileToggle = document.getElementById('mobile-nav-toggle');
+
+        function applyResponsive() {
+            if (window.innerWidth < 768) {
+                if (desktopNav) desktopNav.style.display = 'none';
+                if (mobileToggle) mobileToggle.style.display = 'flex';
+            } else {
+                if (desktopNav) desktopNav.style.display = '';
+                if (mobileToggle) mobileToggle.style.display = 'none';
+                if (mobileMenu) mobileMenu.style.display = 'none';
+            }
+        }
+        applyResponsive();
+        window.addEventListener('resize', applyResponsive);
+        window.addEventListener('load', applyResponsive);
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const hamburgerIcon = document.getElementById('hamburger-icon');
+        const closeIcon = document.getElementById('close-icon');
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const isOpen = mobileMenu.style.display === 'block';
+                if (isOpen) {
+                    mobileMenu.style.display = 'none';
+                    hamburgerIcon.style.display = '';
+                    closeIcon.style.display = 'none';
+                } else {
+                    mobileMenu.style.display = 'block';
+                    hamburgerIcon.style.display = 'none';
+                    closeIcon.style.display = '';
+                    allDropdowns.forEach(d => d.close());
+                }
+            });
+        }
 
         document.addEventListener('click', function () {
             allDropdowns.forEach(d => d.close());

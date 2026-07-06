@@ -88,7 +88,7 @@
     {{-- Galería de emprendimientos --}}
     <section class="relative z-10 home-scroll-reveal">
         <div class="text-center mb-8">
-            <h2 class="text-xl md:text-2xl font-extrabold">Emprendimientos que ya están en Cocinet</h2>
+            <h2 class="text-xl md:text-2xl font-extrabold">Emprendimientos que podes encontrar en Cocinet</h2>
             <p class="text-slate-400 mt-2 text-sm">Pastelería, comida casera, catering y mucho más.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">

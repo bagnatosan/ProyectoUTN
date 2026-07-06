@@ -225,7 +225,7 @@
   min-width: 0;
   width: auto;
   box-sizing: border-box;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 .seller-reservations__date-input:focus {
@@ -948,6 +948,73 @@
   justify-content: flex-end;
   gap: 0.75rem;
   margin-top: 1.25rem;
+}
+
+/* =============================================
+   RESPONSIVE — MOBILE (max 640px)
+   ============================================= */
+@media (max-width: 640px) {
+  .seller-reservations {
+    padding: 1rem 0;
+  }
+
+  .seller-reservations__filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .seller-reservations__filter-group {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .seller-reservations__filter-btn {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.75rem;
+  }
+
+  .seller-reservations__date-range {
+    width: 100%;
+  }
+
+  .seller-reservations__date-input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    color-scheme: light;
+  }
+
+  .seller-reservations__status-select,
+  .seller-reservations__sort-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .seller-reservations__search-wrapper {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .seller-reservations__card-actions {
+    flex-direction: column;
+  }
+
+  .seller-reservations__btn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .seller-reservations__modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .seller-reservations__modal-actions .seller-reservations__btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* =============================================

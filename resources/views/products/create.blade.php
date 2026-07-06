@@ -41,7 +41,7 @@
 
         <!-- FORMULARIO DE CREACIÓN -->
         <!-- NOTA: Se usa el método POST tradicional que apunta a la ruta 'products.store' -->
-        <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="product-form">
             @csrf
 
             <!-- Nombre -->
@@ -111,14 +111,13 @@
                         Precio de Venta ($) <span class="text-rose-500">*</span>
                     </label>
                     <input 
-                        type="number" 
+                        type="text" 
                         name="price" 
                         id="price" 
-                        step="0.01" 
-                        min="0"
                         value="{{ old('price') }}"
                         required
-                        placeholder="0.00"
+                        placeholder="Ej. 5.000"
+                        inputmode="numeric"
                         class="w-full bg-slate-950/80 border @error('price') border-rose-500 focus:ring-rose-500/30 @else border-slate-800/80 focus:border-indigo-500 focus:ring-indigo-500/30 @enderror rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 transition-all duration-300"
                     >
                     @error('price')
@@ -196,4 +195,10 @@
         </form>
     </div>
 </div>
+<script>
+document.getElementById('product-form').addEventListener('submit', function () {
+    const priceInput = document.getElementById('price');
+    priceInput.value = priceInput.value.replace(/\./g, '').replace(',', '.');
+});
+</script>
 @endsection

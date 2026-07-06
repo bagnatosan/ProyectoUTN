@@ -210,7 +210,7 @@
 
       var imgHtml = '';
       if (r.product && r.product.image) {
-        imgHtml = '<img class="cr-card__image" src="/storage/' + r.product.image + '" alt="' + this.escHtml(r.product.name) + '" loading="lazy">';
+        imgHtml = '<img class="cr-card__image" src="' + r.product.image + '" alt="' + this.escHtml(r.product.name) + '" loading="lazy">';
       } else {
         imgHtml = '<div class="cr-card__image cr-card__image--placeholder">' + (r.product && r.product.name ? this.escHtml(r.product.name.charAt(0)) : '?') + '</div>';
       }

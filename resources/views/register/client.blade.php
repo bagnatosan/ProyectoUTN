@@ -10,7 +10,7 @@
 @endpush
 
 @section('content')
-<div class="max-w-md mx-auto">
+<div class="max-w-2xl mx-auto animate-fade-in">
     <a href="{{ route('register.hub') }}" class="inline-flex items-center gap-2 text-sm mb-6 transition-colors" style="color:#ffffff;">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />

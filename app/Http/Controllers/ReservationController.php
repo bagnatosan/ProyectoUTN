@@ -243,7 +243,7 @@ class ReservationController extends Controller
                 'created_at'        => $r->created_at->format('Y-m-d H:i'),
                 'product'           => $product ? [
                     'name'          => $product->name,
-                    'image'         => $product->image,
+                    'image'         => $product->image ? storage_url($product->image) : null,
                     'price'         => (float) $product->price,
                     'business_name' => $businessProfile?->business_name ?? 'Emprendedor',
                 ] : [
@@ -711,7 +711,7 @@ class ReservationController extends Controller
             'receipt.max'                 => 'El archivo no puede superar los 5 MB.',
         ]);
 
-        $path = $request->file('receipt')->store('receipts', 'public');
+        $path = $request->file('receipt')->store('receipts', 'r2');
 
         $reservation->update([
             'payment_status'     => 'uploaded',

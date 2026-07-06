@@ -589,7 +589,7 @@
     @if($product)
       <div class="sr-detail__product">
         @if($product->image)
-          <img class="sr-detail__product-image" src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" loading="lazy">
+          <img class="sr-detail__product-image" src="{{ storage_url($product->image) }}" alt="{{ $product->name }}" loading="lazy">
         @else
           <div class="sr-detail__product-image sr-detail__product-image--placeholder">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/></svg>
@@ -808,7 +808,7 @@
     </div>
 
     @if($reservation->receipt_path)
-    <a href="{{ Storage::url($reservation->receipt_path) }}" target="_blank"
+    <a href="{{ storage_url($reservation->receipt_path) }}" target="_blank"
        style="display:inline-flex;align-items:center;gap:0.5rem;font-size:0.8125rem;font-weight:600;color:#f5a623;text-decoration:none;margin-bottom:1.25rem;">
       <svg style="width:1rem;height:1rem;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>

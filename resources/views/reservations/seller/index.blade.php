@@ -20,7 +20,6 @@
 <div class="seller-reservations">
   {{-- Header acciones --}}
   <div class="seller-reservations__header">
-    <div class="seller-reservations__header-left">
     <div class="seller-reservations__header-right">
       <div class="seller-reservations__total-badge" id="sr-total" role="status" aria-live="polite">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">

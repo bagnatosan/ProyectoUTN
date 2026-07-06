@@ -41,7 +41,7 @@
 
         <!-- FORMULARIO DE EDICIÓN -->
         <!-- NOTA: Se usa method="POST" con la directiva @method('PUT') y enctype para soportar subida de imágenes -->
-        <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="product-form">
             @csrf
             @method('PUT')
 
@@ -112,14 +112,13 @@
                         Precio de Venta ($) <span class="text-rose-500">*</span>
                     </label>
                     <input 
-                        type="number" 
+                        type="text" 
                         name="price" 
                         id="price" 
-                        step="0.01" 
-                        min="0"
                         value="{{ old('price', $product->price) }}"
                         required
-                        placeholder="0.00"
+                        placeholder="Ej. 5.000"
+                        inputmode="numeric"
                         class="w-full bg-slate-950/80 border @error('price') border-rose-500 focus:ring-rose-500/30 @else border-slate-800/80 focus:border-indigo-500 focus:ring-indigo-500/30 @enderror rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 transition-all duration-300"
                     >
                     @error('price')
@@ -199,7 +198,7 @@
                     <!-- Vista previa de imagen actual -->
                     <div class="w-20 h-20 rounded-xl bg-slate-950 border border-slate-850 flex items-center justify-center overflow-hidden shrink-0">
                         @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                            <img src="{{ storage_url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
                         @else
                             <svg class="w-8 h-8 text-slate-700" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
@@ -243,4 +242,10 @@
         </form>
     </div>
 </div>
+<script>
+document.getElementById('product-form').addEventListener('submit', function () {
+    const priceInput = document.getElementById('price');
+    priceInput.value = priceInput.value.replace(/\./g, '').replace(',', '.');
+});
+</script>
 @endsection
