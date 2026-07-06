@@ -594,6 +594,24 @@
   margin: 6px 0 0;
 }
 
+.cr-card__payment {
+  font-size: 0.75rem;
+  margin: 6px 0 0;
+  font-weight: 500;
+}
+
+.cr-payment--pending_upload {
+  color: var(--cr-clr-amber, #d97706);
+}
+
+.cr-payment--uploaded {
+  color: var(--cr-clr-sky, #0284c7);
+}
+
+.cr-payment--confirmed {
+  color: var(--cr-clr-green, #16a34a);
+}
+
 .cr-card__modified {
   font-size: 0.6875rem;
   color: var(--cr-clr-amber);

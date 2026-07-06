@@ -235,9 +235,11 @@ class ReservationController extends Controller
                     : $r->reservation_date,
                 'reservation_time'  => substr($r->reservation_time, 0, 5),
                 'notes'             => $r->notes,
-                'status'            => $r->status,
-                'cancellation_reason' => $r->cancellation_reason,
-                'can_cancel'        => $r->isCancellable(),
+                'status'               => $r->status,
+                'payment_status'       => $r->payment_status,
+                'payment_confirmed_at' => $r->payment_confirmed_at?->format('d/m/Y H:i'),
+                'cancellation_reason'  => $r->cancellation_reason,
+                'can_cancel'           => $r->isCancellable(),
                 'was_modified'      => $r->updated_at && $r->created_at
                     && $r->updated_at->diffInMinutes($r->created_at) > 1,
                 'created_at'        => $r->created_at->format('Y-m-d H:i'),
@@ -515,6 +517,15 @@ class ReservationController extends Controller
         $updateData = ['status' => $newStatus];
 
         if ($newStatus === 'completed') {
+            $reservationDateTime = \Carbon\Carbon::parse(
+                $reservation->reservation_date->format('Y-m-d') . ' ' . $reservation->reservation_time
+            );
+            if ($reservationDateTime->isFuture()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No podés completar una reserva antes de su fecha y hora pactada.',
+                ], 422);
+            }
             $updateData['completed_at'] = now();
         }
 
@@ -526,11 +537,16 @@ class ReservationController extends Controller
         DB::transaction(function () use ($reservation, $updateData, $newStatus, $request) {
             $reservation->update($updateData);
 
-            if (in_array($newStatus, ['confirmed', 'cancelled'])) {
-                $notification = new \App\Notifications\ReservationCancelled($reservation, 'seller', $request->cancellation_reason ?? null);
-                if ($reservation->user) {
-                    $reservation->user->notify($notification);
-                }
+            if (!$reservation->user) {
+                return;
+            }
+
+            if ($newStatus === 'confirmed') {
+                $reservation->user->notify(new \App\Notifications\ReservationConfirmed($reservation->fresh()));
+            } elseif ($newStatus === 'completed') {
+                $reservation->user->notify(new \App\Notifications\ReservationCompleted($reservation->fresh()));
+            } elseif ($newStatus === 'cancelled') {
+                $reservation->user->notify(new \App\Notifications\ReservationCancelled($reservation, 'seller', $request->cancellation_reason ?? null));
             }
         });
 
