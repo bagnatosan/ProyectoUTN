@@ -50,12 +50,38 @@
             <span class="text-sm font-semibold text-white">{{ $reservation->quantity }} unidades</span>
         </div>
         @endif
+        <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-400">Entrega</span>
+            <span class="text-sm font-semibold text-white">
+                {{ $reservation->delivery_type === 'delivery' ? '🏠 Envío a domicilio' : '🏪 Retiro en local' }}
+            </span>
+        </div>
+        @if($reservation->delivery_type === 'delivery' && $reservation->shipping_address)
+        <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-400">Dirección</span>
+            <span class="text-sm font-semibold text-white text-right max-w-xs">{{ $reservation->shipping_address }}</span>
+        </div>
+        @endif
         @if($product->price > 0)
-        @php $total = $product->price * ($reservation->quantity ?? 1); @endphp
+        @php
+            $subtotal = $product->price * ($reservation->quantity ?? 1);
+            $shipping = $reservation->shipping_cost ?? 0;
+            $total    = $subtotal + $shipping;
+        @endphp
+        @if($shipping > 0)
+        <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-400">Subtotal</span>
+            <span class="text-sm text-white">${{ number_format($subtotal, 2) }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-400">Envío</span>
+            <span class="text-sm text-white">${{ number_format($shipping, 2) }}</span>
+        </div>
+        @endif
         <div class="flex items-center justify-between pt-2 border-t border-slate-800">
             <span class="text-sm font-bold text-slate-300">Total a pagar</span>
             <div class="text-right">
-                @if(($reservation->quantity ?? 1) > 1)
+                @if(($reservation->quantity ?? 1) > 1 && $shipping == 0)
                     <p class="text-xs text-slate-500">${{ number_format($product->price, 2) }} × {{ $reservation->quantity }}</p>
                 @endif
                 <span class="text-lg font-extrabold text-emerald-400">${{ number_format($total, 2) }}</span>
@@ -133,7 +159,7 @@
             <div class="space-y-1">
                 <label class="block text-sm font-medium text-slate-300" for="transfer_amount">Monto transferido ($)</label>
                 <input type="number" name="transfer_amount" id="transfer_amount" step="0.01" min="0.01"
-                    value="{{ old('transfer_amount', $product->price > 0 ? $product->price * ($reservation->quantity ?? 1) : '') }}"
+                    value="{{ old('transfer_amount', $product->price > 0 ? ($product->price * ($reservation->quantity ?? 1)) + ($reservation->shipping_cost ?? 0) : '') }}"
                     class="w-full rounded-xl bg-slate-900 border border-slate-700 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 text-slate-200 px-4 py-2.5 text-sm focus:outline-none transition-all @error('transfer_amount') border-red-500/50 @enderror"
                     placeholder="Ej. 1500.00" required>
             </div>

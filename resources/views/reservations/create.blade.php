@@ -424,6 +424,54 @@
   }
 
   /* =========================================
+     DELIVERY TOGGLE
+     ========================================= */
+  .delivery-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .delivery-btn {
+    flex: 1;
+    padding: 0.625rem 1rem;
+    border-radius: 0.75rem;
+    border: 1.5px solid #334155;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .delivery-btn:hover {
+    border-color: rgba(34, 197, 94, 0.5);
+    color: #e2e8f0;
+  }
+
+  .delivery-btn--active {
+    border-color: rgba(34, 197, 94, 0.7);
+    background: rgba(34, 197, 94, 0.12);
+    color: #4ade80;
+  }
+
+  .delivery-info {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background: rgba(226, 232, 240, 0.5);
+    border: 1px solid #cbd5e1;
+    font-size: 0.8rem;
+    color: #475569;
+  }
+
+  .delivery-info strong {
+    color: #1e293b;
+  }
+
+  /* =========================================
      QUANTITY SELECTOR
      ========================================= */
   .qty-selector {
@@ -562,6 +610,67 @@
                 <input type="hidden" name="quantity" id="quantity" value="{{ old('quantity', 1) }}">
                 <p class="text-xs text-slate-500 mt-1.5">Máximo 50 unidades por reserva.</p>
               </div>
+
+              {{-- ── Modalidad de entrega ──────────────────── --}}
+              @php
+                $shippingCost = $business?->shipping_cost ?? 0;
+                $pickupAddress = $business?->address ?? null;
+                $oldDelivery = old('delivery_type', 'pickup');
+              @endphp
+              <div class="form-field mt-5">
+                <label class="form-field__label">
+                  ¿Cómo recibís tu pedido? <span class="text-rose-400" aria-hidden="true">*</span>
+                </label>
+                <div class="delivery-toggle" role="group" aria-label="Modalidad de entrega">
+                  <button type="button"
+                          class="delivery-btn {{ $oldDelivery === 'pickup' ? 'delivery-btn--active' : '' }}"
+                          id="btn-pickup" data-type="pickup">
+                    🏪 Retiro en local
+                  </button>
+                  <button type="button"
+                          class="delivery-btn {{ $oldDelivery === 'delivery' ? 'delivery-btn--active' : '' }}"
+                          id="btn-delivery" data-type="delivery">
+                    🏠 Envío a domicilio
+                  </button>
+                </div>
+                <input type="hidden" name="delivery_type" id="delivery_type" value="{{ $oldDelivery }}">
+
+                {{-- Info retiro en local --}}
+                <div id="pickup-info" class="delivery-info {{ $oldDelivery === 'delivery' ? 'hidden' : '' }}">
+                  @if($pickupAddress)
+                    <p>📍 Retirás en: <strong>{{ $pickupAddress }}</strong></p>
+                  @else
+                    <p>El emprendedor te va a indicar el punto de retiro.</p>
+                  @endif
+                  <p class="mt-1" style="color:#16a34a;font-weight:600;">✓ Sin costo de envío</p>
+                </div>
+
+                {{-- Info envío a domicilio --}}
+                <div id="delivery-info" class="{{ $oldDelivery === 'pickup' ? 'hidden' : '' }}">
+                  <div class="delivery-info">
+                    @if($shippingCost > 0)
+                      <p>🚚 Costo de envío: <strong style="color:#16a34a;">${{ number_format($shippingCost, 2) }}</strong></p>
+                    @else
+                      <p style="color:#16a34a;font-weight:600;">🚚 Envío sin costo adicional</p>
+                    @endif
+                  </div>
+                  <div class="form-field mt-2">
+                    <label for="shipping_address" class="form-field__label text-sm">
+                      Dirección de envío <span class="text-rose-400">*</span>
+                    </label>
+                    <input type="text"
+                           name="shipping_address"
+                           id="shipping_address"
+                           class="form-field__input w-full {{ $errors->has('shipping_address') ? 'form-field__input--error' : '' }}"
+                           placeholder="Ej. Av. Corrientes 1234, CABA"
+                           value="{{ old('shipping_address', $clientAddress ?? '') }}">
+                    @error('shipping_address')
+                      <p class="text-rose-400 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                  </div>
+                </div>
+              </div>
+              {{-- ── Fin modalidad de entrega ──────────────── --}}
             </div>
 
             <div>
@@ -722,6 +831,38 @@
 
     qtyMinus.addEventListener('click', () => updateQty(qty - 1));
     qtyPlus.addEventListener('click',  () => updateQty(qty + 1));
+
+    // ── Toggle Modalidad de Entrega ───────────────────────
+    const btnPickup     = document.getElementById('btn-pickup');
+    const btnDelivery   = document.getElementById('btn-delivery');
+    const deliveryInput = document.getElementById('delivery_type');
+    const pickupInfo    = document.getElementById('pickup-info');
+    const deliveryInfo  = document.getElementById('delivery-info');
+    const shippingAddr  = document.getElementById('shipping_address');
+
+    function setDeliveryType(type) {
+      deliveryInput.value = type;
+
+      if (type === 'pickup') {
+        btnPickup.classList.add('delivery-btn--active');
+        btnDelivery.classList.remove('delivery-btn--active');
+        pickupInfo.classList.remove('hidden');
+        deliveryInfo.classList.add('hidden');
+        if (shippingAddr) shippingAddr.removeAttribute('required');
+      } else {
+        btnDelivery.classList.add('delivery-btn--active');
+        btnPickup.classList.remove('delivery-btn--active');
+        deliveryInfo.classList.remove('hidden');
+        pickupInfo.classList.add('hidden');
+        if (shippingAddr) shippingAddr.setAttribute('required', 'required');
+      }
+    }
+
+    btnPickup.addEventListener('click',   () => setDeliveryType('pickup'));
+    btnDelivery.addEventListener('click', () => setDeliveryType('delivery'));
+
+    // Estado inicial
+    setDeliveryType(deliveryInput.value || 'pickup');
   });
 </script>
 @endsection

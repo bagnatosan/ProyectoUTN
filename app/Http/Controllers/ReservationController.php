@@ -36,8 +36,6 @@ class ReservationController extends Controller
                 ->find($request->input('product_id'));
         }
 
-        // Solo mostrar productos del negocio al que pertenece el producto seleccionado.
-        // Si no viene product_id, mostrar todos (acceso directo a /reservations/create).
         if ($selectedProduct) {
             $products = Product::where('is_active', true)
                 ->where('business_profile_id', $selectedProduct->business_profile_id)
@@ -49,7 +47,18 @@ class ReservationController extends Controller
                 ->get();
         }
 
-        return view('reservations.create', compact('products', 'selectedProduct'));
+        // Negocio y costo de envío
+        $business = $selectedProduct
+            ? $selectedProduct->businessProfile
+            : ($products->first()?->businessProfile ?? null);
+
+        // Dirección precargada del cliente
+        $clientAddress = null;
+        if (Auth::check() && Auth::user()->clientProfile) {
+            $clientAddress = Auth::user()->clientProfile->address;
+        }
+
+        return view('reservations.create', compact('products', 'selectedProduct', 'business', 'clientAddress'));
     }
 
     public function store(StoreReservationRequest $request): RedirectResponse|JsonResponse
@@ -82,6 +91,11 @@ class ReservationController extends Controller
                 'client_email'     => $request->client_email,
                 'client_phone'     => $request->client_phone,
                 'quantity'         => $request->quantity ?? 1,
+                'delivery_type'    => $request->delivery_type,
+                'shipping_address' => $request->delivery_type === 'delivery' ? $request->shipping_address : null,
+                'shipping_cost'    => $request->delivery_type === 'delivery'
+                    ? ($product->businessProfile->shipping_cost ?? 0)
+                    : 0,
                 'reservation_date' => $request->reservation_date,
                 'reservation_time' => $request->reservation_time,
                 'notes'            => $request->notes,

@@ -24,6 +24,7 @@ class BusinessProfile extends Model
         'bank_alias',
         'bank_name',
         'bank_account_holder',
+        'shipping_cost',
         'street',
         'street_number',
         'floor',

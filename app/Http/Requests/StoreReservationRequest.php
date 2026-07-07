@@ -26,6 +26,8 @@ class StoreReservationRequest extends FormRequest
         $rules = [
             'product_id'       => 'required|integer|exists:products,id',
             'quantity'         => 'required|integer|min:1|max:50',
+            'delivery_type'    => 'required|in:delivery,pickup',
+            'shipping_address' => 'required_if:delivery_type,delivery|nullable|string|max:255',
             'client_name'      => 'required|string|max:255',
             'client_email'     => 'required|email|max:255',
             'client_phone'     => [
@@ -55,6 +57,9 @@ class StoreReservationRequest extends FormRequest
             'quantity.integer'                 => 'La cantidad debe ser un número entero.',
             'quantity.min'                     => 'La cantidad mínima es 1.',
             'quantity.max'                     => 'La cantidad máxima es 50.',
+            'delivery_type.required'           => 'Seleccioná si querés envío o retiro en local.',
+            'delivery_type.in'                 => 'La modalidad de entrega no es válida.',
+            'shipping_address.required_if'     => 'Ingresá la dirección de envío.',
             'client_name.required'             => 'El nombre es obligatorio.',
             'client_email.required'            => 'El correo electrónico es obligatorio.',
             'client_email.email'               => 'El correo electrónico no es válido.',

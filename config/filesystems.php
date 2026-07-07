@@ -72,6 +72,10 @@ return [
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
+            // ↓ Fix SSL para Windows local
+            'http' => [
+                'verify' => env('R2_VERIFY_SSL', true),
+            ],
         ],
 
     ],

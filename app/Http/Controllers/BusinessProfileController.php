@@ -51,24 +51,20 @@ class BusinessProfileController extends Controller
         ]);
 
         $validated = $request->validate([
-            'business_name'        => 'required|string|max:255',
-            'description'          => 'nullable|string',
-            'phone'                => [
-                'nullable',
-                'string',
-                'max:20',
-                'regex:/^\+54\d+$/'
-            ],
-            'address'              => 'nullable|string|max:255',
-            'latitude'             => 'nullable|numeric|between:-90,90',
-            'longitude'            => 'nullable|numeric|between:-180,180',
-            'logo'                 => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'cover_image'          => 'nullable|image|mimes:jpeg,png,jpg|max:4096',
-            'profit_margin'        => 'nullable|numeric|min:1|max:50',
-            'bank_cbu'             => 'nullable|string|max:22',
-            'bank_alias'           => 'nullable|string|max:100',
-            'bank_name'            => 'nullable|string|max:100',
-            'bank_account_holder'  => 'nullable|string|max:255',
+            'business_name'       => 'required|string|max:255',
+            'description'         => 'nullable|string',
+            'phone'               => ['nullable', 'string', 'max:20', 'regex:/^\+54\d+$/'],
+            'address'             => 'nullable|string|max:255',
+            'latitude'            => 'nullable|numeric|between:-90,90',
+            'longitude'           => 'nullable|numeric|between:-180,180',
+            'logo'                => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'cover_image'         => 'nullable|image|mimes:jpeg,png,jpg|max:4096',
+            'profit_margin'       => 'nullable|numeric|min:1|max:50',
+            'bank_cbu'            => 'nullable|string|max:22',
+            'bank_alias'          => 'nullable|string|max:100',
+            'bank_name'           => 'nullable|string|max:100',
+            'bank_account_holder' => 'nullable|string|max:255',
+            'shipping_cost'       => 'nullable|numeric|min:0',
         ], [
             'phone.regex' => 'El teléfono debe comenzar con +54 y no debe contener espacios.',
         ]);
@@ -96,13 +92,14 @@ class BusinessProfileController extends Controller
         $profile->bank_alias          = $validated['bank_alias'] ?? null;
         $profile->bank_name           = $validated['bank_name'] ?? null;
         $profile->bank_account_holder = $validated['bank_account_holder'] ?? null;
+        $profile->shipping_cost       = $validated['shipping_cost'] ?? 0; // ← fix: faltaba esta línea
 
-        $latitude = isset($validated['latitude']) ? (float) $validated['latitude'] : null;
+        $latitude  = isset($validated['latitude'])  ? (float) $validated['latitude']  : null;
         $longitude = isset($validated['longitude']) ? (float) $validated['longitude'] : null;
         $addressChanged = $previousAddress !== $profile->address;
 
         if ($latitude !== null && $longitude !== null) {
-            $profile->latitude = $latitude;
+            $profile->latitude  = $latitude;
             $profile->longitude = $longitude;
         } else {
             $geocodingService->syncProfileCoordinates(
@@ -118,14 +115,16 @@ class BusinessProfileController extends Controller
             if ($profile->logo) {
                 Storage::disk('r2')->delete($profile->logo);
             }
-            $profile->logo = $request->file('logo')->store('logos', 'r2');
+            $stored = $request->file('logo')->store('logos', 'r2');
+            if ($stored) $profile->logo = $stored;
         }
 
         if ($request->hasFile('cover_image')) {
             if ($profile->cover_image) {
                 Storage::disk('r2')->delete($profile->cover_image);
             }
-            $profile->cover_image = $request->file('cover_image')->store('covers', 'r2');
+            $stored = $request->file('cover_image')->store('covers', 'r2');
+            if ($stored) $profile->cover_image = $stored;
         }
 
         $profile->save();
