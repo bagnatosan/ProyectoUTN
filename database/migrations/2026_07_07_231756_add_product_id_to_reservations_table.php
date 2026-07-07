@@ -9,17 +9,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reservations', function (Blueprint $table) {
-            // Se agrega después de product_id, con valor por defecto 1
-            // para no romper las reservas existentes.
-            // ✅ Sin after(), se agrega al final de la tabla sin importar el orden
-            $table->unsignedSmallInteger('quantity')->default(1);
+            $table->unsignedBigInteger('product_id')->nullable()->after('id');
+            $table->foreign('product_id')->references('id')->on('products')->nullOnDelete();
         });
     }
 
     public function down(): void
     {
         Schema::table('reservations', function (Blueprint $table) {
-            $table->dropColumn('quantity');
+            $table->dropForeign(['product_id']);
+            $table->dropColumn('product_id');
         });
     }
 };
