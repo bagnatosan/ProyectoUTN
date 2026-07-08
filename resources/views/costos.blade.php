@@ -81,15 +81,42 @@
                         <tr class="border-b border-slate-800 bg-slate-900/50 text-[10px] uppercase text-slate-500 tracking-wider">
                             <th class="p-2.5">Ingrediente</th>
                             <th class="p-2.5">Cantidad</th>
+                            <th class="p-2.5">Costo ref.</th>
                             <th class="p-2.5 text-right">Acción</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-800/40 font-mono">
                         @forelse($product->ingredients as $ing)
+                            @php
+                                $unitMeasure = strtolower($ing->unit_measure);
+                                $unitCost = (float) $ing->unit_cost;
+                                if (in_array($unitMeasure, ['g', 'gr'])) {
+                                    $refCost = $unitCost * 1000;
+                                    $refUnit = 'kg';
+                                } elseif (in_array($unitMeasure, ['kg'])) {
+                                    $refCost = $unitCost;
+                                    $refUnit = 'kg';
+                                } elseif (in_array($unitMeasure, ['ml'])) {
+                                    $refCost = $unitCost * 1000;
+                                    $refUnit = 'L';
+                                } elseif (in_array($unitMeasure, ['l', 'lt', 'lts'])) {
+                                    $refCost = $unitCost;
+                                    $refUnit = 'L';
+                                } elseif (in_array($unitMeasure, ['docena', 'docenas'])) {
+                                    $refCost = $unitCost;
+                                    $refUnit = 'docena';
+                                } else {
+                                    $refCost = $unitCost;
+                                    $refUnit = 'u';
+                                }
+                            @endphp
                             <tr class="hover:bg-slate-900/10">
                                 <td class="p-2.5 text-slate-200 font-sans font-medium">{{ $ing->name }}</td>
                                 <td class="p-2.5 text-slate-400 text-xs">
                                     {{ $ing->pivot->quantity }} {{ $ing->pivot->quantity_unit ?? $ing->unit_measure }}
+                                </td>
+                                <td class="p-2.5 text-slate-500 text-xs">
+                                    ${{ number_format($refCost, 2) }}<span class="text-slate-600">/{{ $refUnit }}</span>
                                 </td>
                                 <td class="p-2.5 text-right">
                                     <form action="{{ route('recipes.remove-ingredient', [$product->id, $ing->id]) }}" method="POST"
@@ -104,7 +131,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="p-4 text-center text-slate-500 font-sans text-xs italic">
+                                <td colspan="4" class="p-4 text-center text-slate-500 font-sans text-xs italic">
                                     No hay ingredientes asignados a esta receta.
                                 </td>
                             </tr>
