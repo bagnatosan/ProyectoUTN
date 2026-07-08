@@ -110,10 +110,33 @@
     </div>
 </div>
 <script>
+function normalizeNumber(val) {
+    val = val.trim();
+    if (!val) return val;
+
+    if (val.includes(',')) {
+        return val.replace(/\./g, '').replace(',', '.');
+    }
+
+    if ((val.match(/\./g) || []).length > 1) {
+        return val.replace(/\./g, '');
+    }
+
+    if (val.includes('.')) {
+        var parts = val.split('.');
+        if (parts[1] && parts[1].length === 3) {
+            return parts[0] + parts[1];
+        }
+        return val;
+    }
+
+    return val;
+}
+
 document.getElementById('ingredient-form').addEventListener('submit', function () {
     ['unit_cost', 'stock', 'stock_minimo'].forEach(function (id) {
         var el = document.getElementById(id);
-        if (el && el.value) el.value = el.value.replace(/\./g, '').replace(',', '.');
+        if (el && el.value) el.value = normalizeNumber(el.value);
     });
 });
 </script>

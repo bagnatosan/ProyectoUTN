@@ -114,7 +114,7 @@
                     <!-- Imagen o Placeholder -->
                     <div class="relative aspect-[4/3] w-full overflow-hidden bg-slate-950 border-b border-slate-800/60">
                         @if($product->image)
-                            <img src="{{ storage_url($product->image) }}" alt="{{ $product->name }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ storage_url($product->image) }}" alt="{{ $product->name }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-zoom-in" data-lightbox="{{ storage_url($product->image) }}" data-lightbox-caption="{{ $product->name }}">
                         @else
                             <div class="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-950 text-slate-650 transition-colors group-hover:text-emerald-500/60">
                                 <svg class="w-12 h-12 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
@@ -179,6 +179,38 @@
         </div>
     @endif
 </div>
+
+<!-- Lightbox -->
+<div id="lightbox-overlay" style="display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem;" onclick="closeLightbox()">
+    <button onclick="closeLightbox()" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:50%;width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    <div onclick="event.stopPropagation()" style="max-width:min(90vw,700px);width:100%;">
+        <img id="lightbox-img" src="" alt="" style="width:100%;max-height:80vh;object-fit:contain;border-radius:1rem;box-shadow:0 25px 60px rgba(0,0,0,0.6);">
+        <p id="lightbox-caption" style="text-align:center;color:rgba(255,255,255,0.7);font-size:0.875rem;font-weight:600;margin-top:0.875rem;"></p>
+    </div>
+</div>
+<script>
+function openLightbox(src, caption) {
+    var overlay = document.getElementById('lightbox-overlay');
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox-caption').textContent = caption || '';
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+    document.getElementById('lightbox-overlay').style.display = 'none';
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-lightbox]').forEach(function(img) {
+        img.addEventListener('click', function() {
+            openLightbox(this.getAttribute('data-lightbox'), this.getAttribute('data-lightbox-caption'));
+        });
+    });
+});
+</script>
 
 <!-- JS Vanilla para Filtrado Interactivo -->
 <script>

@@ -56,7 +56,7 @@
                     <label for="unit_cost" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Costo ($)</label>
                     <div class="relative input-icon-group">
                         <span class="absolute left-3 top-2.5 text-slate-500 text-sm font-mono">$</span>
-                        <input type="text" name="unit_cost" id="unit_cost" required placeholder="Ej. 60.000"
+                        <input type="text" name="unit_cost" id="unit_cost" required placeholder="Ej: 4000 o 4.000 o 4000,50"
                                inputmode="numeric"
                                class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-7 pr-3 py-2.5 text-sm text-emerald-400 font-semibold font-mono focus:outline-none focus:border-emerald-500 transition-colors">
                     </div>
@@ -102,10 +102,50 @@
     </div>
 </div>
 <script>
+/**
+ * Normaliza un número ingresado en formato argentino o inglés antes de enviarlo.
+ *
+ * Casos soportados:
+ *   "4.000"     → 4000     (punto como miles, formato AR)
+ *   "4.000,50"  → 4000.50  (punto miles + coma decimal, formato AR)
+ *   "4000.50"   → 4000.50  (punto decimal, formato EN)
+ *   "4000,50"   → 4000.50  (coma decimal sin miles)
+ *   "4000"      → 4000     (entero sin separador)
+ */
+function normalizeNumber(val) {
+    val = val.trim();
+    if (!val) return val;
+
+    // Caso 1: tiene coma → la coma ES el decimal (formato argentino)
+    if (val.includes(',')) {
+        return val.replace(/\./g, '').replace(',', '.');
+    }
+
+    // Caso 2: tiene más de un punto → todos son separadores de miles
+    if ((val.match(/\./g) || []).length > 1) {
+        return val.replace(/\./g, '');
+    }
+
+    // Caso 3: tiene un solo punto
+    if (val.includes('.')) {
+        var parts = val.split('.');
+        // Si después del punto hay exactamente 3 dígitos → es separador de miles
+        // Ej: "4.000" → 4000
+        if (parts[1] && parts[1].length === 3) {
+            return parts[0] + parts[1];
+        }
+        // Si no → es separador decimal. Ej: "4000.50" → 4000.50 (ya válido)
+        return val;
+    }
+
+    // Sin separador: número entero
+    return val;
+}
+
 document.getElementById('ingredient-form').addEventListener('submit', function () {
     ['unit_cost', 'stock', 'stock_minimo'].forEach(function (id) {
         var el = document.getElementById(id);
-        if (el && el.value) el.value = el.value.replace(/\./g, '').replace(',', '.');
+        if (el && el.value) el.value = normalizeNumber(el.value);
     });
 });
 </script>
