@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Helpers\UnitConverter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -117,7 +118,15 @@ class ProductController extends Controller implements HasMiddleware
             'custom_margin' => $request->filled('custom_margin') ? $request->custom_margin : null,
         ];
 
-        if ($request->hasFile('image')) {
+        if ($request->boolean('remove_image') && !$request->hasFile('image')) {
+            if ($product->image) {
+                Storage::disk('r2')->delete($product->image);
+            }
+            $data['image'] = null;
+        } elseif ($request->hasFile('image')) {
+            if ($product->image) {
+                Storage::disk('r2')->delete($product->image);
+            }
             $data['image'] = $this->ImagePath($request);
         }
 
@@ -199,6 +208,7 @@ class ProductController extends Controller implements HasMiddleware
             'image'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'is_active'    => 'required|boolean',
             'custom_margin'=> 'nullable|numeric|min:1|max:50',
+            'remove_image' => 'nullable|boolean',
         ];
     }
 }

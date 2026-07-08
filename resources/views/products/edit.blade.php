@@ -190,35 +190,46 @@
 
             <!-- Imagen actual y nueva imagen -->
             <div class="space-y-3">
-                <label for="image" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
                     Imagen del Producto
                 </label>
-                
+
+                <input type="hidden" name="remove_image" id="remove-image-input" value="0">
+
                 <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    <!-- Vista previa de imagen actual -->
-                    <div class="w-20 h-20 rounded-xl bg-slate-950 border border-slate-850 flex items-center justify-center overflow-hidden shrink-0">
+                    <!-- Vista previa -->
+                    <div class="relative shrink-0">
+                        <div id="product-image-preview" class="w-20 h-20 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden">
+                            @if($product->image)
+                                <img id="product-img" src="{{ storage_url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                            @else
+                                <svg id="product-img-placeholder" class="w-8 h-8 text-slate-700" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                </svg>
+                            @endif
+                        </div>
                         @if($product->image)
-                            <img src="{{ storage_url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
-                        @else
-                            <svg class="w-8 h-8 text-slate-700" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        <button type="button" id="btn-remove-image" onclick="removeProductImage()" title="Eliminar imagen" style="position:absolute;top:-6px;right:-6px;width:1.4rem;height:1.4rem;background:#b91c1c;border-radius:9999px;display:flex;align-items:center;justify-content:center;border:2px solid #1e293b;cursor:pointer;">
+                            <svg style="width:0.65rem;height:0.65rem;color:#fff;" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
+                        </button>
                         @endif
                     </div>
-                    
+
                     <div class="flex-grow w-full">
-                        <input 
-                            type="file" 
-                            name="image" 
-                            id="image" 
-                            accept="image/*"
+                        <input
+                            type="file"
+                            name="image"
+                            id="image"
+                            accept="image/jpeg,image/png,image/jpg,image/webp"
                             class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-950 file:text-indigo-400 file:border-slate-800 hover:file:bg-slate-900 transition-all duration-350 cursor-pointer"
                         >
                         <p class="text-[10px] text-slate-500 mt-1.5">
-                            Formatos soportados: JPG, PNG, WEBP. Máx: 2MB. Selecciona uno nuevo si deseas reemplazar la imagen actual.
+                            Formatos soportados: JPG, PNG, WEBP. Máx: 2MB. Seleccioná uno nuevo para reemplazar la imagen actual.
                         </p>
                         @error('image')
-                            <p class="text-xs text-rose-450 mt-1.5">{{ $message }}</p>
+                            <p class="text-xs text-rose-400 mt-1.5">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
@@ -243,9 +254,38 @@
     </div>
 </div>
 <script>
-document.getElementById('product-form').addEventListener('submit', function () {
-    const priceInput = document.getElementById('price');
-    priceInput.value = priceInput.value.replace(/\./g, '').replace(',', '.');
+function removeProductImage() {
+    document.getElementById('remove-image-input').value = '1';
+    var preview = document.getElementById('product-image-preview');
+    var btn = document.getElementById('btn-remove-image');
+    preview.innerHTML = '<svg class="w-8 h-8 text-slate-700" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>';
+    if (btn) btn.style.display = 'none';
+    var imageInput = document.getElementById('image');
+    if (imageInput) imageInput.value = '';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    var imageInput = document.getElementById('image');
+    if (imageInput) {
+        imageInput.addEventListener('change', function () {
+            var file = imageInput.files && imageInput.files[0];
+            if (!file) return;
+            document.getElementById('remove-image-input').value = '0';
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var preview = document.getElementById('product-image-preview');
+                preview.innerHTML = '<img src="' + e.target.result + '" class="w-full h-full object-cover">';
+                var btn = document.getElementById('btn-remove-image');
+                if (btn) btn.style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    document.getElementById('product-form').addEventListener('submit', function () {
+        const priceInput = document.getElementById('price');
+        priceInput.value = priceInput.value.replace(/\./g, '').replace(',', '.');
+    });
 });
 </script>
 @endsection
