@@ -70,14 +70,25 @@
 
                 <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.05) 60%);"></div>
 
-                <label style="position:absolute;top:1rem;right:1rem;cursor:pointer;display:inline-flex;align-items:center;gap:0.375rem;padding:0.375rem 0.875rem;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.3);border-radius:0.625rem;color:#fff;font-size:0.72rem;font-weight:600;backdrop-filter:blur(6px);transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.65)'" onmouseout="this.style.background='rgba(0,0,0,0.45)'">
-                    <svg style="width:0.875rem;height:0.875rem;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/>
-                    </svg>
-                    {{ $coverUrl ? 'Cambiar portada' : 'Subir portada' }}
-                    <input type="file" name="cover_image" id="cover-image-input" accept="image/jpeg,image/png,image/jpg" class="hidden">
-                </label>
+                <input type="hidden" name="remove_cover_image" id="remove-cover-input" value="0">
+                <div style="position:absolute;top:1rem;right:1rem;display:flex;gap:0.5rem;align-items:center;">
+                    @if($coverUrl)
+                    <button type="button" id="btn-remove-cover" onclick="removeCover()" style="cursor:pointer;display:inline-flex;align-items:center;gap:0.375rem;padding:0.375rem 0.875rem;background:rgba(180,30,30,0.55);border:1px solid rgba(255,255,255,0.3);border-radius:0.625rem;color:#fff;font-size:0.72rem;font-weight:600;backdrop-filter:blur(6px);transition:background 0.2s;" onmouseover="this.style.background='rgba(180,30,30,0.8)'" onmouseout="this.style.background='rgba(180,30,30,0.55)'">
+                        <svg style="width:0.875rem;height:0.875rem;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        Eliminar portada
+                    </button>
+                    @endif
+                    <label style="cursor:pointer;display:inline-flex;align-items:center;gap:0.375rem;padding:0.375rem 0.875rem;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.3);border-radius:0.625rem;color:#fff;font-size:0.72rem;font-weight:600;backdrop-filter:blur(6px);transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.65)'" onmouseout="this.style.background='rgba(0,0,0,0.45)'">
+                        <svg style="width:0.875rem;height:0.875rem;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/>
+                        </svg>
+                        {{ $coverUrl ? 'Cambiar portada' : 'Subir portada' }}
+                        <input type="file" name="cover_image" id="cover-image-input" accept="image/jpeg,image/png,image/jpg" class="hidden">
+                    </label>
+                </div>
 
                 <div style="position:absolute;bottom:1.25rem;left:1.5rem;display:flex;align-items:flex-end;gap:1rem;">
                     <div style="position:relative;">
@@ -90,6 +101,7 @@
                                 </svg>
                             @endif
                         </div>
+                        <input type="hidden" name="remove_logo" id="remove-logo-input" value="0">
                         <label style="position:absolute;bottom:-6px;right:-6px;cursor:pointer;width:1.75rem;height:1.75rem;background:#2d6a4f;border-radius:9999px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25);" title="Cambiar logo">
                             <svg style="width:0.875rem;height:0.875rem;color:#fff;" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
@@ -97,6 +109,13 @@
                             </svg>
                             <input type="file" name="logo" id="profile-logo-input" accept="image/jpeg,image/png,image/jpg" class="hidden">
                         </label>
+                        @if($logoUrl)
+                        <button type="button" onclick="removeLogo()" style="position:absolute;top:-6px;right:-6px;cursor:pointer;width:1.5rem;height:1.5rem;background:#b91c1c;border-radius:9999px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25);" title="Eliminar logo">
+                            <svg style="width:0.7rem;height:0.7rem;color:#fff;" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                        @endif
                     </div>
                     <div style="padding-bottom:0.25rem;">
                         <p style="color:#fff;font-weight:700;font-size:1.125rem;text-shadow:0 1px 6px rgba(0,0,0,0.5);line-height:1.2;">{{ $profile->business_name ?? 'Tu emprendimiento' }}</p>
@@ -372,6 +391,28 @@
 @push('scripts')
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
+function removeCover() {
+    document.getElementById('remove-cover-input').value = '1';
+    var img = document.getElementById('cover-preview-img');
+    var placeholder = document.getElementById('cover-placeholder');
+    var btn = document.getElementById('btn-remove-cover');
+    if (img) { img.src = ''; img.style.display = 'none'; }
+    if (placeholder) placeholder.style.display = 'block';
+    if (btn) btn.style.display = 'none';
+    var ci = document.getElementById('cover-image-input');
+    if (ci) ci.value = '';
+}
+
+function removeLogo() {
+    document.getElementById('remove-logo-input').value = '1';
+    var previewWrap = document.getElementById('profile-logo-preview');
+    var previewSidebar = document.querySelector('.profile-preview-logo');
+    previewWrap.innerHTML = '<svg style="width:2rem;height:2rem;color:#9a9390;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>';
+    if (previewSidebar) previewSidebar.innerHTML = '<svg class="w-7 h-7" style="color:#2d6a4f" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>';
+    var logoInput = document.getElementById('profile-logo-input');
+    if (logoInput) logoInput.value = '';
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     var defaultCenter = [-34.6037, -58.3816];
     var latInput = document.getElementById('business-latitude');
@@ -402,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function () {
         coverInput.addEventListener('change', function () {
             var file = coverInput.files && coverInput.files[0];
             if (!file) return;
+            document.getElementById('remove-cover-input').value = '0';
             var reader = new FileReader();
             reader.onload = function (event) {
                 var img = document.getElementById('cover-preview-img');
@@ -455,11 +497,12 @@ document.addEventListener('DOMContentLoaded', function () {
         feedback.classList.remove('profile-field-error');
     }
 
-    document.getElementById('btn-geocode-address').addEventListener('click', function () {
-        var address = addressInput.value.trim();
+    function geocodeAddress(address, silent) {
         if (!address) {
-            feedback.textContent = 'Ingresá una dirección antes de ubicar.';
-            feedback.classList.add('profile-field-error');
+            if (!silent) {
+                feedback.textContent = 'Ingresá una dirección antes de ubicar.';
+                feedback.classList.add('profile-field-error');
+            }
             return;
         }
         feedback.textContent = 'Buscando dirección…';
@@ -482,9 +525,25 @@ document.addEventListener('DOMContentLoaded', function () {
             setMarkerPosition(data.latitude, data.longitude, 'Dirección ubicada. Podés ajustar el marcador si hace falta.');
         })
         .catch(function () {
-            feedback.textContent = 'No se encontró esa dirección. Probá con más detalle o mové el marcador manualmente.';
-            feedback.classList.add('profile-field-error');
+            if (!silent) {
+                feedback.textContent = 'No se encontró esa dirección. Probá con más detalle o mové el marcador manualmente.';
+                feedback.classList.add('profile-field-error');
+            } else {
+                feedback.textContent = '';
+            }
         });
+    }
+
+    document.getElementById('btn-geocode-address').addEventListener('click', function () {
+        geocodeAddress(addressInput.value.trim(), false);
+    });
+
+    addressInput.addEventListener('blur', function () {
+        var address = addressInput.value.trim();
+        var hasCoords = latInput.value !== '' && lngInput.value !== '';
+        if (address && !hasCoords) {
+            geocodeAddress(address, true);
+        }
     });
 
     setTimeout(function () { map.invalidateSize(); }, 150);

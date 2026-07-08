@@ -59,6 +59,8 @@ class BusinessProfileController extends Controller
             'longitude'           => 'nullable|numeric|between:-180,180',
             'logo'                => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'cover_image'         => 'nullable|image|mimes:jpeg,png,jpg|max:4096',
+            'remove_logo'         => 'nullable|boolean',
+            'remove_cover_image'  => 'nullable|boolean',
             'profit_margin'       => 'nullable|numeric|min:1|max:50',
             'bank_cbu'            => 'nullable|string|max:22',
             'bank_alias'          => 'nullable|string|max:100',
@@ -111,7 +113,12 @@ class BusinessProfileController extends Controller
             );
         }
 
-        if ($request->hasFile('logo')) {
+        if ($request->boolean('remove_logo') && !$request->hasFile('logo')) {
+            if ($profile->logo) {
+                Storage::disk('r2')->delete($profile->logo);
+            }
+            $profile->logo = null;
+        } elseif ($request->hasFile('logo')) {
             if ($profile->logo) {
                 Storage::disk('r2')->delete($profile->logo);
             }
@@ -119,7 +126,12 @@ class BusinessProfileController extends Controller
             if ($stored) $profile->logo = $stored;
         }
 
-        if ($request->hasFile('cover_image')) {
+        if ($request->boolean('remove_cover_image') && !$request->hasFile('cover_image')) {
+            if ($profile->cover_image) {
+                Storage::disk('r2')->delete($profile->cover_image);
+            }
+            $profile->cover_image = null;
+        } elseif ($request->hasFile('cover_image')) {
             if ($profile->cover_image) {
                 Storage::disk('r2')->delete($profile->cover_image);
             }

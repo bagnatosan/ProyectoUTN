@@ -17,57 +17,64 @@ class GeocodingService
         $normalized = mb_strtolower(trim($address));
         $cacheKey = 'geocode:' . md5($normalized);
 
-        return Cache::remember($cacheKey, now()->addDays(30), function () use ($address) {
-            $request = Http::timeout(10)
-                ->withHeaders([
-                    'User-Agent' => config('app.name') . ' (' . (config('app.url') ?: 'http://localhost') . ')',
-                ]);
+        if (Cache::has($cacheKey)) {
+            return Cache::get($cacheKey);
+        }
 
-            // WORKAROUND: en entornos Windows locales, PHP/OpenSSL puede fallar
-            // al verificar la cadena de certificados de nominatim.openstreetmap.org
-            // (cURL error 60 / certificate verify failed), aunque el navegador
-            // conecte sin problema usando el almacén nativo de Windows.
-            // Se detecta el entorno local por APP_URL en lugar de APP_ENV,
-            // así funciona aunque APP_ENV=production (para evitar el warning
-            // de migrate:fresh al correr migraciones en desarrollo).
-            $appUrl = config('app.url', '');
-            $isLocalEnv = app()->environment('local')
-                || str_contains($appUrl, '127.0.0.1')
-                || str_contains($appUrl, 'localhost');
+        $httpRequest = Http::timeout(10)
+            ->withHeaders([
+                'User-Agent' => config('app.name') . ' (' . (config('app.url') ?: 'http://localhost') . ')',
+            ]);
 
-            if ($isLocalEnv) {
-                $request = $request->withOptions(['verify' => false]);
-            }
+        // WORKAROUND: en entornos Windows locales, PHP/OpenSSL puede fallar
+        // al verificar la cadena de certificados de nominatim.openstreetmap.org
+        // (cURL error 60 / certificate verify failed), aunque el navegador
+        // conecte sin problema usando el almacén nativo de Windows.
+        // Se detecta el entorno local por APP_URL en lugar de APP_ENV,
+        // así funciona aunque APP_ENV=production (para evitar el warning
+        // de migrate:fresh al correr migraciones en desarrollo).
+        $appUrl = config('app.url', '');
+        $isLocalEnv = app()->environment('local')
+            || str_contains($appUrl, '127.0.0.1')
+            || str_contains($appUrl, 'localhost');
 
-            try {
-                $response = $request->get('https://nominatim.openstreetmap.org/search', [
-                    'q'      => $address . ', Argentina',
-                    'format' => 'json',
-                    'limit'  => 1,
-                ]);
-            } catch (\Exception $e) {
-                // Si el geocoding falla (sin internet, SSL, timeout), el registro
-                // igual se completa — las coordenadas quedan en null.
-                \Illuminate\Support\Facades\Log::warning(
-                    'GeocodingService: fallo al conectar con Nominatim. ' . $e->getMessage()
-                );
-                return null;
-            }
+        if ($isLocalEnv) {
+            $httpRequest = $httpRequest->withOptions(['verify' => false]);
+        }
 
-            if (!$response->successful()) {
-                return null;
-            }
+        try {
+            $response = $httpRequest->get('https://nominatim.openstreetmap.org/search', [
+                'q'      => $address . ', Argentina',
+                'format' => 'json',
+                'limit'  => 1,
+            ]);
+        } catch (\Exception $e) {
+            // Si el geocoding falla (sin internet, SSL, timeout), el registro
+            // igual se completa — las coordenadas quedan en null.
+            \Illuminate\Support\Facades\Log::warning(
+                'GeocodingService: fallo al conectar con Nominatim. ' . $e->getMessage()
+            );
+            return null;
+        }
 
-            $results = $response->json();
-            if (empty($results[0]['lat']) || empty($results[0]['lon'])) {
-                return null;
-            }
+        if (!$response->successful()) {
+            return null;
+        }
 
-            return [
-                'latitude'  => (float) $results[0]['lat'],
-                'longitude' => (float) $results[0]['lon'],
-            ];
-        });
+        $results = $response->json();
+        if (empty($results[0]['lat']) || empty($results[0]['lon'])) {
+            return null;
+        }
+
+        $coords = [
+            'latitude'  => (float) $results[0]['lat'],
+            'longitude' => (float) $results[0]['lon'],
+        ];
+
+        // Solo cachear resultados exitosos para no bloquear reintentos ante fallos transitorios
+        Cache::put($cacheKey, $coords, now()->addDays(30));
+
+        return $coords;
     }
 
     /**
