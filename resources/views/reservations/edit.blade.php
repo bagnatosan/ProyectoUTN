@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Modificar Reserva | ProyectoUTN')
+@section('title', 'Modificar Compra | ProyectoUTN')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/sections/client-reservations.css') }}">
@@ -61,14 +61,14 @@
 <div class="cr-edit">
 
   <a href="{{ route('reservations.index') }}" class="cr-form__cancel" style="display:inline-flex;margin-bottom:16px">
-    &larr; Volver a mis reservas
+    &larr; Volver a mis compras
   </a>
 
-  <h1 class="cr-edit__heading">Modificar reserva</h1>
-  <p class="cr-edit__sub">Cambiá el producto, la fecha, el horario o agregá notas a tu reserva.</p>
+  <h1 class="cr-edit__heading">Modificar compra</h1>
+  <p class="cr-edit__sub">Cambiá el producto, la fecha, el horario o agregá notas a tu compra.</p>
 
   <div class="cr-alert cr-alert--warning" id="cr-warning-advance">
-    Solo podés modificar reservas con más de 2 días de anticipación.
+    Solo podés modificar compras con más de 2 días de anticipación.
   </div>
 
   <form id="cr-edit-form" method="POST" action="{{ route('reservations.update', $reservation) }}" novalidate>
@@ -101,7 +101,7 @@
         <button type="button" class="qty-btn" id="qty-plus" aria-label="Aumentar cantidad">+</button>
       </div>
       <input type="hidden" name="quantity" id="quantity" value="{{ old('quantity', $reservation->quantity ?? 1) }}">
-      <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.375rem;">Máximo 50 unidades por reserva.</p>
+      <p style="font-size:0.75rem;color:#9ca3af;margin-top:0.375rem;">Máximo 50 unidades por compra.</p>
     </div>
 
     {{-- Fecha --}}

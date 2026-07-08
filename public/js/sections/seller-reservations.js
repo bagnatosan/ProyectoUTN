@@ -347,7 +347,7 @@ const SellerReservations = (() => {
   function updateTotal(total) {
     var el = document.getElementById('sr-total');
     if (el) {
-      el.textContent = total + ' ' + (total === 1 ? 'reserva' : 'reservas');
+      el.textContent = total + ' ' + (total === 1 ? 'compra' : 'compras');
     }
   }
 
@@ -367,7 +367,7 @@ const SellerReservations = (() => {
     var clientName = r.client_name || 'Sin nombre';
     var initials = getInitials(clientName);
     var productName = r.product ? r.product.name : 'Producto eliminado';
-    var productImg = r.product && r.product.image ? '/storage/' + r.product.image : null;
+    var productImg = r.product && r.product.image ? r.product.image : null;
     var statusClass = STATUS_CLASSES[r.status] || STATUS_CLASSES.pending;
     var statusLabel = STATUS_LABELS[r.status] || r.status;
 
@@ -375,6 +375,16 @@ const SellerReservations = (() => {
     var isOverdue = isReservationOverdue(r);
     card.className = 'seller-reservations__card' + (isOverdue ? ' seller-reservations__card--overdue' : '');
     card.dataset.id = r.id;
+
+    var pendingBadge = '';
+    if (r.status === 'pending' && r.created_at) {
+      var created = new Date(r.created_at.replace(' ', 'T'));
+      var hoursAgo = Math.floor((Date.now() - created.getTime()) / 3600000);
+      if (hoursAgo >= 2) {
+        var label = hoursAgo >= 24 ? Math.floor(hoursAgo / 24) + 'd sin confirmar' : hoursAgo + 'h sin confirmar';
+        pendingBadge = '<span style="font-size:0.65rem;font-weight:700;color:#f59e0b;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);padding:0.15rem 0.5rem;border-radius:0.375rem;white-space:nowrap;">' + label + '</span>';
+      }
+    }
 
     var productHtml = '';
     if (productImg) {
@@ -401,6 +411,7 @@ const SellerReservations = (() => {
           '<div class="seller-reservations__card-client-info">' +
             '<div class="seller-reservations__card-client-name">' + escapeHtml(clientName) + '</div>' +
             '<div class="seller-reservations__card-client-email">' + escapeHtml(r.client_email || '') + '</div>' +
+            (r.client_phone ? '<div class="seller-reservations__card-client-email">' + escapeHtml(r.client_phone) + '</div>' : '') +
           '</div>' +
         '</div>' +
         '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.375rem;flex-shrink:0;">' +
@@ -408,6 +419,7 @@ const SellerReservations = (() => {
             '<span class="seller-reservations__badge-dot" aria-hidden="true"></span>' +
             statusLabel +
           '</span>' +
+          pendingBadge +
           '<span style="font-size:0.7rem;font-family:monospace;font-weight:700;color:#6a6966;background:#f5f1ea;border:1px solid #e8e0d0;padding:0.15rem 0.5rem;border-radius:0.375rem;">' +
             '#' + String(r.id).padStart(5, '0') +
           '</span>' +
@@ -538,7 +550,7 @@ const SellerReservations = (() => {
 
     var html =
       '<div class="seller-reservations__modal-section">' +
-        '<span class="seller-reservations__modal-label">N\u00famero de Reserva</span>' +
+        '<span class="seller-reservations__modal-label">N\u00famero de Compra</span>' +
         '<div class="seller-reservations__modal-value" style="font-family:monospace;font-weight:700;color:#2d8c4e;">' + escapeHtml(orderNumber) + '</div>' +
       '</div>' +
       '<div class="seller-reservations__modal-section">' +

@@ -21,7 +21,7 @@
         <div class="container mx-auto px-4 min-h-16 py-2 flex items-center justify-between gap-3">
 
             <a href="{{ route('register.select') }}" class="flex items-center group" style="text-decoration:none;">
-                <img src="{{ asset('cocinet_logo_v2.png') }}" alt="Cocinet" style="height: 70px;width:auto;mix-blend-mode:screen;">
+                <img src="{{ asset('cocinet_logo_v2.png') }}" alt="Cocinet" style="height: 90px;width:auto;mix-blend-mode:screen;margin-top:-6px;margin-bottom:-6px;">
             </a>
 
             {{-- Desktop nav --}}
@@ -41,7 +41,7 @@
                             </a>
                             <a href="{{ route('reservations.index') }}"
                                class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.index') || request()->routeIs('reservations.edit') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
-                                Mis Reservas
+                                Mis Compras
                             </a>
                         @endif
                     @endauth
@@ -186,7 +186,7 @@
                             @if(auth()->user()->role === 'client')
                                 <div class="py-1 mb-1 border-b border-slate-900">
                                     <a href="{{ route('client_profile.edit') }}" class="nav-dropdown-link {{ request()->routeIs('client_profile.*') ? 'nav-dropdown-link-active' : '' }}">Mi Perfil</a>
-                                    <a href="{{ route('reservations.index') }}" class="nav-dropdown-link {{ request()->routeIs('reservations.index') ? 'nav-dropdown-link-active' : '' }}">Mis reservas</a>
+                                    <a href="{{ route('reservations.index') }}" class="nav-dropdown-link {{ request()->routeIs('reservations.index') ? 'nav-dropdown-link-active' : '' }}">Mis compras</a>
                                 </div>
                             @endif
                             <form action="{{ route('logout') }}" method="POST" class="block pt-1">
@@ -251,7 +251,7 @@
                         </a>
                         <a href="{{ route('reservations.index') }}"
                            class="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('reservations.index') ? 'bg-green-600/20 text-green-400' : '' }}">
-                            Mis Reservas
+                            Mis Compras
                         </a>
                         <div class="border-t border-slate-800 my-2"></div>
                         <a href="{{ route('client_profile.edit') }}"
@@ -396,7 +396,7 @@
     <footer style="background-color:#1e3a2f;border-top:1px solid rgba(255,255,255,0.08);padding:2rem 1.5rem;text-align:center;position:relative;z-index:10;">
         <div style="max-width:480px;margin:0 auto;">
             <p style="font-size:1.1rem;font-weight:700;color:#ffffff;letter-spacing:0.02em;">Cocinet</p>
-            <p style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:0.375rem;">Conectamos emprendimientos gastronómicos locales con quienes quieren reservar.</p>
+            <p style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:0.375rem;">Conectamos emprendimientos gastronómicos locales con quienes quieren comprar.</p>
             <p style="font-size:0.7rem;color:rgba(255,255,255,0.3);margin-top:1rem;">&copy; {{ date('Y') }} Cocinet. Todos los derechos reservados.</p>
         </div>
     </footer>
@@ -518,5 +518,73 @@
     });
     </script>
     @stack('scripts')
+
+{{-- Global delete confirmation modal --}}
+<div id="delete-modal-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(145deg,#0f2e1e,#0a1f14);border:1px solid rgba(255,255,255,0.08);border-radius:1.25rem;padding:1.75rem 1.5rem 1.5rem;max-width:22rem;width:90%;box-shadow:0 0 0 1px rgba(255,255,255,0.04),0 24px 64px rgba(0,0,0,0.6),0 0 40px rgba(45,106,79,0.15);">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:1rem;margin-bottom:1.5rem;">
+            <div style="width:3rem;height:3rem;border-radius:50%;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 20px rgba(239,68,68,0.15);">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="#f87171"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            <div>
+                <p style="color:#ffffff;font-size:0.9375rem;font-weight:700;margin:0 0 0.25rem;letter-spacing:-0.01em;">Confirmar eliminación</p>
+                <p id="delete-modal-message" style="color:rgba(255,255,255,0.5);font-size:0.8125rem;font-weight:400;line-height:1.5;margin:0;"></p>
+            </div>
+        </div>
+        <div style="display:flex;gap:0.625rem;">
+            <button id="delete-modal-cancel" type="button"
+                style="flex:1;padding:0.6rem 1rem;font-size:0.8125rem;font-weight:600;border-radius:0.625rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.65);cursor:pointer;transition:all 0.2s;"
+                onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.color='#ffffff';this.style.borderColor='rgba(255,255,255,0.2)'"
+                onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='rgba(255,255,255,0.65)';this.style.borderColor='rgba(255,255,255,0.12)'">
+                Cancelar
+            </button>
+            <button id="delete-modal-confirm" type="button"
+                style="flex:1;padding:0.6rem 1rem;font-size:0.8125rem;font-weight:600;border-radius:0.625rem;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:#f87171;cursor:pointer;transition:all 0.2s;"
+                onmouseover="this.style.background='#dc2626';this.style.color='#fff';this.style.borderColor='#dc2626'"
+                onmouseout="this.style.background='rgba(239,68,68,0.15)';this.style.color='#f87171';this.style.borderColor='rgba(239,68,68,0.4)'">
+                Sí, eliminar
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    var overlay = document.getElementById('delete-modal-overlay');
+    var msg     = document.getElementById('delete-modal-message');
+    var btnOk   = document.getElementById('delete-modal-confirm');
+    var btnCancel = document.getElementById('delete-modal-cancel');
+    var pendingForm = null;
+
+    function openModal(message, form) {
+        pendingForm = form;
+        msg.textContent = message;
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+        overlay.style.display = 'none';
+        document.body.style.overflow = '';
+        pendingForm = null;
+    }
+
+    btnCancel.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+    btnOk.addEventListener('click', function () {
+        if (pendingForm) { pendingForm.submit(); }
+        closeModal();
+    });
+
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-confirm]');
+        if (!btn) return;
+        var form = btn.closest('form');
+        if (!form) return;
+        e.preventDefault();
+        openModal(btn.getAttribute('data-confirm'), form);
+    }, true);
+})();
+</script>
 </body>
 </html>

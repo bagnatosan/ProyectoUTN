@@ -338,7 +338,7 @@
 
     updateResultCount: function (total) {
       if (total > 0) {
-        this.els.resultsCount.textContent = total + ' reserva' + (total !== 1 ? 's' : '') + ' encontrada' + (total !== 1 ? 's' : '');
+        this.els.resultsCount.textContent = total + ' compra' + (total !== 1 ? 's' : '') + ' encontrada' + (total !== 1 ? 's' : '');
       } else {
         this.els.resultsCount.textContent = '';
       }
@@ -394,7 +394,7 @@
         var modal = document.getElementById('cr-cancel-modal');
         var modalInfo = document.getElementById('cr-cancel-info');
         document.getElementById('cr-cancel-reason').value = '';
-        modalInfo.textContent = '¿Estás seguro de cancelar la reserva de "' + btn.getAttribute('data-product') + '" para el ' + btn.getAttribute('data-date') + ' a las ' + btn.getAttribute('data-time') + '?';
+        modalInfo.textContent = '¿Estás seguro de cancelar la compra de "' + btn.getAttribute('data-product') + '" para el ' + btn.getAttribute('data-date') + ' a las ' + btn.getAttribute('data-time') + '?';
         modal.classList.remove('cr-modal-overlay--hidden');
       }
     });
@@ -435,7 +435,7 @@
           MyReservations.collectFilters();
           MyReservations.fetchReservations(true);
         } else {
-          alert(data.message || 'Error al cancelar la reserva.');
+          alert(data.message || 'Error al cancelar la compra.');
         }
       })
       .catch(function () {

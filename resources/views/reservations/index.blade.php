@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Mis Reservas | ProyectoUTN')
+@section('title', 'Mis Compras | ProyectoUTN')
 
 @section('main_align', 'items-start')
 @section('content_width', 'max-w-6xl mx-auto')
@@ -17,7 +17,7 @@
     <img src="{{ asset('images/banner-home.png') }}" alt="" class="page-banner__bg">
     <div class="page-banner__overlay"></div>
     <div class="page-banner__content">
-      <h1 class="page-banner__title">Mis reservas</h1>
+      <h1 class="page-banner__title">Mis compras</h1>
       <p class="page-banner__subtitle">Todos tus pedidos y turnos en un solo lugar. Filtralos, buscalos y gestionálos.</p>
     </div>
   </div>
@@ -119,24 +119,24 @@
 
       <div class="mr-loader" id="mr-loader">
         <div class="mr-loader__spinner"></div>
-        <p class="mr-loader__text">Cargando reservas...</p>
+        <p class="mr-loader__text">Cargando compras...</p>
       </div>
 
       <div class="mr-empty" id="mr-empty" style="display:none">
-        <p class="mr-empty__title" id="mr-empty-title">No se encontraron reservas</p>
-        <p class="mr-empty__text" id="mr-empty-text">Probá cambiando los filtros o creá una nueva reserva.</p>
+        <p class="mr-empty__title" id="mr-empty-title">No se encontraron compras</p>
+        <p class="mr-empty__text" id="mr-empty-text">Probá cambiando los filtros o creá una nueva compra.</p>
       </div>
 
       <div class="mr-error" id="mr-error" style="display:none">
         <p class="mr-error__title">Error de conexión</p>
-        <p class="mr-error__text">No se pudieron cargar las reservas. Verificá tu conexión e intentá de nuevo.</p>
+        <p class="mr-error__text">No se pudieron cargar las compras. Verificá tu conexión e intentá de nuevo.</p>
         <button class="mr-btn mr-btn--retry" id="mr-retry-btn">Reintentar</button>
       </div>
 
       <div class="cr-list" id="mr-list"></div>
 
       <div class="mr-load-more" id="mr-load-more" style="display:none">
-        <button class="mr-btn mr-btn--load-more" id="mr-load-more-btn">Cargar más reservas</button>
+        <button class="mr-btn mr-btn--load-more" id="mr-load-more-btn">Cargar más compras</button>
       </div>
     </div>
 
@@ -145,7 +145,7 @@
 
 <div id="cr-cancel-modal" class="cr-modal-overlay cr-modal-overlay--hidden" role="dialog" aria-modal="true">
   <div class="cr-modal">
-    <h2 class="cr-modal__title">Cancelar reserva</h2>
+    <h2 class="cr-modal__title">Cancelar compra</h2>
     <p class="cr-modal__text" id="cr-cancel-info"></p>
 
     <div>
@@ -155,7 +155,7 @@
 
     <div class="cr-modal__footer">
       <button type="button" id="cr-cancel-close" class="cr-btn">Volver</button>
-      <button type="button" id="cr-cancel-confirm" class="cr-btn cr-btn--danger" style="background:var(--cr-clr-rose);border-color:var(--cr-clr-rose);color:#fff">Sí, cancelar reserva</button>
+      <button type="button" id="cr-cancel-confirm" class="cr-btn cr-btn--danger" style="background:var(--cr-clr-rose);border-color:var(--cr-clr-rose);color:#fff">Sí, cancelar compra</button>
     </div>
   </div>
 </div>

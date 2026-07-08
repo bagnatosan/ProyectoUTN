@@ -13,7 +13,7 @@
   <div class="page-banner__overlay"></div>
   <div class="page-banner__content">
     <h1 class="page-banner__title">Gestión de Pedidos</h1>
-    <p class="page-banner__subtitle">Revisá y gestioná las reservas de tus clientes.</p>
+    <p class="page-banner__subtitle">Revisá y gestioná las compras de tus clientes.</p>
   </div>
 </div>
 
@@ -25,7 +25,7 @@
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <span>0 reservas</span>
+        <span>0 compras</span>
       </div>
       <a href="{{ route('reservations.export', request()->query()) }}" class="seller-reservations__export-btn" title="Exportar a CSV">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -38,48 +38,52 @@
 
   {{-- Filters --}}
   <div class="seller-reservations__filters">
-    <div class="seller-reservations__filter-group" role="tablist" aria-label="Filtros temporales">
-      <button class="seller-reservations__filter-btn seller-reservations__filter-btn--active" data-sr-filter="today" role="tab" aria-selected="true">Hoy</button>
-      <button class="seller-reservations__filter-btn" data-sr-filter="tomorrow" role="tab" aria-selected="false">Mañana</button>
-      <button class="seller-reservations__filter-btn" data-sr-filter="week" role="tab" aria-selected="false">Esta Semana</button>
-      <button class="seller-reservations__filter-btn" data-sr-filter="month" role="tab" aria-selected="false">Este Mes</button>
-      <button class="seller-reservations__filter-btn" data-sr-filter="all" role="tab" aria-selected="false">Todas</button>
+    <div class="seller-reservations__filters-top">
+      <div class="seller-reservations__filter-group" role="tablist" aria-label="Filtros temporales">
+        <button class="seller-reservations__filter-btn seller-reservations__filter-btn--active" data-sr-filter="today" role="tab" aria-selected="true">Hoy</button>
+        <button class="seller-reservations__filter-btn" data-sr-filter="tomorrow" role="tab" aria-selected="false">Mañana</button>
+        <button class="seller-reservations__filter-btn" data-sr-filter="week" role="tab" aria-selected="false">Esta Semana</button>
+        <button class="seller-reservations__filter-btn" data-sr-filter="month" role="tab" aria-selected="false">Este Mes</button>
+        <button class="seller-reservations__filter-btn" data-sr-filter="all" role="tab" aria-selected="false">Todas</button>
+      </div>
+
+      <div class="seller-reservations__date-range">
+        <input type="date" id="sr-date-from" class="seller-reservations__date-input" aria-label="Desde fecha" title="Desde">
+        <span class="seller-reservations__date-sep">a</span>
+        <input type="date" id="sr-date-to" class="seller-reservations__date-input" aria-label="Hasta fecha" title="Hasta">
+      </div>
+
+      <select id="sr-status-select" class="seller-reservations__status-select" aria-label="Filtrar por estado">
+        <option value="">Todos los estados</option>
+        <option value="pending">Pendiente</option>
+        <option value="confirmed">Confirmada</option>
+        <option value="completed">Completada</option>
+        <option value="cancelled">Cancelada</option>
+      </select>
+
+      <select id="sr-sort-select" class="seller-reservations__sort-select" aria-label="Ordenar por">
+        <option value="reservation_date">Fecha</option>
+        <option value="client_name">Cliente</option>
+        <option value="status">Estado</option>
+      </select>
     </div>
 
-    <div class="seller-reservations__date-range">
-      <input type="date" id="sr-date-from" class="seller-reservations__date-input" aria-label="Desde fecha" title="Desde">
-      <span class="seller-reservations__date-sep">a</span>
-      <input type="date" id="sr-date-to" class="seller-reservations__date-input" aria-label="Hasta fecha" title="Hasta">
-    </div>
-
-    <select id="sr-status-select" class="seller-reservations__status-select" aria-label="Filtrar por estado">
-      <option value="">Todos los estados</option>
-      <option value="pending">Pendiente</option>
-      <option value="confirmed">Confirmada</option>
-      <option value="completed">Completada</option>
-      <option value="cancelled">Cancelada</option>
-    </select>
-
-    <select id="sr-sort-select" class="seller-reservations__sort-select" aria-label="Ordenar por">
-      <option value="reservation_date">Fecha</option>
-      <option value="client_name">Cliente</option>
-      <option value="status">Estado</option>
-    </select>
-
-    <div class="seller-reservations__search-wrapper">
-      <svg class="seller-reservations__search-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-      </svg>
-      <input type="search"
-             id="sr-search-input"
-             class="seller-reservations__search-input"
-             placeholder="Buscar cliente o producto..."
-             aria-label="Buscar reservas"
-             autocomplete="off">
-      <button type="button"
-              id="sr-search-clear"
-              class="seller-reservations__search-clear"
-              aria-label="Limpiar búsqueda">&times;</button>
+    <div class="seller-reservations__filters-search">
+      <div class="seller-reservations__search-wrapper">
+        <svg class="seller-reservations__search-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+        <input type="search"
+               id="sr-search-input"
+               class="seller-reservations__search-input"
+               placeholder="Buscar cliente o producto..."
+               aria-label="Buscar reservas"
+               autocomplete="off">
+        <button type="button"
+                id="sr-search-clear"
+                class="seller-reservations__search-clear"
+                aria-label="Limpiar búsqueda">&times;</button>
+      </div>
     </div>
   </div>
 

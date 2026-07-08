@@ -65,6 +65,39 @@
                 </div>
             </div>
 
+            <div>
+                <label for="supplier_notes" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Notas del Proveedor</label>
+                <textarea name="supplier_notes" id="supplier_notes" rows="4"
+                          placeholder="Ej: Proveedor: Juan López · Tel: 11-1234-5678 · Dirección: Av. Corrientes 1234 · Entrega los lunes."
+                          class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors resize-y">{{ old('supplier_notes', $ingredient->supplier_notes) }}</textarea>
+            </div>
+
+            <div class="border-t border-slate-800/60 pt-4">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Stock</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="stock" class="block text-xs text-slate-500 mb-2">Cantidad en depósito</label>
+                        <div class="relative">
+                            <input type="text" name="stock" id="stock" inputmode="numeric"
+                                   value="{{ old('stock', $ingredient->stock !== null ? number_format((float)$ingredient->stock, 2, ',', '.') : '') }}"
+                                   placeholder="Ej: 5,00"
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors">
+                            <span class="absolute right-3 top-2.5 text-slate-500 text-xs font-mono">{{ $ingredient->unit_measure }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="stock_minimo" class="block text-xs text-slate-500 mb-2">Stock mínimo (alerta)</label>
+                        <div class="relative">
+                            <input type="text" name="stock_minimo" id="stock_minimo" inputmode="numeric"
+                                   value="{{ old('stock_minimo', $ingredient->stock_minimo !== null ? number_format((float)$ingredient->stock_minimo, 2, ',', '.') : '') }}"
+                                   placeholder="Ej: 1,00"
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors">
+                            <span class="absolute right-3 top-2.5 text-slate-500 text-xs font-mono">{{ $ingredient->unit_measure }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800/60">
                 <a href="{{ route('ingredients.index') }}" class="text-xs font-bold text-slate-400 hover:text-slate-200 px-4 py-2 transition-colors">
                     Cancelar
@@ -78,8 +111,10 @@
 </div>
 <script>
 document.getElementById('ingredient-form').addEventListener('submit', function () {
-    const input = document.getElementById('unit_cost');
-    input.value = input.value.replace(/\./g, '').replace(',', '.');
+    ['unit_cost', 'stock', 'stock_minimo'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && el.value) el.value = el.value.replace(/\./g, '').replace(',', '.');
+    });
 });
 </script>
 @endsection

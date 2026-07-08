@@ -25,16 +25,26 @@ class ProductController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $businessProfileId = auth()->user()->businessProfile?->id ?? 1;
-        $products = Product::where('business_profile_id', $businessProfileId)->get();
+
+        $allowedSorts = ['name', 'price'];
+        $sort = in_array($request->input('sort'), $allowedSorts) ? $request->input('sort') : 'name';
+        $dir  = $request->input('dir') === 'desc' ? 'desc' : 'asc';
+
+        $query = Product::where('business_profile_id', $businessProfileId)
+            ->withCount('reservations')
+            ->with('category')
+            ->orderBy($sort, $dir);
+
+        $products = $query->get();
 
         $totalProductos = $products->count();
         $activos        = $products->where('is_active', true)->count();
         $inactivos      = $products->where('is_active', false)->count();
 
-        return view('products.index', compact('products', 'totalProductos', 'activos', 'inactivos'));
+        return view('products.index', compact('products', 'totalProductos', 'activos', 'inactivos', 'sort', 'dir'));
     }
 
     public function create(Request $request)
@@ -49,6 +59,11 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function store(Request $request)
     {
+        // Normaliza el precio: "5.000,50" → 5000.50 | "5000.50" → 5000.50
+        $price = preg_replace('/\.(?=\d{3}(\D|$))/', '', $request->input('price', ''));
+        $price = str_replace(',', '.', $price);
+        $request->merge(['price' => $price]);
+
         // 1. Validar datos básicos
         $request->validate([
             'name'        => 'required|string|max:255',
@@ -107,6 +122,11 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function update(Request $request, Product $product)
     {
+        // Normaliza el precio: "5.000,50" → 5000.50 | "5000.50" → 5000.50
+        $price = preg_replace('/\.(?=\d{3}(\D|$))/', '', $request->input('price', ''));
+        $price = str_replace(',', '.', $price);
+        $request->merge(['price' => $price]);
+
         $request->validate($this->DataValidation());
 
         $data = [

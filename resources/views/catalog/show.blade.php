@@ -156,7 +156,7 @@
                             </div>
                             
                             <a href="{{ route('reservations.create', ['product_id' => $product->id]) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 shadow-md shadow-emerald-600/10 hover:shadow-emerald-500/20 border border-emerald-500/20 transition-all cursor-pointer w-full justify-center">
-                                <span>Reservar</span>
+                                <span>Comprar</span>
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                                 </svg>

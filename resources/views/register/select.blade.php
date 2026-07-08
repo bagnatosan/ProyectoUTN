@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Cocinet | Reservas y Emprendimientos Locales')
+@section('title', 'Cocinet | Compras y Emprendimientos Locales')
 
 @section('main_align', 'items-start')
 @section('content_width', 'max-w-6xl mx-auto')
@@ -16,7 +16,7 @@
         <div class="absolute inset-0 rounded-3xl" style="background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.6) 100%);"></div>
         <div class="relative z-10 pb-10 pt-10 px-4 md:px-10">
         <span class="inline-block px-3 py-1 text-xs font-semibold tracking-wider text-indigo-400 bg-indigo-500/10 rounded-full border border-indigo-500/20 uppercase animate-fade-in-up">
-            Plataforma de reservas locales
+            Plataforma de compras locales
         </span>
 
         <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mt-5 max-w-3xl mx-auto leading-tight animate-fade-in-up animate-delay-1"
@@ -30,7 +30,7 @@
         </h1>
 
         <p class="text-white/80 mt-4 max-w-2xl mx-auto text-sm md:text-lg animate-fade-in-up animate-delay-2" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);">
-            Conectamos emprendimientos gastronómicos locales con quienes quieren reservar. Explorá catálogos, elegí horarios y reservá al instante.
+            Conectamos emprendimientos gastronómicos locales con quienes quieren comprar. Explorá catálogos, elegí horarios y comprá al instante.
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8 animate-fade-in-up animate-delay-3">
@@ -57,8 +57,8 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-semibold">Reserva confirmada</p>
-                        <p class="text-xs text-slate-400 mt-0.5">Turno reservado en 2 clics, sin mensajes</p>
+                        <p class="text-sm font-semibold">Compra confirmada</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Compra en 2 clics, sin mensajes</p>
                     </div>
                 </div>
             </div>
@@ -70,7 +70,7 @@
     <section class="relative z-10 home-scroll-reveal">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             @foreach ([
-                ['Reservas online 24/7', 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
+                ['Compras online 24/7', 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
                 ['Emprendimientos locales', 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
                 ['Confirmación inmediata', 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
                 ['Panel para vendedores', 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
@@ -119,9 +119,9 @@
                 <span style="display:inline-block;padding:0.2rem 0.75rem;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:9999px;">
                     Para clientes
                 </span>
-                <h2 class="text-2xl md:text-3xl font-extrabold mt-4" style="color:#ffffff !important;">Tu próxima reserva, a un clic</h2>
+                <h2 class="text-2xl md:text-3xl font-extrabold mt-4" style="color:#ffffff !important;">Tu próxima compra, a un clic</h2>
                 <p style="color:rgba(255,255,255,0.65);margin-top:0.5rem;max-width:36rem;margin-left:auto;margin-right:auto;font-size:0.95rem;">
-                    Descubrí emprendimientos de tu zona, mirá disponibilidad y reservá sin llamadas ni mensajes.
+                    Descubrí emprendimientos de tu zona, mirá disponibilidad y comprá sin llamadas ni mensajes.
                 </p>
             </div>
 
@@ -129,7 +129,7 @@
                 @foreach ([
                     ['1', 'Explorá', 'Navegá catálogos de negocios locales y encontrá lo que necesitás.', 'home-scroll-reveal-delay-1'],
                     ['2', 'Elegí', 'Seleccioná producto o turno según la disponibilidad publicada.', 'home-scroll-reveal-delay-2'],
-                    ['3', 'Reservá', 'Confirmá tu reserva y recibí la confirmación al instante.', 'home-scroll-reveal-delay-3'],
+                    ['3', 'Comprá', 'Confirmá tu compra y recibí la confirmación al instante.', 'home-scroll-reveal-delay-3'],
                 ] as $step)
                     <div class="home-step-card home-scroll-reveal {{ $step[3] }} rounded-2xl p-6 transition-all duration-300" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);">
                         <span style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:9999px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);font-size:0.875rem;font-weight:700;color:#f5a623;">
@@ -151,12 +151,12 @@
                 <div style="color:rgba(255,255,255,0.85);">
                     <h3 class="text-xl font-bold mb-3" style="color:#ffffff !important;">Tu comida favorita, sin llamadas</h3>
                     <p style="font-size:0.95rem;color:rgba(255,255,255,0.65);line-height:1.7;">
-                        Entrás a Cocinet, buscás el emprendimiento que más te gusta y reservás tu turno o pedido en segundos. Sin mensajes por WhatsApp, sin esperar respuesta.
+                        Entrás a Cocinet, buscás el emprendimiento que más te gusta y comprás tu turno o pedido en segundos. Sin mensajes por WhatsApp, sin esperar respuesta.
                     </p>
                     <ul class="mt-4 space-y-2" style="font-size:0.875rem;color:rgba(255,255,255,0.6);">
                         <li style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#f5a623;">✓</span> Catálogos con fotos y precios</li>
                         <li style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#f5a623;">✓</span> Horarios disponibles en tiempo real</li>
-                        <li style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#f5a623;">✓</span> Confirmación inmediata de tu reserva</li>
+                        <li style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#f5a623;">✓</span> Confirmación inmediata de tu compra</li>
                     </ul>
                 </div>
             </div>
@@ -192,7 +192,7 @@
                 </span>
                 <h2 class="text-2xl md:text-3xl font-extrabold mt-4" style="color:#ffffff !important;">Potenciá tu negocio local</h2>
                 <p style="color:rgba(255,255,255,0.65);margin-top:0.5rem;max-width:42rem;margin-left:auto;margin-right:auto;font-size:0.95rem;">
-                    Publicá tu catálogo, gestioná horarios y recibí reservas directas. Tus clientes reservan solos y vos gestionás desde un panel.
+                    Publicá tu catálogo, gestioná horarios y recibí compras directas. Tus clientes compran solos y vos gestionás desde un panel.
                 </p>
             </div>
 
@@ -214,8 +214,8 @@
                 @foreach ([
                     ['Perfil de negocio', 'Nombre comercial, descripción y datos de contacto en un solo lugar.', 'home-scroll-reveal-delay-1'],
                     ['Catálogo de productos', 'Publicá productos, precios y categorías para tus clientes.', 'home-scroll-reveal-delay-2'],
-                    ['Horarios y disponibilidad', 'Definí cuándo podés atender reservas y turnos.', 'home-scroll-reveal-delay-3'],
-                    ['Gestión de reservas', 'Recibí y administrá pedidos desde tu panel.', 'home-scroll-reveal-delay-1'],
+                    ['Horarios y disponibilidad', 'Definí cuándo podés atender compras y turnos.', 'home-scroll-reveal-delay-3'],
+                    ['Gestión de compras', 'Recibí y administrá pedidos desde tu panel.', 'home-scroll-reveal-delay-1'],
                     ['Recetas e insumos', 'Organizá ingredientes y costos de lo que ofrecés.', 'home-scroll-reveal-delay-2'],
                     ['Métricas del negocio', 'Mirá cómo rinde tu emprendimiento en el dashboard.', 'home-scroll-reveal-delay-3'],
                 ] as $feature)
@@ -235,7 +235,7 @@
                 @foreach ([
                     ['1', 'Registrate', 'Creá tu cuenta como emprendedor en pocos minutos.', 'home-scroll-reveal-delay-1'],
                     ['2', 'Completá tu perfil', 'Subí tu catálogo, categorías y horarios disponibles.', 'home-scroll-reveal-delay-2'],
-                    ['3', 'Recibí reservas', 'Compartí tu negocio y empezá a recibir pedidos.', 'home-scroll-reveal-delay-3'],
+                    ['3', 'Recibí compras', 'Compartí tu negocio y empezá a recibir pedidos.', 'home-scroll-reveal-delay-3'],
                 ] as $step)
                     <div class="home-scroll-reveal {{ $step[3] }} text-center md:text-left">
                         <span style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:9999px;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);font-size:0.875rem;font-weight:700;color:#f5a623;">
@@ -276,7 +276,7 @@
             </div>
             <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
                 <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color: #d88448;">Emprendedor</p>
-                <p class="text-sm text-slate-300 italic">"María publicó su catálogo de pastelería y recibe reservas para los fines de semana desde un solo panel."</p>
+                <p class="text-sm text-slate-300 italic">"María publicó su catálogo de pastelería y recibe compras para los fines de semana desde un solo panel."</p>
             </div>
         </div>
     </section>
@@ -292,16 +292,16 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                 </summary>
-                <p class="text-sm text-slate-400 mt-3">Sí, crear una cuenta de cliente es gratuito y te permite explorar catálogos y realizar reservas.</p>
+                <p class="text-sm text-slate-400 mt-3">Sí, crear una cuenta de cliente es gratuito y te permite explorar catálogos y realizar compras.</p>
             </details>
             <details class="home-faq rounded-xl border border-slate-800 bg-slate-900/40 p-4 group">
                 <summary class="flex items-center justify-between text-sm font-semibold">
-                    ¿Cómo reservo un producto o turno?
+                    ¿Cómo compro un producto o turno?
                     <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                 </summary>
-                <p class="text-sm text-slate-400 mt-3">Registrate, elegí un emprendimiento, seleccioná el producto o horario disponible y confirmá tu reserva.</p>
+                <p class="text-sm text-slate-400 mt-3">Registrate, elegí un emprendimiento, seleccioná el producto o horario disponible y confirmá tu compra.</p>
             </details>
             <details class="home-faq rounded-xl border border-slate-800 bg-slate-900/40 p-4 group">
                 <summary class="flex items-center justify-between text-sm font-semibold">
@@ -333,7 +333,7 @@
         <div class="absolute inset-0" style="background:linear-gradient(135deg, rgba(15,46,30,0.88) 0%, rgba(30,58,47,0.75) 100%);"></div>
         <div class="relative z-10 text-center py-16 px-6">
         <h2 class="text-2xl md:text-3xl font-bold mb-3" style="color:#ffffff !important;">¿Listo para empezar?</h2>
-        <p class="text-white/70 text-sm mb-8 max-w-md mx-auto">Unite a los emprendimientos y clientes que ya usan Cocinet para reservar sin complicaciones.</p>
+        <p class="text-white/70 text-sm mb-8 max-w-md mx-auto">Unite a los emprendimientos y clientes que ya usan Cocinet para comprar sin complicaciones.</p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a href="{{ route('register.client') }}"
                style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.75rem;border-radius:0.75rem;font-size:0.875rem;font-weight:600;color:#1e3a2f;background:#ffffff;text-decoration:none;transition:all 0.2s;box-shadow:0 4px 14px rgba(0,0,0,0.25);"

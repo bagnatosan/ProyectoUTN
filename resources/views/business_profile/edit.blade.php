@@ -23,12 +23,24 @@
 
     <div class="max-w-4xl mx-auto">
 
-    <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 mb-4 transition-colors">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        <span>Volver al panel</span>
-    </a>
+    <div class="flex items-center justify-between mb-4">
+        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Volver al panel</span>
+        </a>
+
+        @if($profile && $profile->id)
+        <a href="{{ route('catalog.show', $profile->id) }}" target="_blank"
+           class="inline-flex items-center gap-2 text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl px-4 py-2 transition-all duration-200">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+            </svg>
+            Ver mi catálogo público
+        </a>
+        @endif
+    </div>
 
     {{-- Alertas globales (fuera de ambos forms) --}}
     @if($errors->any())
@@ -174,7 +186,7 @@
                         <span class="profile-section-label">Datos de cobro</span>
                     </div>
 
-                    <p class="profile-field-hint -mt-2">Estos datos se muestran al cliente cuando hace una reserva para que pueda realizar la transferencia.</p>
+                    <p class="profile-field-hint -mt-2">Estos datos se muestran al cliente cuando hace una compra para que pueda realizar la transferencia.</p>
 
                     <div class="profile-field">
                         <label for="bank_account_holder" class="profile-label">Titular de la cuenta</label>

@@ -10,15 +10,19 @@ class IngredientController extends Controller
     /**
      * Muestra el catálogo de materias primas del vendedor logueado.
      */
-    public function index()
+    public function index(Request $request)
     {
         $businessProfileId = auth()->user()->businessProfile?->id;
 
-        $ingredients = Ingredient::where('business_profile_id', $businessProfileId)
-            ->orderBy('name')
-            ->get();
+        $search = $request->input('search', '');
 
-        return view('ingredients.index', compact('ingredients'));
+        $ingredients = Ingredient::where('business_profile_id', $businessProfileId)
+            ->when($search, fn ($q) => $q->where('name', 'like', "%{$search}%"))
+            ->orderBy('name')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('ingredients.index', compact('ingredients', 'search'));
     }
 
     /**
@@ -35,9 +39,12 @@ class IngredientController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'         => 'required|string|max:255',
-            'unit_measure' => 'required|string|max:50',
-            'unit_cost'    => 'required|numeric|min:0',
+            'name'           => 'required|string|max:255',
+            'unit_measure'   => 'required|string|max:50',
+            'unit_cost'      => 'required|numeric|min:0',
+            'supplier_notes' => 'nullable|string',
+            'stock'          => 'nullable|numeric|min:0',
+            'stock_minimo'   => 'nullable|numeric|min:0',
         ]);
 
         $businessProfileId = auth()->user()->businessProfile?->id;
@@ -78,9 +85,12 @@ class IngredientController extends Controller
         $this->authorizeOwnership($ingredient);
 
         $validated = $request->validate([
-            'name'         => 'required|string|max:255',
-            'unit_measure' => 'required|string|max:50',
-            'unit_cost'    => 'required|numeric|min:0',
+            'name'           => 'required|string|max:255',
+            'unit_measure'   => 'required|string|max:50',
+            'unit_cost'      => 'required|numeric|min:0',
+            'supplier_notes' => 'nullable|string',
+            'stock'          => 'nullable|numeric|min:0',
+            'stock_minimo'   => 'nullable|numeric|min:0',
         ]);
 
         $ingredient->update($validated);

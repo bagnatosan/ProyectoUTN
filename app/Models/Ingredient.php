@@ -15,11 +15,16 @@ class Ingredient extends Model
     'name',
     'unit_measure',
     'unit_cost',
+    'supplier_notes',
+    'stock',
+    'stock_minimo',
 ];
 
     
     protected $casts = [
-        'unit_cost' => 'decimal:2',
+        'unit_cost'    => 'decimal:2',
+        'stock'        => 'decimal:2',
+        'stock_minimo' => 'decimal:2',
     ];
 
 

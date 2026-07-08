@@ -73,6 +73,22 @@
         </div>
     </div>
 
+    @if(!$productsList->isEmpty())
+    <div class="mb-4 flex justify-center">
+        <div class="relative w-1/2">
+            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+            </svg>
+            <input
+                type="text"
+                id="product-search"
+                placeholder="Buscar por nombre o categoría..."
+                class="w-full bg-slate-900/40 border border-slate-800/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all duration-200"
+            >
+        </div>
+    </div>
+    @endif
+
     <div class="border border-slate-800/80 bg-slate-900/40 backdrop-blur rounded-2xl shadow-xl shadow-indigo-950/10 overflow-hidden">
         @if($productsList->isEmpty())
         <div class="py-20 text-center border-dashed border-slate-800 rounded-2xl">
@@ -81,7 +97,7 @@
             </svg>
             <h3 class="text-lg font-bold text-white">No tienes productos registrados</h3>
             <p class="text-sm text-slate-400 mt-2 max-w-sm mx-auto">
-                Comienza agregando productos a tu inventario para que tus clientes puedan verlos y reservarlos.
+                Comienza agregando productos a tu inventario para que tus clientes puedan verlos y comprarlos.
             </p>
             <div class="mt-6">
                 <a href="{{ route('products.create') }}" class="inline-flex items-center space-x-2 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-4 py-2.5 transition-colors duration-200">
@@ -92,13 +108,34 @@
         @else
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
+                @php
+                    function sortUrl($col, $currentSort, $currentDir) {
+                        $nextDir = ($currentSort === $col && $currentDir === 'asc') ? 'desc' : 'asc';
+                        return request()->fullUrlWithQuery(['sort' => $col, 'dir' => $nextDir]);
+                    }
+                    function sortIcon($col, $currentSort, $currentDir) {
+                        if ($currentSort !== $col) return '<svg class="w-3 h-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4M8 15l4 4 4-4"/></svg>';
+                        return $currentDir === 'asc'
+                            ? '<svg class="w-3 h-3 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>'
+                            : '<svg class="w-3 h-3 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>';
+                    }
+                @endphp
                 <thead>
                     <tr class="border-b border-slate-800 bg-slate-950/40">
-                        <th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Producto</th>
+                        <th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                            <a href="{{ sortUrl('name', $sort, $dir) }}" class="inline-flex items-center gap-1 hover:text-white transition-colors">
+                                Producto {!! sortIcon('name', $sort, $dir) !!}
+                            </a>
+                        </th>
                         <th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Categoría</th>
-                        <th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Precio Venta</th>
+                        <th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                            <a href="{{ sortUrl('price', $sort, $dir) }}" class="inline-flex items-center gap-1 hover:text-white transition-colors">
+                                Precio Venta {!! sortIcon('price', $sort, $dir) !!}
+                            </a>
+                        </th>
                         <th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Costo Estimado</th>
                         <th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Precio Sugerido</th>
+                        <th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Pedidos</th>
                         <th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Estado</th>
                         <th class="p-4 text-xs font-semibold uppercase tracking-wider text-slate-400 text-right">Acciones</th>
                     </tr>
@@ -165,6 +202,17 @@
                         </td>
 
                         <td class="p-4">
+                            @if($product->reservations_count > 0)
+                                <span class="inline-flex items-center gap-1 text-xs font-semibold text-indigo-300">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+                                    {{ $product->reservations_count }}
+                                </span>
+                            @else
+                                <span class="text-xs text-slate-600">—</span>
+                            @endif
+                        </td>
+
+                        <td class="p-4">
                             <form action="{{ route('products.change-statement', $product->id) }}" method="POST" class="form-toggle inline-block align-middle">
                                 @csrf
                                 @method('PATCH')
@@ -210,7 +258,7 @@
                                         type="submit" 
                                         class="p-2 rounded-lg text-slate-400 hover:text-rose-450 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all duration-300 cursor-pointer"
                                         title="Eliminar producto"
-                                        onclick="return confirm('¿Estás seguro de que deseas eliminar el producto {{ $product->name }}? Se aplicará borrado lógico.')"
+                                        data-confirm="¿Eliminar el producto «{{ $product->name }}»?"
                                     >
                                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -228,4 +276,23 @@
     </div>
 </div>
 <script src="/js/products.js"></script>
+<script>
+(function () {
+    var input = document.getElementById('product-search');
+    if (!input) return;
+
+    input.addEventListener('input', function () {
+        var query = input.value.toLowerCase().trim();
+        var rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(function (row) {
+            var name = row.querySelector('h4') ? row.querySelector('h4').textContent.toLowerCase() : '';
+            var category = row.querySelector('td:nth-child(2)') ? row.querySelector('td:nth-child(2)').textContent.toLowerCase() : '';
+            var desc = row.querySelector('td:nth-child(1) p') ? row.querySelector('td:nth-child(1) p').textContent.toLowerCase() : '';
+
+            row.style.display = (!query || name.includes(query) || category.includes(query) || desc.includes(query)) ? '' : 'none';
+        });
+    });
+})();
+</script>
 @endsection

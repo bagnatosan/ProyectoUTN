@@ -25,7 +25,7 @@
         <div class="mb-8">
             <span class="auth-role-badge auth-role-badge-client">Cuenta Cliente</span>
             <h1 class="text-2xl font-extrabold mt-2">Registro de cliente</h1>
-            <p class="text-xs text-slate-400 mt-1">Completá tus datos para explorar emprendimientos y reservar.</p>
+            <p class="text-xs text-slate-400 mt-1">Completá tus datos para explorar emprendimientos y comprar.</p>
         </div>
 
         <form action="{{ route('register.client.store') }}" method="POST" class="space-y-6" id="client-registration-form">

@@ -115,7 +115,7 @@
                         type="text" 
                         name="price" 
                         id="price" 
-                        value="{{ old('price', $product->price) }}"
+                        value="{{ old('price', number_format((float)$product->price, 2, ',', '.')) }}"
                         required
                         placeholder="Ej. 5.000"
                         inputmode="numeric"

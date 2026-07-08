@@ -504,9 +504,21 @@ class ReservationController extends Controller
             ->orderBy('reservation_time')
             ->paginate($perPage);
 
+        $formatted = collect($reservations->items())->map(function ($r) {
+            $product = $r->product;
+            return array_merge($r->toArray(), [
+                'product' => $product ? [
+                    'id'    => $product->id,
+                    'name'  => $product->name,
+                    'image' => $product->image ? storage_url($product->image) : null,
+                    'price' => (float) $product->price,
+                ] : null,
+            ]);
+        });
+
         return response()->json([
             'success'       => true,
-            'data'          => $reservations->items(),
+            'data'          => $formatted,
             'total'         => $reservations->total(),
             'current_page'  => $reservations->currentPage(),
             'last_page'     => $reservations->lastPage(),

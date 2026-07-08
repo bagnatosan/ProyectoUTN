@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Agendar Reserva | ProyectoUTN')
+@section('title', 'Nueva Compra | ProyectoUTN')
 
 @section('content')
 <style>
@@ -547,7 +547,7 @@
         </div>
         <div>
           <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-            Agendar una Reserva
+            Nueva Compra
           </h1>
           <p class="text-slate-400 text-sm mt-0.5">
             Completá los datos y elegí la fecha y horario que prefieras.
@@ -608,7 +608,7 @@
                   </button>
                 </div>
                 <input type="hidden" name="quantity" id="quantity" value="{{ old('quantity', 1) }}">
-                <p class="text-xs text-slate-500 mt-1.5">Máximo 50 unidades por reserva.</p>
+                <p class="text-xs text-slate-500 mt-1.5">Máximo 50 unidades por compra.</p>
               </div>
 
               {{-- ── Modalidad de entrega ──────────────────── --}}
@@ -787,7 +787,7 @@
             <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span>Solicitar Reserva</span>
+            <span>Confirmar Compra</span>
           </button>
         </div>
       </form>

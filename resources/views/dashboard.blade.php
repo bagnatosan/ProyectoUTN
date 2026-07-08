@@ -27,7 +27,7 @@
     @if($upcomingReservations->isNotEmpty())
     <div style="margin-bottom:1.5rem;padding:1rem 1.25rem;border-radius:0.875rem;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.95);">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:#6a6966;text-transform:uppercase;letter-spacing:0.08em;">Mis próximas reservas</span>
+            <span style="font-size:0.75rem;font-weight:700;color:#6a6966;text-transform:uppercase;letter-spacing:0.08em;">Mis próximas compras</span>
             <a href="{{ route('reservations.index') }}" style="font-size:0.75rem;font-weight:600;color:#2d6a4f;">Ver todas →</a>
         </div>
         <div style="display:flex;flex-direction:column;gap:0.5rem;">
@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="flex items-center justify-between">
                 <h2 class="text-lg font-bold text-white flex items-center gap-2">
                     <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Próximas Reservas
+                    Próximas Compras
                 </h2>
                 <a href="{{ route('reservations.manage') }}" class="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">Ver todas →</a>
             </div>
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="text-xs text-slate-500 font-normal">({{ $reservationsToday->count() }})</span>
                 </h3>
                 @if($reservationsToday->isEmpty())
-                    <p class="text-sm text-slate-600 py-4 text-center border border-dashed border-slate-800 rounded-xl">Sin reservas para hoy.</p>
+                    <p class="text-sm text-slate-600 py-4 text-center border border-dashed border-slate-800 rounded-xl">Sin compras para hoy.</p>
                 @else
                     <div class="space-y-2">
                         @foreach($reservationsToday as $res)
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="text-xs text-slate-500 font-normal">({{ $reservationsTomorrow->count() }})</span>
                 </h3>
                 @if($reservationsTomorrow->isEmpty())
-                    <p class="text-sm text-slate-600 py-4 text-center border border-dashed border-slate-800 rounded-xl">Sin reservas para mañana.</p>
+                    <p class="text-sm text-slate-600 py-4 text-center border border-dashed border-slate-800 rounded-xl">Sin compras para mañana.</p>
                 @else
                     <div class="space-y-2">
                         @foreach($reservationsTomorrow as $res)

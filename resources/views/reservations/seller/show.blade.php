@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detalle de Reserva | ProyectoUTN')
+@section('title', 'Detalle de Compra | ProyectoUTN')
 
 @section('content')
 <style>
@@ -718,7 +718,7 @@
       Nota Interna
       <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--sd-text-secondary);font-size:0.75rem;">(opcional, solo visible para vos)</span>
     </h2>
-    <textarea id="sr-detail-seller-notes" class="sr-detail__textarea" placeholder="Escribe una nota interna sobre esta reserva...">{{ $reservation->seller_notes }}</textarea>
+    <textarea id="sr-detail-seller-notes" class="sr-detail__textarea" placeholder="Escribe una nota interna sobre esta compra...">{{ $reservation->seller_notes }}</textarea>
     <div class="sr-detail__notes-actions">
       <button type="button"
               id="sr-detail-save-notes"
@@ -734,11 +734,11 @@
     @if($reservation->status === 'pending')
       <button type="button" class="sr-detail__action-btn sr-detail__action-btn--confirm" data-action="confirm" data-id="{{ $reservation->id }}">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        Confirmar Reserva
+        Confirmar Compra
       </button>
       <button type="button" class="sr-detail__action-btn sr-detail__action-btn--cancel" data-action="cancel" data-id="{{ $reservation->id }}">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        Cancelar Reserva
+        Cancelar Compra
       </button>
     @elseif($reservation->status === 'confirmed')
       <button type="button" class="sr-detail__action-btn sr-detail__action-btn--complete" data-action="complete" data-id="{{ $reservation->id }}">
@@ -747,14 +747,14 @@
       </button>
       <button type="button" class="sr-detail__action-btn sr-detail__action-btn--cancel" data-action="cancel" data-id="{{ $reservation->id }}">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        Cancelar Reserva
+        Cancelar Compra
       </button>
     @else
       <div class="sr-detail__actions-info">
         @if($reservation->status === 'completed')
-          Esta reserva ya fue completada.
+          Esta compra ya fue completada.
         @elseif($reservation->status === 'cancelled')
-          Esta reserva fue cancelada.
+          Esta compra fue cancelada.
         @endif
       </div>
     @endif
@@ -826,7 +826,7 @@
         <svg style="width:1rem;height:1rem;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        Confirmar pago y reserva
+        Confirmar pago y compra
       </button>
     </form>
     @endif

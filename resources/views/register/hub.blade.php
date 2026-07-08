@@ -31,11 +31,11 @@
                 </svg>
             </div>
             <span class="auth-role-badge auth-role-badge-client">Cliente</span>
-            <h2 class="text-xl font-bold mt-4">Quiero reservar</h2>
+            <h2 class="text-xl font-bold mt-4">Quiero comprar</h2>
             <p class="text-sm text-slate-400 mt-2">Explorá emprendimientos locales, mirá catálogos y reservá turnos o productos.</p>
             <ul class="mt-5 space-y-2 text-sm text-slate-300">
                 <li class="flex items-center gap-2"><span class="text-indigo-400">✓</span> Cuenta gratuita</li>
-                <li class="flex items-center gap-2"><span class="text-indigo-400">✓</span> Reservas online</li>
+                <li class="flex items-center gap-2"><span class="text-indigo-400">✓</span> Compras online</li>
                 <li class="flex items-center gap-2"><span class="text-indigo-400">✓</span> Historial de pedidos</li>
             </ul>
             <a href="{{ route('register.client') }}" class="auth-role-btn auth-role-btn-client mt-8">
@@ -56,10 +56,10 @@
             </div>
             <span class="auth-role-badge auth-role-badge-seller">Emprendedor</span>
             <h2 class="text-xl font-bold mt-4">Tengo un negocio</h2>
-            <p class="text-sm text-slate-400 mt-2">Publicá tu catálogo, gestioná horarios y recibí reservas desde un panel.</p>
+            <p class="text-sm text-slate-400 mt-2">Publicá tu catálogo, gestioná horarios y recibí compras desde un panel.</p>
             <ul class="mt-5 space-y-2 text-sm text-slate-300">
                 <li class="flex items-center gap-2"><span style="color:#d88448">✓</span> Perfil comercial</li>
-                <li class="flex items-center gap-2"><span style="color:#d88448">✓</span> Catálogo y reservas</li>
+                <li class="flex items-center gap-2"><span style="color:#d88448">✓</span> Catálogo y compras</li>
                 <li class="flex items-center gap-2"><span style="color:#d88448">✓</span> Visible en el mapa</li>
             </ul>
             <a href="{{ route('register.seller') }}" class="auth-role-btn auth-role-btn-seller mt-8">
