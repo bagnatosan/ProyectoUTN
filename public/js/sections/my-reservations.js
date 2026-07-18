@@ -234,7 +234,6 @@
       var paymentHtml = '';
       if (r.status !== 'cancelled') {
         var paymentLabels = {
-          'pending_upload': 'Esperando comprobante',
           'uploaded': 'Comprobante enviado — pendiente de confirmación',
           'confirmed': 'Pago confirmado',
         };
@@ -257,6 +256,10 @@
       var canModify = r.status === 'pending' && resDate >= minDate;
 
       actionsHtml += '<span class="cr-badge cr-badge--' + r.status + '">' + statusLabel + '</span>';
+
+      if (r.status === 'pending' && r.payment_status === 'pending_upload') {
+        actionsHtml += '<a href="/reservations/' + r.id + '/payment" class="cr-btn cr-btn--success" style="background:#10b981;border-color:#10b981;color:#fff;margin-right:4px;">Pagar</a>';
+      }
 
       if (canModify) {
         actionsHtml += '<a href="/reservations/' + r.id + '/edit" class="cr-btn cr-btn--primary">Modificar</a>';

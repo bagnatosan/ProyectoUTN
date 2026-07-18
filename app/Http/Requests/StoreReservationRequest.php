@@ -24,8 +24,9 @@ class StoreReservationRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'product_id'       => 'required|integer|exists:products,id',
-            'quantity'         => 'required|integer|min:1|max:50',
+            'product_id'       => 'required_without:cart_data|nullable|integer|exists:products,id',
+            'quantity'         => 'required_without:cart_data|nullable|integer|min:1|max:50',
+            'cart_data'        => 'nullable|string',
             'delivery_type'    => 'required|in:delivery,pickup',
             'shipping_address' => 'required_if:delivery_type,delivery|nullable|string|max:255',
             'client_name'      => 'required|string|max:255',

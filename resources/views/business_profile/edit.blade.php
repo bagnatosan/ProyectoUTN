@@ -182,56 +182,57 @@
                         @enderror
                     </div>
 
+
+
                     <div class="profile-section-divider">
-                        <span class="profile-section-label">Datos de cobro</span>
+                        <span class="profile-section-label">Mercado Pago</span>
                     </div>
 
-                    <p class="profile-field-hint -mt-2">Estos datos se muestran al cliente cuando hace una compra para que pueda realizar la transferencia.</p>
-
                     <div class="profile-field">
-                        <label for="bank_account_holder" class="profile-label">Titular de la cuenta</label>
-                        <input type="text" name="bank_account_holder" id="bank_account_holder"
-                            value="{{ old('bank_account_holder', $profile->bank_account_holder ?? '') }}"
-                            class="profile-input @error('bank_account_holder') profile-input-error @enderror"
-                            placeholder="Ej. María González">
-                        @error('bank_account_holder')
-                            <p class="profile-field-error">{{ $message }}</p>
-                        @enderror
+                        <label class="profile-label font-semibold text-slate-100">Vinculación Rápida (OAuth)</label>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-4 mt-2">
+                            <a href="{{ route('business_profile.mercadopago.connect') }}" class="btn-mp-connect flex items-center justify-center gap-2">
+                                Conectar mi cuenta de Mercado Pago
+                            </a>
+                            @if(!empty($profile->mp_access_token))
+                                <span class="text-mp-connected">
+                                    ✓ Conectado correctamente
+                                </span>
+                            @else
+                                <span class="text-mp-disconnected">Sin vincular actualmente</span>
+                            @endif
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="profile-field">
-                            <label for="bank_cbu" class="profile-label">CBU</label>
-                            <input type="text" name="bank_cbu" id="bank_cbu"
-                                value="{{ old('bank_cbu', $profile->bank_cbu ?? '') }}"
-                                class="profile-input @error('bank_cbu') profile-input-error @enderror"
-                                placeholder="22 dígitos">
-                            @error('bank_cbu')
+                            <label for="mp_public_key" class="profile-label">Clave Pública (Public Key)</label>
+                            <input type="text" name="mp_public_key" id="mp_public_key"
+                                value="{{ old('mp_public_key', $profile->mp_public_key ?? '') }}"
+                                class="profile-input @error('mp_public_key') profile-input-error @enderror"
+                                placeholder="APP_USR-...">
+                            @error('mp_public_key')
                                 <p class="profile-field-error">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div class="profile-field">
-                            <label for="bank_alias" class="profile-label">Alias</label>
-                            <input type="text" name="bank_alias" id="bank_alias"
-                                value="{{ old('bank_alias', $profile->bank_alias ?? '') }}"
-                                class="profile-input @error('bank_alias') profile-input-error @enderror"
-                                placeholder="Ej. MI.ALIAS.MP">
-                            @error('bank_alias')
+                            <label for="mp_access_token" class="profile-label">Token de Acceso (Access Token)</label>
+                            <input type="password" name="mp_access_token" id="mp_access_token"
+                                value="{{ old('mp_access_token', $profile->mp_access_token ?? '') }}"
+                                class="profile-input @error('mp_access_token') profile-input-error @enderror"
+                                placeholder="APP_USR-...">
+                            @error('mp_access_token')
                                 <p class="profile-field-error">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
-                    <div class="profile-field">
-                        <label for="bank_name" class="profile-label">Banco / Billetera</label>
-                        <input type="text" name="bank_name" id="bank_name"
-                            value="{{ old('bank_name', $profile->bank_name ?? '') }}"
-                            class="profile-input @error('bank_name') profile-input-error @enderror"
-                            placeholder="Ej. Mercado Pago, Banco Galicia">
-                        @error('bank_name')
-                            <p class="profile-field-error">{{ $message }}</p>
-                        @enderror
+                    <div class="profile-field flex items-center gap-3 mp-test-wrapper">
+                        <button type="button" id="btn-test-mp" class="btn-mp-test">
+                            Probar Conexión
+                        </button>
+                        <span id="test-mp-result" class="text-sm font-semibold text-mp-test-result"></span>
                     </div>
 
                     <div class="profile-section-divider">
@@ -557,6 +558,50 @@ document.addEventListener('DOMContentLoaded', function () {
             geocodeAddress(address, true);
         }
     });
+
+    // Mercado Pago Credentials Test
+    var btnTestMp = document.getElementById('btn-test-mp');
+    var testMpResult = document.getElementById('test-mp-result');
+    var mpAccessTokenInput = document.getElementById('mp_access_token');
+
+    if (btnTestMp) {
+        btnTestMp.addEventListener('click', function () {
+            var token = mpAccessTokenInput.value.trim();
+            if (!token) {
+                testMpResult.textContent = 'Ingresá un Access Token primero.';
+                testMpResult.style.color = '#ef4444';
+                return;
+            }
+
+            testMpResult.textContent = 'Probando conexión...';
+            testMpResult.style.color = '#555555';
+
+            fetch('{{ route('business_profile.mercadopago.test') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ mp_access_token: token })
+            })
+            .then(function (response) {
+                return response.json().then(function (data) {
+                    if (response.ok) {
+                        testMpResult.textContent = data.message;
+                        testMpResult.style.color = '#10b981';
+                    } else {
+                        testMpResult.textContent = data.message || 'Error al validar las credenciales.';
+                        testMpResult.style.color = '#ef4444';
+                    }
+                });
+            })
+            .catch(function () {
+                testMpResult.textContent = 'Error de conexión con el servidor.';
+                testMpResult.style.color = '#ef4444';
+            });
+        });
+    }
 
     setTimeout(function () { map.invalidateSize(); }, 150);
 });

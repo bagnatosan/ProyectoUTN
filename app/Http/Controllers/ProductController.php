@@ -60,15 +60,20 @@ class ProductController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         // Normaliza el precio: "5.000,50" → 5000.50 | "5000.50" → 5000.50
-        $price = preg_replace('/\.(?=\d{3}(\D|$))/', '', $request->input('price', ''));
-        $price = str_replace(',', '.', $price);
-        $request->merge(['price' => $price]);
+        $priceInput = $request->input('price', '');
+        if (!empty($priceInput) && $priceInput !== 'Calculado por receta') {
+            $price = preg_replace('/\.(?=\d{3}(\D|$))/', '', $priceInput);
+            $price = str_replace(',', '.', $price);
+            $request->merge(['price' => $price]);
+        } else {
+            $request->merge(['price' => 0.00]);
+        }
 
         // 1. Validar datos básicos
         $request->validate([
             'name'        => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price'       => 'required|numeric|min:0',
+            'price'       => 'nullable|numeric|min:0',
             'category_id' => 'required',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
@@ -170,6 +175,7 @@ class ProductController extends Controller implements HasMiddleware
             ?? 3;
 
         $product->suggested_price = ($product->estimated_cost ?? 0) * $margin;
+        $product->price = ($product->estimated_cost ?? 0) * $margin;
         $product->save();
     }
 
@@ -224,7 +230,7 @@ class ProductController extends Controller implements HasMiddleware
             'name'         => 'required|string|max:100',
             'description'  => 'nullable|string|max:255',
             'category_id'  => 'required|exists:categories,id',
-            'price'        => 'required|numeric|min:0',
+            'price'        => 'nullable|numeric|min:0',
             'image'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'is_active'    => 'required|boolean',
             'custom_margin'=> 'nullable|numeric|min:1|max:50',

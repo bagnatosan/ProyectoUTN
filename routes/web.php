@@ -58,6 +58,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/profile/edit', [BusinessProfileController::class, 'edit'])->name('business_profile.edit');
         Route::put('/profile/update', [BusinessProfileController::class, 'update'])->name('business_profile.update');
         Route::put('/profile/password', [BusinessProfileController::class, 'updatePassword'])->name('business_profile.password');
+        
+        // Mercado Pago Seller Routes
+        Route::post('/profile/test-mp', [BusinessProfileController::class, 'testMpCredentials'])->name('business_profile.mercadopago.test');
+        Route::get('/profile/mp-connect', [BusinessProfileController::class, 'mercadopagoConnect'])->name('business_profile.mercadopago.connect');
+        Route::get('/profile/mp-callback', [BusinessProfileController::class, 'mercadopagoCallback'])->name('business_profile.mercadopago.callback');
     });
 
     // --- Programador 2: Catálogo de Productos y Categorías ---
@@ -126,10 +131,12 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.update-status');
     Route::patch('/reservations/{reservation}/seller-notes', [ReservationController::class, 'updateSellerNotes'])->name('reservations.seller-notes');
     Route::post('/reservations/{reservation}/confirm-payment', [ReservationController::class, 'confirmPayment'])->name('reservations.confirm-payment');
+    Route::get('/reservations/{reservation}/simulate-payment', [ReservationController::class, 'simulatePaymentSuccess'])->name('reservations.payment.simulate');
 
 });
 
 // --- Rutas Públicas (Programador 2 y 4) ---
+Route::post('/webhooks/mercadopago', [ReservationController::class, 'mercadopagoWebhook'])->name('reservations.mercadopago.webhook');
 Route::get('/mapa', [MapController::class, 'index'])->name('map.index');
 Route::get('/mapa/emprendimientos', [MapController::class, 'markers'])->name('map.markers');
 Route::post('/mapa/geocodificar', [MapController::class, 'geocode'])->name('map.geocode');

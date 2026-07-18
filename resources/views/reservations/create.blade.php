@@ -570,45 +570,59 @@
                 <span>Producto</span>
               </h2>
 
-              <div class="form-field">
-                <select name="product_id"
-                        id="product_id"
-                        class="form-field__input form-field__input--select w-full"
-                        data-validate="product"
-                        required
-                        aria-required="true">
-                  <option value="">Seleccioná un producto</option>
-                  @foreach($products as $product)
-                    <option value="{{ $product->id }}"
-                            data-user-id="{{ $product->businessProfile->user_id }}"
-                            {{ (old('product_id', $selectedProduct->id ?? '') == $product->id) ? 'selected' : '' }}>
-                      {{ $product->name }} - ${{ number_format($product->price, 2) }}
-                    </option>
-                  @endforeach
-                </select>
-                <ul id="error-product" class="form-field__errors form-field__errors--hidden" data-error-for="product" role="alert"></ul>
+              <input type="hidden" name="cart_data" id="cart_data">
+
+              <div id="single-product-selectors">
+                <div class="form-field">
+                  <select name="product_id"
+                          id="product_id"
+                          class="form-field__input form-field__input--select w-full"
+                          data-validate="product"
+                          required
+                          aria-required="true">
+                    <option value="">Seleccioná un producto</option>
+                    @foreach($products as $product)
+                      <option value="{{ $product->id }}"
+                              data-user-id="{{ $product->businessProfile->user_id }}"
+                              {{ (old('product_id', $selectedProduct->id ?? '') == $product->id) ? 'selected' : '' }}>
+                        {{ $product->name }} - ${{ number_format($product->price, 2) }}
+                      </option>
+                    @endforeach
+                  </select>
+                  <ul id="error-product" class="form-field__errors form-field__errors--hidden" data-error-for="product" role="alert"></ul>
+                </div>
+
+                {{-- Cantidad --}}
+                <div class="form-field mt-5">
+                  <label class="form-field__label">
+                    Cantidad <span class="text-rose-400" aria-hidden="true">*</span>
+                  </label>
+                  <div class="qty-selector" role="group" aria-label="Selector de cantidad">
+                    <button type="button" class="qty-btn" id="qty-minus" aria-label="Reducir cantidad" disabled>
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H6" />
+                      </svg>
+                    </button>
+                    <span class="qty-display" id="qty-display" aria-live="polite">1</span>
+                    <button type="button" class="qty-btn" id="qty-plus" aria-label="Aumentar cantidad">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                      </svg>
+                    </button>
+                  </div>
+                  <input type="hidden" name="quantity" id="quantity" value="{{ old('quantity', 1) }}">
+                  <p class="text-xs text-slate-500 mt-1.5">Máximo 50 unidades por compra.</p>
+                </div>
               </div>
 
-              {{-- Cantidad --}}
-              <div class="form-field mt-5">
-                <label class="form-field__label">
-                  Cantidad <span class="text-rose-400" aria-hidden="true">*</span>
-                </label>
-                <div class="qty-selector" role="group" aria-label="Selector de cantidad">
-                  <button type="button" class="qty-btn" id="qty-minus" aria-label="Reducir cantidad" disabled>
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H6" />
-                    </svg>
-                  </button>
-                  <span class="qty-display" id="qty-display" aria-live="polite">1</span>
-                  <button type="button" class="qty-btn" id="qty-plus" aria-label="Aumentar cantidad">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
-                    </svg>
-                  </button>
+              <div id="cart-summary-selector" class="hidden space-y-4">
+                <div id="cart-summary-items" class="space-y-2">
+                  <!-- JS render items -->
                 </div>
-                <input type="hidden" name="quantity" id="quantity" value="{{ old('quantity', 1) }}">
-                <p class="text-xs text-slate-500 mt-1.5">Máximo 50 unidades por compra.</p>
+                <div class="p-4 bg-slate-950/30 border border-slate-850/60 rounded-xl flex justify-between font-bold text-white text-base">
+                  <span>Subtotal:</span>
+                  <span id="cart-summary-total">$0.00</span>
+                </div>
               </div>
 
               {{-- ── Modalidad de entrega ──────────────────── --}}
@@ -863,6 +877,50 @@
 
     // Estado inicial
     setDeliveryType(deliveryInput.value || 'pickup');
+
+    // ── Cart Detection & Rendering ───────────────────────
+    const businessId = "{{ $business->id ?? '' }}";
+    const cartKey = 'cocinet_cart_' + businessId;
+    const cartData = JSON.parse(localStorage.getItem(cartKey)) || [];
+
+    if (cartData.length > 0) {
+      document.getElementById('cart_data').value = JSON.stringify(cartData);
+      
+      // Render cart items
+      const summaryItems = document.getElementById('cart-summary-items');
+      const summaryTotal = document.getElementById('cart-summary-total');
+      let total = 0;
+      summaryItems.innerHTML = '';
+      
+      cartData.forEach(item => {
+        let subtotal = item.price * item.quantity;
+        total += subtotal;
+        summaryItems.innerHTML += `
+          <div class="flex items-center justify-between p-3 bg-slate-950/40 border border-slate-800/80 rounded-xl text-sm">
+            <div>
+              <span class="font-semibold text-slate-200">${item.name}</span>
+              <span class="text-xs text-slate-500 block">Cantidad: ${item.quantity} · $${item.price.toLocaleString('es-AR', {minimumFractionDigits: 2})} c/u</span>
+            </div>
+            <span class="font-bold text-slate-350">$${subtotal.toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
+          </div>
+        `;
+      });
+      
+      summaryTotal.textContent = '$' + total.toLocaleString('es-AR', {minimumFractionDigits: 2});
+      
+      // Hide single selectors, show summary
+      document.getElementById('single-product-selectors').classList.add('hidden');
+      document.getElementById('cart-summary-selector').classList.remove('hidden');
+      
+      // Select the first product in the dropdown programmatically to trigger availability calculations
+      const productSelect = document.getElementById('product_id');
+      if (productSelect) {
+        productSelect.value = cartData[0].id;
+        // Trigger change event to load calendar availability
+        const event = new Event('change', { bubbles: true });
+        productSelect.dispatchEvent(event);
+      }
+    }
   });
 </script>
 @endsection

@@ -30,10 +30,15 @@ class ReservationController extends Controller
     public function create(Request $request): View
     {
         $selectedProduct = null;
+        $business = null;
 
         if ($request->has('product_id')) {
             $selectedProduct = Product::where('is_active', true)
                 ->find($request->input('product_id'));
+        }
+
+        if ($request->has('business_profile_id')) {
+            $business = BusinessProfile::find($request->input('business_profile_id'));
         }
 
         if ($selectedProduct) {
@@ -41,16 +46,18 @@ class ReservationController extends Controller
                 ->where('business_profile_id', $selectedProduct->business_profile_id)
                 ->with('businessProfile')
                 ->get();
+            $business = $selectedProduct->businessProfile;
+        } elseif ($business) {
+            $products = Product::where('is_active', true)
+                ->where('business_profile_id', $business->id)
+                ->with('businessProfile')
+                ->get();
         } else {
             $products = Product::where('is_active', true)
                 ->with('businessProfile')
                 ->get();
+            $business = $products->first()?->businessProfile ?? null;
         }
-
-        // Negocio y costo de envío
-        $business = $selectedProduct
-            ? $selectedProduct->businessProfile
-            : ($products->first()?->businessProfile ?? null);
 
         // Dirección precargada del cliente
         $clientAddress = null;
@@ -63,16 +70,34 @@ class ReservationController extends Controller
 
     public function store(StoreReservationRequest $request): RedirectResponse|JsonResponse
     {
-        $product = Product::where('is_active', true)->find($request->product_id);
+        $cartItems = null;
+        $productsDb = null;
+        $product = null;
 
-        if (!$product) {
-            return back()->withInput()
-                ->withErrors(['product_id' => 'El producto seleccionado no está disponible.']);
+        if ($request->filled('cart_data')) {
+            $cartItems = json_decode($request->cart_data, true);
         }
 
-        $sellerId = $product->businessProfile->user_id;
+        if ($cartItems && count($cartItems) > 0) {
+            $productIds = collect($cartItems)->pluck('id');
+            $productsDb = Product::whereIn('id', $productIds)->with('businessProfile')->get()->keyBy('id');
+            
+            $firstProduct = $productsDb->first();
+            if (!$firstProduct) {
+                return back()->withInput()->withErrors(['product_id' => 'Los productos no están disponibles.']);
+            }
+            $sellerId = $firstProduct->businessProfile->user_id;
+            $businessProfile = $firstProduct->businessProfile;
+        } else {
+            $product = Product::where('is_active', true)->find($request->product_id);
+            if (!$product) {
+                return back()->withInput()->withErrors(['product_id' => 'El producto seleccionado no está disponible.']);
+            }
+            $sellerId = $product->businessProfile->user_id;
+            $businessProfile = $product->businessProfile;
+        }
 
-        $reservation = DB::transaction(function () use ($request, $product, $sellerId) {
+        $reservation = DB::transaction(function () use ($request, $cartItems, $productsDb, $sellerId, $businessProfile, $product) {
             $isAvailable = $this->availabilityService->isSlotAvailable(
                 $sellerId,
                 $request->reservation_date,
@@ -80,33 +105,79 @@ class ReservationController extends Controller
             );
 
             if (!$isAvailable) {
-                DB::rollBack();
                 return null;
             }
 
-            return Reservation::create([
-                'product_id'       => $product->id,
-                'user_id'          => Auth::check() ? Auth::id() : null,
-                'client_name'      => $request->client_name,
-                'client_email'     => $request->client_email,
-                'client_phone'     => $request->client_phone,
-                'quantity'         => $request->quantity ?? 1,
-                'delivery_type'    => $request->delivery_type,
-                'shipping_address' => $request->delivery_type === 'delivery' ? $request->shipping_address : null,
-                'shipping_cost'    => $request->delivery_type === 'delivery'
-                    ? ($product->businessProfile->shipping_cost ?? 0)
-                    : 0,
-                'reservation_date' => $request->reservation_date,
-                'reservation_time' => $request->reservation_time,
-                'notes'            => $request->notes,
-                'status'           => 'pending',
-                'payment_status'   => 'pending_upload',
-            ]);
+            if ($cartItems) {
+                $totalQty = collect($cartItems)->sum('quantity');
+                $mainProduct = $productsDb->first();
+                
+                $reservation = Reservation::create([
+                    'product_id'       => $mainProduct->id,
+                    'user_id'          => Auth::check() ? Auth::id() : null,
+                    'client_name'      => $request->client_name,
+                    'client_email'     => $request->client_email,
+                    'client_phone'     => $request->client_phone,
+                    'quantity'         => $totalQty,
+                    'delivery_type'    => $request->delivery_type,
+                    'shipping_address' => $request->delivery_type === 'delivery' ? $request->shipping_address : null,
+                    'shipping_cost'    => $request->delivery_type === 'delivery' ? ($businessProfile->shipping_cost ?? 0) : 0,
+                    'reservation_date' => $request->reservation_date,
+                    'reservation_time' => $request->reservation_time,
+                    'notes'            => $request->notes,
+                    'status'           => 'pending',
+                    'payment_status'   => 'pending_upload',
+                ]);
+
+                foreach ($cartItems as $item) {
+                    $prodDb = $productsDb->get($item['id']);
+                    if ($prodDb) {
+                        \App\Models\ReservationItem::create([
+                            'reservation_id' => $reservation->id,
+                            'product_id'     => $prodDb->id,
+                            'quantity'       => $item['quantity'],
+                            'unit_price'     => $prodDb->price,
+                        ]);
+                    }
+                }
+                
+                return $reservation;
+            } else {
+                $reservation = Reservation::create([
+                    'product_id'       => $product->id,
+                    'user_id'          => Auth::check() ? Auth::id() : null,
+                    'client_name'      => $request->client_name,
+                    'client_email'     => $request->client_email,
+                    'client_phone'     => $request->client_phone,
+                    'quantity'         => $request->quantity ?? 1,
+                    'delivery_type'    => $request->delivery_type,
+                    'shipping_address' => $request->delivery_type === 'delivery' ? $request->shipping_address : null,
+                    'shipping_cost'    => $request->delivery_type === 'delivery' ? ($businessProfile->shipping_cost ?? 0) : 0,
+                    'reservation_date' => $request->reservation_date,
+                    'reservation_time' => $request->reservation_time,
+                    'notes'            => $request->notes,
+                    'status'           => 'pending',
+                    'payment_status'   => 'pending_upload',
+                ]);
+
+                \App\Models\ReservationItem::create([
+                    'reservation_id' => $reservation->id,
+                    'product_id'     => $product->id,
+                    'quantity'       => $request->quantity ?? 1,
+                    'unit_price'     => $product->price,
+                ]);
+
+                return $reservation;
+            }
         });
 
         if (!$reservation) {
             return back()->withInput()
                 ->withErrors(['reservation_time' => 'Este horario ya no está disponible. Por favor elegí otro.']);
+        }
+
+        if ($cartItems) {
+            session()->flash('clear_cart_id', $businessProfile->id);
         }
 
         return redirect()->route('reservations.payment', $reservation->id);
@@ -455,7 +526,7 @@ class ReservationController extends Controller
         }
 
         $query = Reservation::whereHas('product', fn ($q) => $q->where('business_profile_id', $businessProfile->id))
-            ->with(['product', 'user']);
+            ->with(['product', 'user', 'items.product']);
 
         $filter = $request->input('filter', 'today');
         $today = Carbon::today();
@@ -513,6 +584,15 @@ class ReservationController extends Controller
                     'image' => $product->image ? storage_url($product->image) : null,
                     'price' => (float) $product->price,
                 ] : null,
+                'items' => $r->items->map(function($item) {
+                    return [
+                        'id' => $item->id,
+                        'product_id' => $item->product_id,
+                        'product_name' => $item->product ? $item->product->name : 'Producto eliminado',
+                        'quantity' => $item->quantity,
+                        'unit_price' => (float) $item->unit_price,
+                    ];
+                })->toArray(),
             ]);
         });
 
@@ -723,9 +803,129 @@ class ReservationController extends Controller
             return redirect()->route('reservations.index');
         }
 
-        $reservation->load('product.businessProfile');
+        $reservation->load(['product.businessProfile', 'items.product']);
 
-        return view('reservations.payment', compact('reservation'));
+        $preferenceId = null;
+        $business = $reservation->product->businessProfile;
+        
+        if (!empty($business->mp_access_token)) {
+            $items = [];
+            if ($reservation->items->isNotEmpty()) {
+                foreach ($reservation->items as $item) {
+                    $items[] = [
+                        'title' => $item->product->name,
+                        'quantity' => (int)$item->quantity,
+                        'unit_price' => (float)$item->unit_price,
+                        'currency_id' => 'ARS',
+                    ];
+                }
+            } else {
+                $items[] = [
+                    'title' => $reservation->product->name,
+                    'quantity' => (int)$reservation->quantity,
+                    'unit_price' => (float)$reservation->product->price,
+                    'currency_id' => 'ARS',
+                ];
+            }
+
+            if ($reservation->delivery_type === 'delivery' && $reservation->shipping_cost > 0) {
+                $items[] = [
+                    'title' => 'Costo de envío',
+                    'quantity' => 1,
+                    'unit_price' => (float)$reservation->shipping_cost,
+                    'currency_id' => 'ARS',
+                ];
+            }
+
+            try {
+                $mpToken = $business->mp_access_token;
+                if (str_starts_with($mpToken, 'APP_USR-MOCK-')) {
+                    $preferenceId = 'mock_pref_' . $reservation->id;
+                    $reservation->mp_preference_id = $preferenceId;
+                    $reservation->save();
+                } else {
+                    $webhookUrl = route('reservations.mercadopago.webhook');
+                    $host = parse_url($webhookUrl, PHP_URL_HOST);
+                    $payload = [
+                        'items' => $items,
+                        'external_reference' => (string)$reservation->id,
+                    ];
+                    
+                    // Only pass notification_url and auto_return redirects if it is a public HTTPS domain (prevents MP 400 Bad Request error on local env)
+                    if ($host && $host !== 'localhost' && $host !== '127.0.0.1' && !str_starts_with($host, '192.168.') && !str_starts_with($host, '10.')) {
+                        $payload['notification_url'] = $webhookUrl;
+                        $payload['back_urls'] = [
+                            'success' => route('reservations.index'),
+                            'pending' => route('reservations.index'),
+                            'failure' => route('reservations.index'),
+                        ];
+                        $payload['auto_return'] = 'approved';
+                    }
+
+                    $response = \Illuminate\Support\Facades\Http::withToken($mpToken)
+                        ->post('https://api.mercadopago.com/checkout/preferences', $payload);
+
+                    if ($response->successful()) {
+                        $preferenceId = $response->json()['id'];
+                        $reservation->mp_preference_id = $preferenceId;
+                        $reservation->save();
+                    }
+                }
+            } catch (\Exception $e) {
+                // Fail silently and allow bank transfer
+            }
+        }
+
+        return view('reservations.payment', compact('reservation', 'preferenceId'));
+    }
+
+    public function mercadopagoWebhook(Request $request): JsonResponse
+    {
+        $paymentId = $request->input('data.id') ?? $request->input('id');
+        $topic = $request->input('type') ?? $request->input('topic');
+
+        if ($topic === 'payment' && $paymentId) {
+            $reservations = Reservation::where('payment_status', 'pending_upload')
+                ->whereNotNull('mp_preference_id')
+                ->with('product.businessProfile')
+                ->latest()
+                ->take(15)
+                ->get();
+
+            foreach ($reservations as $res) {
+                $mpToken = $res->product->businessProfile->mp_access_token;
+                if (!$mpToken) continue;
+
+                try {
+                    $response = \Illuminate\Support\Facades\Http::withToken($mpToken)
+                        ->get("https://api.mercadopago.com/v1/payments/{$paymentId}");
+
+                    if ($response->successful()) {
+                        $paymentData = $response->json();
+                        if (isset($paymentData['external_reference']) && (int)$paymentData['external_reference'] === $res->id) {
+                            $status = $paymentData['status'];
+                            $res->mp_payment_id = (string)$paymentId;
+                            $res->mp_status = $status;
+                            
+                            if ($status === 'approved') {
+                                $res->status = 'confirmed';
+                                $res->payment_status = 'confirmed';
+                                $res->payment_confirmed_at = now();
+                                $res->transfer_amount = $paymentData['transaction_amount'];
+                                $res->transfer_date = now()->format('Y-m-d');
+                                $res->transfer_reference = 'MP-' . $paymentId;
+                            }
+                            $res->save();
+                            break;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Fail silently
+                }
+            }
+        }
+
+        return response()->json(['success' => true]);
     }
 
     public function uploadReceipt(Request $request, Reservation $reservation): RedirectResponse
@@ -811,5 +1011,27 @@ class ReservationController extends Controller
 
         return redirect()->route('reservations.detail', $reservation->id)
             ->with('success', 'Pago confirmado. La reserva está confirmada.');
+    }
+
+    public function simulatePaymentSuccess(Reservation $reservation): RedirectResponse
+    {
+        $business = $reservation->product->businessProfile;
+        if (!$business || !str_starts_with($business->mp_access_token ?? '', 'APP_USR-MOCK-')) {
+            abort(403, 'La simulación solo está permitida con credenciales de prueba MOCK.');
+        }
+
+        $reservation->update([
+            'payment_status'      => 'confirmed',
+            'payment_confirmed_at' => now(),
+            'status'              => 'confirmed',
+            'transfer_reference'  => 'MP-MOCK-' . strtoupper(uniqid()),
+        ]);
+
+        if ($reservation->user) {
+            $reservation->user->notify(new PaymentConfirmed($reservation->fresh()));
+        }
+
+        return redirect()->route('reservations.index')
+            ->with('success', '¡Simulación de Pago Mercado Pago exitosa! La reserva ha sido confirmada.');
     }
 }

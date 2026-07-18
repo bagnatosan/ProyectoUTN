@@ -32,6 +32,8 @@ class BusinessProfile extends Model
         'province',
         'locality',
         'postal_code',
+        'mp_public_key',
+        'mp_access_token',
     ];
 
     // Relaciones

@@ -33,6 +33,9 @@ class Reservation extends Model
         'transfer_reference',
         'receipt_path',
         'payment_confirmed_at',
+        'mp_payment_id',
+        'mp_preference_id',
+        'mp_status',
     ];
 
     protected $casts = [
@@ -41,6 +44,11 @@ class Reservation extends Model
         'transfer_date' => 'date:Y-m-d',
         'payment_confirmed_at' => 'datetime',
     ];
+
+    public function items()
+    {
+        return $this->hasMany(ReservationItem::class);
+    }
 
     public function product()
     {

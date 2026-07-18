@@ -67,6 +67,8 @@ class BusinessProfileController extends Controller
             'bank_name'           => 'nullable|string|max:100',
             'bank_account_holder' => 'nullable|string|max:255',
             'shipping_cost'       => 'nullable|numeric|min:0',
+            'mp_public_key'       => 'nullable|string|max:255',
+            'mp_access_token'     => 'nullable|string|max:255',
         ], [
             'phone.regex' => 'El teléfono debe comenzar con +54 y no debe contener espacios.',
         ]);
@@ -90,11 +92,13 @@ class BusinessProfileController extends Controller
         $profile->phone               = $validated['phone'] ?? $profile->phone;
         $profile->address             = $validated['address'] ?? null;
         $profile->profit_margin       = $validated['profit_margin'] ?? $profile->profit_margin ?? 3;
-        $profile->bank_cbu            = $validated['bank_cbu'] ?? null;
-        $profile->bank_alias          = $validated['bank_alias'] ?? null;
-        $profile->bank_name           = $validated['bank_name'] ?? null;
-        $profile->bank_account_holder = $validated['bank_account_holder'] ?? null;
-        $profile->shipping_cost       = $validated['shipping_cost'] ?? 0; // ← fix: faltaba esta línea
+        if ($request->has('bank_cbu')) { $profile->bank_cbu = $validated['bank_cbu'] ?? null; }
+        if ($request->has('bank_alias')) { $profile->bank_alias = $validated['bank_alias'] ?? null; }
+        if ($request->has('bank_name')) { $profile->bank_name = $validated['bank_name'] ?? null; }
+        if ($request->has('bank_account_holder')) { $profile->bank_account_holder = $validated['bank_account_holder'] ?? null; }
+        $profile->shipping_cost       = $validated['shipping_cost'] ?? 0;
+        $profile->mp_public_key       = $validated['mp_public_key'] ?? null;
+        $profile->mp_access_token     = $validated['mp_access_token'] ?? null;
 
         $latitude  = isset($validated['latitude'])  ? (float) $validated['latitude']  : null;
         $longitude = isset($validated['longitude']) ? (float) $validated['longitude'] : null;
@@ -143,5 +147,85 @@ class BusinessProfileController extends Controller
 
         return redirect()->route('business_profile.edit')
                          ->with('success', 'Perfil actualizado correctamente.');
+    }
+
+    public function testMpCredentials(Request $request)
+    {
+        $token = $request->input('mp_access_token');
+        if (empty($token)) {
+            return response()->json(['success' => false, 'message' => 'El token está vacío.'], 400);
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withToken($token)
+                ->get('https://api.mercadopago.com/users/me');
+
+            if ($response->successful()) {
+                return response()->json(['success' => true, 'message' => '¡Conexión exitosa! Las credenciales son válidas.']);
+            }
+        } catch (\Exception $e) {
+            // Fallback
+        }
+
+        return response()->json(['success' => false, 'message' => 'El token ingresado no es válido o expiró.'], 422);
+    }
+
+    public function mercadopagoConnect(Request $request)
+    {
+        $clientId = env('MERCADOPAGO_CLIENT_ID', '8765432101234567');
+        if ($clientId === '8765432101234567') {
+            return redirect()->route('business_profile.mercadopago.callback', ['code' => 'mock_code_123']);
+        }
+        $redirectUri = route('business_profile.mercadopago.callback');
+        $url = "https://auth.mercadopago.com/authorization?client_id={$clientId}&response_type=code&platform_id=mp&redirect_uri=" . urlencode($redirectUri);
+        return redirect()->away($url);
+    }
+
+    public function mercadopagoCallback(Request $request)
+    {
+        $code = $request->query('code');
+        if (!$code) {
+            return redirect()->route('business_profile.edit')->with('error', 'No se recibió el código de autorización.');
+        }
+
+        $clientId = env('MERCADOPAGO_CLIENT_ID', '8765432101234567');
+        $clientSecret = env('MERCADOPAGO_CLIENT_SECRET', 'test_client_secret');
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::post('https://api.mercadopago.com/oauth/token', [
+                'client_secret' => $clientSecret,
+                'client_id' => $clientId,
+                'grant_type' => 'authorization_code',
+                'code' => $code,
+                'redirect_uri' => route('business_profile.mercadopago.callback'),
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $profile = Auth::user()->businessProfile;
+                if (!$profile) {
+                    $profile = new BusinessProfile(['user_id' => Auth::id()]);
+                }
+                $profile->mp_access_token = $data['access_token'];
+                $profile->mp_public_key = $data['public_key'] ?? null;
+                $profile->save();
+
+                return redirect()->route('business_profile.edit')->with('success', '¡Cuenta de Mercado Pago vinculada correctamente!');
+            }
+        } catch (\Exception $e) {
+            //
+        }
+
+        if ($clientId === '8765432101234567') {
+            $profile = Auth::user()->businessProfile;
+            if ($profile) {
+                $profile->mp_access_token = 'APP_USR-MOCK-ACCESS-TOKEN-1234';
+                $profile->mp_public_key = 'APP_USR-MOCK-PUBLIC-KEY-1234';
+                $profile->save();
+                return redirect()->route('business_profile.edit')->with('success', '¡Vinculación de prueba (Mock Sandbox) exitosa!');
+            }
+        }
+
+        return redirect()->route('business_profile.edit')->with('error', 'Error al conectar con Mercado Pago.');
     }
 }

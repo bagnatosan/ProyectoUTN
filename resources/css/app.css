@@ -1666,3 +1666,65 @@ a.home-btn-outline-peach:hover {
     animation: cat-blink 5s infinite;
     transform-origin: center;
 }
+
+/* Mercado Pago & Cart UI classes */
+.btn-mercadopago {
+    background-color: #009ee3;
+    color: white !important;
+}
+.btn-mercadopago:hover {
+    background-color: #0081bb;
+}
+.btn-mp-connect {
+    background-color: #009ee3;
+    border-color: #009ee3;
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 11pt;
+    transition: background-color 0.2s;
+}
+.btn-mp-connect:hover {
+    background-color: #0081bb;
+    border-color: #0081bb;
+}
+.text-mp-connected {
+    color: #10b981;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.text-mp-disconnected {
+    color: #64748b;
+    font-size: 9.5pt;
+}
+.mp-test-wrapper {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+.btn-mp-test {
+    padding: 8px 16px;
+    border: 1px solid #d8cbb5;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 10pt;
+    color: #133b2c;
+}
+.text-mp-test-result {
+    margin-left: 10px;
+}
+.icon-mercadopago {
+    width: 20px;
+    height: 20px;
+    fill: white;
+}
+.icon-error-payment {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto 8px auto;
+}

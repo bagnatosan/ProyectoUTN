@@ -128,6 +128,7 @@ class RecipeController extends Controller
 
         $product->estimated_cost = $totalCost;
         $product->suggested_price = $totalCost * $margin;
+        $product->price = $totalCost * $margin;
         $product->save();
     }
 }

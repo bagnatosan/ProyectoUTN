@@ -108,21 +108,17 @@
                 <!-- Precio -->
                 <div>
                     <label for="price" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                        Precio de Venta ($) <span class="text-rose-500">*</span>
+                        Precio de Venta ($)
                     </label>
                     <input 
                         type="text" 
                         name="price" 
                         id="price" 
-                        value="{{ old('price') }}"
-                        required
-                        placeholder="Ej. 5.000"
-                        inputmode="numeric"
-                        class="w-full bg-slate-950/80 border @error('price') border-rose-500 focus:ring-rose-500/30 @else border-slate-800/80 focus:border-indigo-500 focus:ring-indigo-500/30 @enderror rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 transition-all duration-300"
+                        value="Calculado por receta"
+                        disabled
+                        class="w-full bg-slate-900/50 border border-slate-800/80 rounded-xl px-4 py-3 text-sm text-slate-500 cursor-not-allowed select-none"
                     >
-                    @error('price')
-                        <p class="text-xs text-rose-450 mt-1.5">{{ $message }}</p>
-                    @enderror
+                    <p class="text-xs text-slate-400 mt-1.5">Se calculará en base a la receta que configures en el siguiente paso.</p>
                 </div>
             </div>
 
@@ -196,9 +192,6 @@
     </div>
 </div>
 <script>
-document.getElementById('product-form').addEventListener('submit', function () {
-    const priceInput = document.getElementById('price');
-    priceInput.value = priceInput.value.replace(/\./g, '').replace(',', '.');
-});
+// El precio se calcula asíncronamente en base a las recetas.
 </script>
 @endsection

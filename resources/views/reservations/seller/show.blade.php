@@ -579,14 +579,34 @@
     </span>
   </div>
 
-  {{-- Product Section --}}
-  <div class="sr-detail__section">
-    <h2 class="sr-detail__section-title">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
-      Producto
-    </h2>
-
-    @if($product)
+    @if($reservation->items->isNotEmpty())
+      <div style="display:flex;flex-direction:column;gap:1.25rem;">
+        @foreach($reservation->items as $item)
+          <div class="sr-detail__product" style="margin-bottom:0rem;padding-bottom:0.75rem;border-bottom:1px solid var(--sd-border);">
+            @if($item->product && $item->product->image)
+              <img class="sr-detail__product-image" src="{{ storage_url($item->product->image) }}" alt="{{ $item->product->name }}" loading="lazy">
+            @else
+              <div class="sr-detail__product-image sr-detail__product-image--placeholder">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/></svg>
+              </div>
+            @endif
+            <div class="sr-detail__product-info">
+              <div class="sr-detail__product-name">{{ $item->product ? $item->product->name : 'Producto eliminado' }} (x{{ $item->quantity }})</div>
+              <div class="sr-detail__product-prices" style="margin-top: 0.5rem;">
+                <div class="sr-detail__product-price-item">
+                  <span class="sr-detail__product-price-label">Precio Unitario</span>
+                  <span class="sr-detail__product-price-amount sr-detail__product-price-amount--sale">${{ number_format($item->unit_price, 2) }}</span>
+                </div>
+                <div class="sr-detail__product-price-item">
+                  <span class="sr-detail__product-price-label">Subtotal</span>
+                  <span class="sr-detail__product-price-amount sr-detail__product-price-amount--sale">${{ number_format($item->unit_price * $item->quantity, 2) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @elseif($product)
       <div class="sr-detail__product">
         @if($product->image)
           <img class="sr-detail__product-image" src="{{ storage_url($product->image) }}" alt="{{ $product->name }}" loading="lazy">
@@ -770,10 +790,20 @@
         </svg>
       </div>
       <div>
-        <p style="font-size:0.875rem;font-weight:700;color:#1a1918;">Comprobante de transferencia</p>
+        <p style="font-size:0.875rem;font-weight:700;color:#1a1918;">
+          @if(str_starts_with($reservation->transfer_reference ?? '', 'MP-'))
+            Pago electrónico (Mercado Pago)
+          @else
+            Comprobante de transferencia
+          @endif
+        </p>
         <p style="font-size:0.75rem;color:#6a6966;">
           @if($reservation->payment_status === 'confirmed')
-            Pago verificado y confirmado
+            @if(str_starts_with($reservation->transfer_reference ?? '', 'MP-'))
+              Aprobado automáticamente por la API
+            @else
+              Pago verificado y confirmado por vos
+            @endif
           @else
             El cliente subió el comprobante — revisalo y confirmá el pago
           @endif

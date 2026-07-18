@@ -46,6 +46,13 @@
                         @endif
                     @endauth
 
+                    {{-- Botón Carrito en Navbar --}}
+                    <button id="nav-cart-btn" class="shrink-0 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-855 transition-all hidden items-center gap-1.5 cursor-pointer">
+                        <span>🛒</span>
+                        <span class="hidden md:inline">Carrito</span>
+                        <span id="nav-cart-count" class="px-1.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold shadow-sm">0</span>
+                    </button>
+
                     @guest
                         <a href="{{ route('login') }}"
                         class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all {{ request()->routeIs('login') ? 'bg-green-600/20 text-green-400 border border-green-600/30' : '' }}">
@@ -585,6 +592,68 @@
         openModal(btn.getAttribute('data-confirm'), form);
     }, true);
 })();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const navCartBtn = document.getElementById('nav-cart-btn');
+    const navCartCount = document.getElementById('nav-cart-count');
+    if (!navCartBtn) return;
+
+    let activeBusinessId = null;
+
+    function getActiveBusinessFromStorage() {
+        if (typeof businessId !== 'undefined') {
+            return businessId;
+        }
+        for (let i = 0; i < localStorage.length; i++) {
+            let key = localStorage.key(i);
+            if (key.startsWith('cocinet_cart_')) {
+                try {
+                    let cart = JSON.parse(localStorage.getItem(key)) || [];
+                    if (cart.length > 0) {
+                        return key.replace('cocinet_cart_', '');
+                    }
+                } catch(e) {}
+            }
+        }
+        return null;
+    }
+
+    function updateNavCart() {
+        activeBusinessId = getActiveBusinessFromStorage();
+        let count = 0;
+        
+        if (activeBusinessId) {
+            try {
+                let cart = JSON.parse(localStorage.getItem('cocinet_cart_' + activeBusinessId)) || [];
+                count = cart.reduce((acc, item) => acc + item.quantity, 0);
+            } catch(e) {}
+        }
+
+        if (count > 0) {
+            navCartBtn.classList.remove('hidden');
+            navCartBtn.classList.add('flex');
+            navCartCount.textContent = count;
+        } else {
+            navCartBtn.classList.remove('flex');
+            navCartBtn.classList.add('hidden');
+        }
+    }
+
+    updateNavCart();
+
+    // Listen to storage changes to sync
+    window.addEventListener('storage', updateNavCart);
+    window.addEventListener('cart-updated', updateNavCart);
+
+    navCartBtn.addEventListener('click', function() {
+        if (typeof toggleCartDrawer === 'function') {
+            toggleCartDrawer();
+        } else if (activeBusinessId) {
+            window.location.href = '/catalog/' + activeBusinessId;
+        }
+    });
+});
 </script>
 </body>
 </html>

@@ -108,6 +108,29 @@ const reservationsManager = (() => {
     const statusClass = STATUS_CLASSES[reservation.status] || STATUS_CLASSES.pending;
     const statusLabel = STATUS_LABELS[reservation.status] || reservation.status;
 
+    let productDetailsHtml = '';
+    if (reservation.items && reservation.items.length > 0) {
+      productDetailsHtml = '<div class="reservations-manage__card-info" style="align-items:flex-start;gap:8px;"><svg style="margin-top:2px;flex-shrink:0;width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg><div style="flex-grow:1;">';
+      reservation.items.forEach((item) => {
+        productDetailsHtml += '<p style="margin:0 0 4px 0;font-size:0.875rem;color:#f1f5f9;"><strong>' + escapeHtml(item.product_name) + '</strong> <span style="color:#94a3b8;">(x' + item.quantity + ')</span></p>';
+      });
+      productDetailsHtml += '</div></div>';
+    } else {
+      productDetailsHtml = '<div class="reservations-manage__card-info">' +
+        '<svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="flex-shrink:0;width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>' +
+        '<span><strong>' + escapeHtml(productName) + '</strong></span>' +
+      '</div>';
+    }
+
+    let paymentStatusHtml = '';
+    if (reservation.payment_status === 'confirmed') {
+      paymentStatusHtml = '<div class="reservations-manage__card-info" style="color:#10b981;font-weight:600;"><svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="color:#10b981;flex-shrink:0;width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Pago aprobado</span></div>';
+    } else if (reservation.payment_status === 'uploaded') {
+      paymentStatusHtml = '<div class="reservations-manage__card-info" style="color:#f59e0b;font-weight:600;"><svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="color:#f59e0b;flex-shrink:0;width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Comprobante recibido</span></div>';
+    } else {
+      paymentStatusHtml = '<div class="reservations-manage__card-info" style="color:#64748b;"><svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="color:#64748b;flex-shrink:0;width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Pendiente de pago</span></div>';
+    }
+
     const card = document.createElement('article');
     card.className = 'reservations-manage__card';
     card.dataset.id = reservation.id;
@@ -127,14 +150,12 @@ const reservationsManager = (() => {
         '</span>' +
       '</div>' +
       '<div class="reservations-manage__card-body">' +
+        productDetailsHtml +
         '<div class="reservations-manage__card-info">' +
-          '<svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>' +
-          '<span><strong>' + escapeHtml(productName) + '</strong></span>' +
-        '</div>' +
-        '<div class="reservations-manage__card-info">' +
-          '<svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>' +
+          '<svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="flex-shrink:0;width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>' +
           '<span>' + formatDate(reservation.reservation_date) + ' - ' + formatTime(reservation.reservation_time) + '</span>' +
         '</div>' +
+        paymentStatusHtml +
         (reservation.notes ? '<div class="reservations-manage__card-notes">' + escapeHtml(reservation.notes) + '</div>' : '') +
       '</div>' +
       '<div class="reservations-manage__card-footer">' +

@@ -155,12 +155,9 @@
                                 <span class="text-lg font-black text-emerald-400">${{ number_format($product->price, 2, ',', '.') }}</span>
                             </div>
                             
-                            <a href="{{ route('reservations.create', ['product_id' => $product->id]) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 shadow-md shadow-emerald-600/10 hover:shadow-emerald-500/20 border border-emerald-500/20 transition-all cursor-pointer w-full justify-center">
-                                <span>Comprar</span>
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
+                            <button onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price ?? 0 }}, '{{ $product->image ? storage_url($product->image) : '' }}')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 shadow-md shadow-emerald-600/10 hover:shadow-emerald-500/20 border border-emerald-500/20 transition-all cursor-pointer w-full justify-center">
+                                <span>Agregar al carrito</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -294,6 +291,209 @@ document.addEventListener('DOMContentLoaded', function() {
             if (allPill) allPill.click();
         });
     }
+});
+</script>
+
+<!-- Cart Floating Widget -->
+<div id="cart-widget" class="fixed bottom-6 right-6 z-50 hidden">
+    <button onclick="toggleCartDrawer()" class="flex items-center gap-2 px-5 py-3.5 bg-gradient-to-tr from-emerald-600 to-teal-500 text-white rounded-full shadow-2xl hover:scale-105 transition-all cursor-pointer font-bold border border-emerald-500/30">
+        <svg style="width:1.25rem;height:1.25rem;fill:currentColor;" viewBox="0 0 24 24">
+            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+        </svg>
+        <span id="cart-count">0</span> ítems
+    </button>
+</div>
+
+<!-- Cart Drawer / Modal -->
+<div id="cart-drawer" class="fixed inset-0 z-[9999] hidden" onclick="toggleCartDrawer()">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div onclick="event.stopPropagation()" class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-slate-900 border-l border-slate-800 p-6 flex flex-col shadow-2xl text-white">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span>🛒 Tu Pedido</span>
+            </h3>
+            <button onclick="toggleCartDrawer()" class="text-slate-400 hover:text-slate-200 cursor-pointer font-bold">
+                ✕ Cerrar
+            </button>
+        </div>
+
+        <!-- Items list -->
+        <div id="cart-items-list" class="flex-grow overflow-y-auto py-4 space-y-4">
+            <!-- Dynamic items go here -->
+        </div>
+
+        <div class="pt-4 border-t border-slate-800 space-y-4">
+            <div class="flex items-center justify-between text-white font-bold text-lg">
+                <span>Total:</span>
+                <span id="cart-total" class="text-emerald-400">$0.00</span>
+            </div>
+            <button onclick="proceedToCheckout()" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold rounded-xl transition-all cursor-pointer text-center block text-sm shadow-lg shadow-emerald-500/10">
+                Iniciar Reserva
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript Carrito de Compras -->
+<script>
+const businessId = "{{ $business->id }}";
+const cartKey = 'cocinet_cart_' + businessId;
+
+function getCart() {
+    try {
+        return JSON.parse(localStorage.getItem(cartKey)) || [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveCart(cart) {
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+    updateCartWidget();
+    window.dispatchEvent(new Event('cart-updated'));
+}
+
+function addToCart(id, name, price, image) {
+    let cart = getCart();
+    let existing = cart.find(item => item.id === id);
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        cart.push({ id: id, name: name, price: parseFloat(price), image: image, quantity: 1 });
+    }
+    saveCart(cart);
+    
+    // Feedback visual
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-6 right-6 z-[9999] bg-emerald-600 text-white font-semibold px-4 py-2.5 rounded-xl shadow-lg animate-bounce';
+    notification.textContent = `✓ ${name} agregado al carrito`;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 2500);
+
+    // Open drawer automatically on add
+    openCartDrawer();
+}
+
+function removeFromCart(id) {
+    let cart = getCart();
+    cart = cart.filter(item => item.id !== id);
+    saveCart(cart);
+    renderCart();
+}
+
+function updateQuantity(id, delta) {
+    let cart = getCart();
+    let item = cart.find(item => item.id === id);
+    if (item) {
+        item.quantity += delta;
+        if (item.quantity <= 0) {
+            cart = cart.filter(i => i.id !== id);
+        }
+    }
+    saveCart(cart);
+    renderCart();
+}
+
+function updateCartWidget() {
+    let cart = getCart();
+    let count = cart.reduce((acc, item) => acc + item.quantity, 0);
+    const widget = document.getElementById('cart-widget');
+    const countSpan = document.getElementById('cart-count');
+
+    if (count > 0) {
+        widget.classList.remove('hidden');
+        countSpan.textContent = count;
+    } else {
+        widget.classList.add('hidden');
+    }
+}
+
+function renderCart() {
+    let cart = getCart();
+    const list = document.getElementById('cart-items-list');
+    const totalSpan = document.getElementById('cart-total');
+    list.innerHTML = '';
+
+    if (cart.length === 0) {
+        list.innerHTML = `
+            <div class="flex flex-col items-center justify-center h-48 text-slate-500 text-sm">
+                <span>Tu carrito está vacío</span>
+            </div>
+        `;
+        totalSpan.textContent = '$0,00';
+        return;
+    }
+
+    let total = 0;
+    cart.forEach(item => {
+        let subtotal = item.price * item.quantity;
+        total += subtotal;
+
+        let imgHtml = item.image 
+            ? `<img src="${item.image}" class="w-12 h-12 object-cover rounded-lg border border-slate-800">`
+            : `<div class="w-12 h-12 bg-slate-950 border border-slate-850 rounded-lg flex items-center justify-center text-slate-650 font-bold">P</div>`;
+
+        list.innerHTML += `
+            <div class="flex items-center gap-3 p-3 bg-slate-950/40 border border-slate-800/80 rounded-xl">
+                ${imgHtml}
+                <div class="flex-grow min-w-0">
+                    <h4 class="font-semibold text-sm truncate text-slate-200">${item.name}</h4>
+                    <span class="text-xs text-emerald-400 font-bold">$${item.price.toLocaleString('es-AR', {minimumFractionDigits:2})}</span>
+                </div>
+                <div class="flex items-center gap-2 border border-slate-800 rounded-lg p-1 bg-slate-900 shrink-0">
+                    <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white cursor-pointer font-bold text-sm">-</button>
+                    <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
+                    <button onclick="updateQuantity(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white cursor-pointer font-bold text-sm">+</button>
+                </div>
+                <button onclick="removeFromCart(${item.id})" class="text-slate-500 hover:text-rose-450 cursor-pointer p-1 shrink-0">
+                    ✕
+                </button>
+            </div>
+        `;
+    });
+
+    totalSpan.textContent = '$' + total.toLocaleString('es-AR', {minimumFractionDigits: 2});
+}
+
+function openCartDrawer() {
+    const drawer = document.getElementById('cart-drawer');
+    if (drawer) {
+        renderCart();
+        drawer.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeCartDrawer() {
+    const drawer = document.getElementById('cart-drawer');
+    if (drawer) {
+        drawer.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
+function toggleCartDrawer() {
+    const drawer = document.getElementById('cart-drawer');
+    if (drawer) {
+        if (drawer.classList.contains('hidden')) {
+            openCartDrawer();
+        } else {
+            closeCartDrawer();
+        }
+    }
+}
+
+function proceedToCheckout() {
+    let cart = getCart();
+    if (cart.length === 0) return;
+    
+    // Redirect to reservations creation passing business profile id
+    window.location.href = "{{ route('reservations.create') }}?business_profile_id=" + businessId;
+}
+
+// Inicializar widgets
+document.addEventListener('DOMContentLoaded', function() {
+    updateCartWidget();
 });
 </script>
 @endsection
