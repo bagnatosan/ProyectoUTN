@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div id="cart-drawer" class="fixed inset-0 z-[9999] hidden" onclick="toggleCartDrawer()">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
     <div onclick="event.stopPropagation()" class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-slate-900 border-l border-slate-800 p-6 flex flex-col shadow-2xl text-white">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800 shrink-0">
             <h3 class="text-lg font-bold text-white flex items-center gap-2">
                 <span>🛒 Tu Pedido</span>
             </h3>
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
 
         <!-- Items list -->
-        <div id="cart-items-list" class="flex-grow overflow-y-auto py-4 space-y-4">
+        <div id="cart-items-list" class="flex-grow overflow-y-auto pt-6 pb-4 space-y-4 px-1">
             <!-- Dynamic items go here -->
         </div>
 
@@ -369,9 +369,6 @@ function addToCart(id, name, price, image) {
     notification.textContent = `✓ ${name} agregado al carrito`;
     document.body.appendChild(notification);
     setTimeout(() => notification.remove(), 2500);
-
-    // Open drawer automatically on add
-    openCartDrawer();
 }
 
 function removeFromCart(id) {
@@ -425,6 +422,7 @@ function renderCart() {
     }
 
     let total = 0;
+    let itemsHtml = '<div class="pt-3 space-y-4">';
     cart.forEach(item => {
         let subtotal = item.price * item.quantity;
         total += subtotal;
@@ -433,7 +431,7 @@ function renderCart() {
             ? `<img src="${item.image}" class="w-12 h-12 object-cover rounded-lg border border-slate-800">`
             : `<div class="w-12 h-12 bg-slate-950 border border-slate-850 rounded-lg flex items-center justify-center text-slate-650 font-bold">P</div>`;
 
-        list.innerHTML += `
+        itemsHtml += `
             <div class="flex items-center gap-3 p-3 bg-slate-950/40 border border-slate-800/80 rounded-xl">
                 ${imgHtml}
                 <div class="flex-grow min-w-0">
@@ -451,6 +449,8 @@ function renderCart() {
             </div>
         `;
     });
+    itemsHtml += '</div>';
+    list.innerHTML = itemsHtml;
 
     totalSpan.textContent = '$' + total.toLocaleString('es-AR', {minimumFractionDigits: 2});
 }

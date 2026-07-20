@@ -806,6 +806,7 @@ class ReservationController extends Controller
         $reservation->load(['product.businessProfile', 'items.product']);
 
         $preferenceId = null;
+        $initUrl = null;
         $business = $reservation->product->businessProfile;
         
         if (!empty($business->mp_access_token)) {
@@ -849,16 +850,20 @@ class ReservationController extends Controller
                     $payload = [
                         'items' => $items,
                         'external_reference' => (string)$reservation->id,
+                        'payer' => [
+                            'name' => $reservation->user ? $reservation->user->name : 'Comprador',
+                            'email' => $reservation->user ? $reservation->user->email : 'test_user_123456@testuser.com',
+                        ],
+                        'back_urls' => [
+                            'success' => route('reservations.index'),
+                            'pending' => route('reservations.index'),
+                            'failure' => route('reservations.index'),
+                        ],
                     ];
                     
                     // Only pass notification_url and auto_return redirects if it is a public HTTPS domain (prevents MP 400 Bad Request error on local env)
                     if ($host && $host !== 'localhost' && $host !== '127.0.0.1' && !str_starts_with($host, '192.168.') && !str_starts_with($host, '10.')) {
                         $payload['notification_url'] = $webhookUrl;
-                        $payload['back_urls'] = [
-                            'success' => route('reservations.index'),
-                            'pending' => route('reservations.index'),
-                            'failure' => route('reservations.index'),
-                        ];
                         $payload['auto_return'] = 'approved';
                     }
 
@@ -866,7 +871,9 @@ class ReservationController extends Controller
                         ->post('https://api.mercadopago.com/checkout/preferences', $payload);
 
                     if ($response->successful()) {
-                        $preferenceId = $response->json()['id'];
+                        $responseData = $response->json();
+                        $preferenceId = $responseData['id'];
+                        $initUrl = $responseData['init_point'] ?? $responseData['sandbox_init_point'] ?? null;
                         $reservation->mp_preference_id = $preferenceId;
                         $reservation->save();
                     }
@@ -876,7 +883,7 @@ class ReservationController extends Controller
             }
         }
 
-        return view('reservations.payment', compact('reservation', 'preferenceId'));
+        return view('reservations.payment', compact('reservation', 'preferenceId', 'initUrl'));
     }
 
     public function mercadopagoWebhook(Request $request): JsonResponse

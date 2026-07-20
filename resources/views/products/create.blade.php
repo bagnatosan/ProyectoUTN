@@ -107,18 +107,15 @@
 
                 <!-- Precio -->
                 <div>
-                    <label for="price" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                    <span class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
                         Precio de Venta ($)
-                    </label>
-                    <input 
-                        type="text" 
-                        name="price" 
-                        id="price" 
-                        value="Calculado por receta"
-                        disabled
-                        class="w-full bg-slate-900/50 border border-slate-800/80 rounded-xl px-4 py-3 text-sm text-slate-500 cursor-not-allowed select-none"
-                    >
-                    <p class="text-xs text-slate-400 mt-1.5">Se calculará en base a la receta que configures en el siguiente paso.</p>
+                    </span>
+                    <div class="h-[46px] flex items-center justify-center gap-2 bg-slate-900/60 border border-slate-800/80 rounded-xl px-4">
+                        <svg class="w-4 h-4 text-indigo-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="text-xs font-bold text-slate-300 text-center">Calculado por receta automáticamente</span>
+                    </div>
                 </div>
             </div>
 

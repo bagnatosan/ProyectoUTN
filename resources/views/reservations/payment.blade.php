@@ -122,7 +122,7 @@
             [Simulación] Pagar con Mercado Pago
         </a>
         @else
-        <a href="https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id={{ $preferenceId }}" target="_blank"
+        <a href="{{ $initUrl ?? ('https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=' . $preferenceId) }}" target="_blank"
            class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-white font-bold text-sm transition-colors cursor-pointer btn-mercadopago">
             <svg class="icon-mercadopago" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 12H9v-1.41l3.59-3.59H9V7.59L13.41 12H9v1.41l4.41-4.41z"/></svg>
             Pagar con Mercado Pago
