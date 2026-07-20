@@ -85,6 +85,9 @@
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
         },
+        "platform": {
+            "php": "8.3.0"
+        },
         "disable-tls": true,
         "secure-http": false
     },
