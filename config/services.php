@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'mercadopago' => [
+        'client_id' => env('MERCADOPAGO_CLIENT_ID', '8765432101234567'),
+        'client_secret' => env('MERCADOPAGO_CLIENT_SECRET', 'test_client_secret'),
+    ],
+
 ];

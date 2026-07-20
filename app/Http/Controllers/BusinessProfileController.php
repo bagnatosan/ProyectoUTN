@@ -172,7 +172,7 @@ class BusinessProfileController extends Controller
 
     public function mercadopagoConnect(Request $request)
     {
-        $clientId = env('MERCADOPAGO_CLIENT_ID', '8765432101234567');
+        $clientId = config('services.mercadopago.client_id', '8765432101234567');
         if ($clientId === '8765432101234567') {
             return redirect()->route('business_profile.mercadopago.callback', ['code' => 'mock_code_123']);
         }
@@ -188,8 +188,8 @@ class BusinessProfileController extends Controller
             return redirect()->route('business_profile.edit')->with('error', 'No se recibió el código de autorización.');
         }
 
-        $clientId = env('MERCADOPAGO_CLIENT_ID', '8765432101234567');
-        $clientSecret = env('MERCADOPAGO_CLIENT_SECRET', 'test_client_secret');
+        $clientId = config('services.mercadopago.client_id', '8765432101234567');
+        $clientSecret = config('services.mercadopago.client_secret', 'test_client_secret');
 
         try {
             $response = \Illuminate\Support\Facades\Http::post('https://api.mercadopago.com/oauth/token', [
