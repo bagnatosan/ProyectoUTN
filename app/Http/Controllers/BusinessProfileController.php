@@ -97,8 +97,8 @@ class BusinessProfileController extends Controller
         if ($request->has('bank_name')) { $profile->bank_name = $validated['bank_name'] ?? null; }
         if ($request->has('bank_account_holder')) { $profile->bank_account_holder = $validated['bank_account_holder'] ?? null; }
         $profile->shipping_cost       = $validated['shipping_cost'] ?? 0;
-        $profile->mp_public_key       = $validated['mp_public_key'] ?? null;
-        $profile->mp_access_token     = $validated['mp_access_token'] ?? null;
+        if ($request->has('mp_public_key')) { $profile->mp_public_key = $validated['mp_public_key'] ?? null; }
+        if ($request->has('mp_access_token')) { $profile->mp_access_token = $validated['mp_access_token'] ?? null; }
 
         $latitude  = isset($validated['latitude'])  ? (float) $validated['latitude']  : null;
         $longitude = isset($validated['longitude']) ? (float) $validated['longitude'] : null;

@@ -189,9 +189,11 @@
                     </div>
 
                     <div class="profile-field">
-                        <label class="profile-label font-semibold text-slate-100">Vinculación Rápida (OAuth)</label>
+                        <label class="profile-label font-semibold text-slate-100">Cobros Electrónicos (Vinculación 1-Click)</label>
+                        <p class="text-xs text-slate-400 mb-3">Conectá tu cuenta de Mercado Pago para recibir el dinero de tus ventas de forma inmediata y automática.</p>
                         <div class="flex flex-col sm:flex-row sm:items-center gap-4 mt-2">
                             <a href="{{ route('business_profile.mercadopago.connect') }}" class="btn-mp-connect flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 12H9v-1.41l3.59-3.59H9V7.59L13.41 12H9v1.41l4.41-4.41z"/></svg>
                                 Conectar mi cuenta de Mercado Pago
                             </a>
                             @if(!empty($profile->mp_access_token))
@@ -202,37 +204,6 @@
                                 <span class="text-mp-disconnected">Sin vincular actualmente</span>
                             @endif
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="profile-field">
-                            <label for="mp_public_key" class="profile-label">Clave Pública (Public Key)</label>
-                            <input type="text" name="mp_public_key" id="mp_public_key"
-                                value="{{ old('mp_public_key', $profile->mp_public_key ?? '') }}"
-                                class="profile-input @error('mp_public_key') profile-input-error @enderror"
-                                placeholder="APP_USR-...">
-                            @error('mp_public_key')
-                                <p class="profile-field-error">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="profile-field">
-                            <label for="mp_access_token" class="profile-label">Token de Acceso (Access Token)</label>
-                            <input type="password" name="mp_access_token" id="mp_access_token"
-                                value="{{ old('mp_access_token', $profile->mp_access_token ?? '') }}"
-                                class="profile-input @error('mp_access_token') profile-input-error @enderror"
-                                placeholder="APP_USR-...">
-                            @error('mp_access_token')
-                                <p class="profile-field-error">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="profile-field flex items-center gap-3 mp-test-wrapper">
-                        <button type="button" id="btn-test-mp" class="btn-mp-test">
-                            Probar Conexión
-                        </button>
-                        <span id="test-mp-result" class="text-sm font-semibold text-mp-test-result"></span>
                     </div>
 
                     <div class="profile-section-divider">
