@@ -22,12 +22,24 @@ return new class extends Migration
         }
 
         if (Schema::hasColumn('availability_slots', 'business_profile_id')) {
-            DB::statement('
-                UPDATE availability_slots slot
-                JOIN business_profiles bp ON bp.id = slot.business_profile_id
-                SET slot.user_id = bp.user_id
-                WHERE slot.user_id IS NULL
-            ');
+            if (DB::getDriverName() === 'sqlite') {
+                DB::statement('
+                    UPDATE availability_slots
+                    SET user_id = (
+                        SELECT bp.user_id 
+                        FROM business_profiles bp 
+                        WHERE bp.id = availability_slots.business_profile_id
+                    )
+                    WHERE user_id IS NULL
+                ');
+            } else {
+                DB::statement('
+                    UPDATE availability_slots slot
+                    JOIN business_profiles bp ON bp.id = slot.business_profile_id
+                    SET slot.user_id = bp.user_id
+                    WHERE slot.user_id IS NULL
+                ');
+            }
         }
 
         if (Schema::hasColumn('availability_slots', 'weekday')) {
@@ -46,26 +58,30 @@ return new class extends Migration
 
         if (Schema::hasColumn('availability_slots', 'business_profile_id')) {
             Schema::table('availability_slots', function (Blueprint $table) {
-                $table->dropForeign(['business_profile_id']);
+                if (DB::getDriverName() !== 'sqlite') {
+                    $table->dropForeign(['business_profile_id']);
+                }
                 $table->dropColumn('business_profile_id');
                 $table->dropColumn('weekday');
                 $table->dropColumn('is_active');
             });
         }
 
-        DB::statement('ALTER TABLE availability_slots MODIFY user_id BIGINT UNSIGNED NOT NULL');
-        DB::statement('ALTER TABLE availability_slots MODIFY day_of_week TINYINT UNSIGNED NOT NULL');
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement('ALTER TABLE availability_slots MODIFY user_id BIGINT UNSIGNED NOT NULL');
+            DB::statement('ALTER TABLE availability_slots MODIFY day_of_week TINYINT UNSIGNED NOT NULL');
 
-        try {
-            DB::statement('ALTER TABLE availability_slots ADD CONSTRAINT availability_slots_user_id_foreign FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE');
-        } catch (\Exception $e) {
-            // FK may already exist
-        }
+            try {
+                DB::statement('ALTER TABLE availability_slots ADD CONSTRAINT availability_slots_user_id_foreign FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE');
+            } catch (\Exception $e) {
+                // FK may already exist
+            }
 
-        try {
-            DB::statement('ALTER TABLE availability_slots ADD UNIQUE INDEX availability_slots_unique (user_id, day_of_week, start_time, end_time)');
-        } catch (\Exception $e) {
-            // Index may already exist
+            try {
+                DB::statement('ALTER TABLE availability_slots ADD UNIQUE INDEX availability_slots_unique (user_id, day_of_week, start_time, end_time)');
+            } catch (\Exception $e) {
+                // Index may already exist
+            }
         }
     }
 
