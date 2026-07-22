@@ -57,14 +57,28 @@ return new class extends Migration
         DB::statement('UPDATE availability_slots SET user_id = (SELECT id FROM users WHERE role = ? ORDER BY id LIMIT 1) WHERE user_id = 0 OR user_id IS NULL', ['seller']);
 
         if (Schema::hasColumn('availability_slots', 'business_profile_id')) {
-            Schema::table('availability_slots', function (Blueprint $table) {
-                if (DB::getDriverName() !== 'sqlite') {
-                    $table->dropForeign(['business_profile_id']);
-                }
-                $table->dropColumn('business_profile_id');
-                $table->dropColumn('weekday');
-                $table->dropColumn('is_active');
-            });
+            Schema::disableForeignKeyConstraints();
+            try {
+                Schema::table('availability_slots', function (Blueprint $table) {
+                    if (DB::getDriverName() !== 'sqlite') {
+                        try {
+                            $table->dropForeign(['business_profile_id']);
+                        } catch (\Exception $e) {}
+                    }
+                    if (Schema::hasColumn('availability_slots', 'business_profile_id')) {
+                        $table->dropColumn('business_profile_id');
+                    }
+                    if (Schema::hasColumn('availability_slots', 'weekday')) {
+                        $table->dropColumn('weekday');
+                    }
+                    if (Schema::hasColumn('availability_slots', 'is_active')) {
+                        $table->dropColumn('is_active');
+                    }
+                });
+            } catch (\Exception $e) {
+                // Ignore if columns were already dropped
+            }
+            Schema::enableForeignKeyConstraints();
         }
 
         if (DB::getDriverName() !== 'sqlite') {
