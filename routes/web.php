@@ -147,6 +147,9 @@ Route::get('/available-slots/{seller}/{date}', [AvailabilityController::class, '
 // --- Administrador ---
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/users/{user}', [App\Http\Controllers\AdminController::class, 'showUser'])->name('admin.users.show');
+    Route::patch('/users/{user}/suspend', [App\Http\Controllers\AdminController::class, 'toggleSuspendUser'])->name('admin.users.suspend');
     Route::delete('/users/{user}', [App\Http\Controllers\AdminController::class, 'deleteUser'])->name('admin.users.delete');
+    Route::patch('/products/{product}/toggle', [App\Http\Controllers\AdminController::class, 'toggleProductStatus'])->name('admin.products.toggle');
     Route::delete('/products/{product}', [App\Http\Controllers\AdminController::class, 'deleteProduct'])->name('admin.products.delete');
 });

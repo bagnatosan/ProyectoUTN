@@ -252,9 +252,17 @@ class RegistrationController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            if ($user->isSuspended()) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Tu cuenta fue suspendida. Contactá al administrador para más información.',
+                ])->onlyInput('email');
+            }
+
             $request->session()->regenerate();
 
-            $user     = Auth::user();
             $redirect = $user->role === 'admin'
                 ? route('admin.dashboard')
                 : route('dashboard');

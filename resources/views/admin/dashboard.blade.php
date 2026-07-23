@@ -229,21 +229,42 @@
                             @else
                                 <span class="px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30">Cliente</span>
                             @endif
+                            @if($user->isSuspended())
+                                <span class="ml-1 px-2 py-1 rounded-full text-xs bg-rose-500/20 text-rose-400 border border-rose-500/30">Suspendido</span>
+                            @endif
                         </td>
                         <td class="px-6 py-4 text-slate-500">{{ $user->created_at->format('d/m/Y') }}</td>
                         <td class="px-6 py-4">
-                            @if($user->role !== 'admin')
-                            <form action="{{ route('admin.users.delete', $user) }}" method="POST"
-                                onsubmit="return confirm('¿Seguro que querés eliminar a {{ $user->name }}?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-xs text-rose-400 hover:text-rose-300 border border-rose-500/30 px-3 py-1 rounded-lg transition-colors">
-                                    Eliminar
-                                </button>
-                            </form>
-                            @else
-                                <span class="text-slate-600 text-xs">—</span>
-                            @endif
+                            <div class="flex items-center gap-2">
+                                <a href="{{ route('admin.users.show', $user) }}"
+                                    class="text-xs text-indigo-400 hover:text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-lg transition-colors">
+                                    Ver detalle
+                                </a>
+                                @if($user->role !== 'admin')
+                                <form action="{{ route('admin.users.suspend', $user) }}" method="POST"
+                                    onsubmit="return confirm('{{ $user->isSuspended() ? '¿Reactivar' : '¿Suspender' }} a {{ $user->name }}?')">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit"
+                                        class="text-xs px-3 py-1 rounded-lg transition-colors border
+                                            {{ $user->isSuspended()
+                                                ? 'text-emerald-400 hover:text-emerald-300 border-emerald-500/30'
+                                                : 'text-amber-400 hover:text-amber-300 border-amber-500/30' }}">
+                                        {{ $user->isSuspended() ? 'Reactivar' : 'Suspender' }}
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.users.delete', $user) }}" method="POST"
+                                    onsubmit="return confirm('¿Seguro que querés eliminar a {{ $user->name }}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-xs text-rose-400 hover:text-rose-300 border border-rose-500/30 px-3 py-1 rounded-lg transition-colors">
+                                        Eliminar
+                                    </button>
+                                </form>
+                                @else
+                                    <span class="text-slate-600 text-xs">—</span>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @endforeach
@@ -308,14 +329,28 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            <form action="{{ route('admin.products.delete', $product) }}" method="POST"
-                                onsubmit="return confirm('¿Seguro que querés eliminar {{ $product->name }}?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-xs text-rose-400 hover:text-rose-300 border border-rose-500/30 px-3 py-1 rounded-lg transition-colors">
-                                    Eliminar
-                                </button>
-                            </form>
+                            <div class="flex items-center gap-2">
+                                <form action="{{ route('admin.products.toggle', $product) }}" method="POST"
+                                    onsubmit="return confirm('{{ $product->is_active ? '¿Desactivar' : '¿Activar' }} {{ $product->name }}?')">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit"
+                                        class="text-xs px-3 py-1 rounded-lg transition-colors border
+                                            {{ $product->is_active
+                                                ? 'text-amber-400 hover:text-amber-300 border-amber-500/30'
+                                                : 'text-emerald-400 hover:text-emerald-300 border-emerald-500/30' }}">
+                                        {{ $product->is_active ? 'Desactivar' : 'Activar' }}
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.products.delete', $product) }}" method="POST"
+                                    onsubmit="return confirm('¿Seguro que querés eliminar {{ $product->name }}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-xs text-rose-400 hover:text-rose-300 border border-rose-500/30 px-3 py-1 rounded-lg transition-colors">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty
